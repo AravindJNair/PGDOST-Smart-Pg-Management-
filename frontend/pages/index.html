@@ -107,15 +107,15 @@
     .stats-strip {
       background: rgba(255,255,255,.6); backdrop-filter: blur(16px);
       border-top: 1px solid rgba(255,255,255,.5); border-bottom: 1px solid var(--clr-border);
-      padding: 2rem var(--space-xl);
+      padding: clamp(1.5rem, 3vw, 2rem) var(--space-xl);
     }
-    .stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; }
-    .stat-item-num { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--clr-brand-600); line-height: 1; }
-    .stat-item-label { font-size: .8rem; color: var(--clr-text-muted); font-weight: 500; margin-top: .25rem; }
+    .stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: clamp(1rem, 3vw, 2rem); text-align: center; }
+    .stat-item-num { font-family: var(--font-head); font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 800; color: var(--clr-brand-600); line-height: 1; }
+    .stat-item-label { font-size: clamp(0.72rem, 1.5vw, 0.85rem); color: var(--clr-text-muted); font-weight: 500; margin-top: 0.5rem; letter-spacing: 0.5px; }
 
     /* ── Properties Grid ── */
-    .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-xl); }
-    .property-card { animation: cardReveal .5s var(--ease) both; }
+    .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: clamp(1rem, 3vw, 1.5rem); }
+    .property-card { animation: cardReveal 0.5s var(--ease) both; }
     @keyframes cardReveal { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .skeleton-card {
       background: linear-gradient(90deg, rgba(0,0,0,.04) 25%, rgba(0,0,0,.07) 37%, rgba(0,0,0,.04) 63%);
@@ -192,21 +192,38 @@
     .footer-bottom { text-align: center; color: var(--clr-text-muted); font-size: .78rem; padding-top: var(--space-lg); border-top: 1px solid var(--clr-border); }
 
     /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .features-grid, .roles-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+      .properties-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+    }
+    
     @media (max-width: 768px) {
-      .landing-nav { border-radius: 16px; top: 8px; padding: .5rem 1rem; width: calc(100% - 1rem); }
+      .landing-nav { border-radius: 16px; top: 8px; padding: 0.6rem 1rem; width: calc(100% - 1rem); }
       .hidden-mobile { display: none; }
       .nav-hamburger { display: flex; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
-      .properties-grid { grid-template-columns: 1fr; }
-      .stats-inner { grid-template-columns: repeat(2, 1fr); }
-      .hero { min-height: auto; padding: 5.5rem var(--space-md) var(--space-xl) !important; }
-      .search-container { padding: 1.1rem 1.1rem; }
-      .filters-row { gap: .4rem; }
+      .footer-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+      .properties-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .features-grid, .roles-grid { grid-template-columns: 1fr; }
+      .hero { min-height: 80vh; padding: clamp(4rem, 8vw, 5rem) clamp(1rem, 4vw, 1.5rem) var(--space-2xl) !important; }
+      .search-container { padding: clamp(1rem, 2vw, 1.3rem); }
+      .filters-row { gap: 0.5rem; flex-wrap: wrap; }
+      .section-header { flex-direction: column; gap: 0.75rem; }
+      .features, .roles { padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 1.5rem); }
     }
+    
     @media (max-width: 480px) {
       .footer-grid { grid-template-columns: 1fr; }
-      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
       .roles-grid, .features-grid { grid-template-columns: 1fr; }
+      .hero-logo { font-size: clamp(2.5rem, 5vw, 3.5rem); }
+      .hero-tagline { font-size: clamp(0.9rem, 2vw, 1rem); }
+      .hero { padding: 3rem 1rem 2rem !important; }
+      .search-container { padding: 1rem; }
+      .filters-row { gap: 0.35rem; }
+      .filter-pill { font-size: 0.75rem; padding: 0.4rem 0.7rem; }
+      .amenity-toggle { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
     }
   </style>
 </head>
