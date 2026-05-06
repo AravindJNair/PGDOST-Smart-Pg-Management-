@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGDOST — PG Management Platform</title>
+  <meta name="description" content="PGDOST is a smart PG management platform. Browse verified PG and hostel accommodations. Search by city, price, and amenities." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root { --font-head: 'Poppins', 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+    /* ── Hamburger / Mobile Nav ── */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; border-radius: 8px; transition: background .2s; }
+    .nav-hamburger:hover { background: rgba(123,138,98,.1); }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--clr-text); border-radius: 2px; transition: all .3s var(--ease); }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-nav-overlay { display: none; position: fixed; inset: 0; z-index: 98; background: rgba(45,51,36,.3); backdrop-filter: blur(4px); }
+    .mobile-nav-overlay.open { display: block; }
+    .mobile-nav-panel {
+      position: fixed; top: 0; right: -100%; width: 280px; height: 100dvh; z-index: 99;
+      background: var(--clr-bg-2); border-left: 1px solid var(--glass-border);
+      box-shadow: var(--shadow-xl); transition: right .35s var(--ease); padding: 5rem 2rem 2rem;
+      display: flex; flex-direction: column; gap: .75rem;
+    }
+    .mobile-nav-panel.open { right: 0; }
+    .mobile-nav-panel a { display: block; padding: .75rem 1rem; border-radius: 12px; font-weight: 600; font-size: .95rem; transition: all .2s; }
+    .mobile-nav-panel a:hover { background: rgba(123,138,98,.1); color: var(--clr-brand-600); }
+    .mobile-nav-divider { height: 1px; background: var(--clr-border); margin: .5rem 0; }
+
+    /* ── Scroll shadow on nav ── */
+    .landing-nav.scrolled { box-shadow: 0 8px 32px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.06); }
+
+    /* ── Hero ── */
+    /* ── Hero animations (self-contained, no JS needed) ── */
+    .hero-badge   { animation: fadeSlideUp .5s ease both; animation-delay: 0s; }
+    .hero-logo    { animation: fadeSlideUp .6s ease both; animation-delay: .1s; }
+    .hero-tagline { animation: fadeSlideUp .6s ease both; animation-delay: .2s; }
+    .search-container { animation: fadeSlideUp .7s ease both; animation-delay: .3s; }
+    .hero {
+      min-height: 92vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 5.5rem var(--space-xl) var(--space-2xl); position: relative; overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: var(--space-xs);
+      background: rgba(123,138,98,.12); border: 1px solid rgba(123,138,98,.28);
+      color: var(--clr-brand-600); font-size: .75rem; font-weight: 700;
+      padding: .38rem 1rem; border-radius: var(--radius-full); letter-spacing: .07em;
+      text-transform: uppercase; backdrop-filter: blur(8px); margin-bottom: 1.25rem;
+    }
+    .hero-logo {
+      font-family: var(--font-head); font-size: clamp(3.2rem, 10vw, 6.5rem);
+      font-weight: 900; letter-spacing: -.03em; line-height: 1;
+      background: linear-gradient(135deg, var(--clr-brand-700), var(--clr-brand-400), var(--clr-brand-200));
+      background-size: 200% 200%; animation: gradientShift 6s ease infinite;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: .75rem;
+    }
+    .hero-tagline { font-size: clamp(.95rem, 2.5vw, 1.15rem); color: var(--clr-text-muted); max-width: 500px; line-height: 1.8; margin-bottom: 2rem; }
+    .hero-decoration { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 0; }
+    .hero > * { position: relative; z-index: 1; }
+
+    /* ── Glass search container ── */
+    .search-container {
+      width: 100%; max-width: 680px;
+      background: rgba(255,255,255,.7); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.8); border-radius: 20px;
+      padding: 1.5rem 1.75rem; box-shadow: 0 8px 32px rgba(123,138,98,.12), 0 2px 8px rgba(0,0,0,.04);
+      transition: box-shadow .3s var(--ease);
+    }
+    .search-container:focus-within { box-shadow: 0 12px 40px rgba(123,138,98,.18), 0 4px 12px rgba(0,0,0,.06); }
+    .search-bar-enhanced {
+      display: flex; align-items: center; gap: .75rem;
+      background: rgba(255,255,255,.9); border: 1.5px solid rgba(0,0,0,.08);
+      border-radius: var(--radius-full); padding: .75rem 1.25rem;
+      transition: all .25s var(--ease); margin-bottom: 1rem;
+    }
+    .search-bar-enhanced:focus-within { border-color: var(--clr-brand-400); box-shadow: 0 0 0 3px rgba(123,138,98,.15); background: #fff; }
+    .search-bar-enhanced input { background: none; border: none; outline: none; flex: 1; font-size: .95rem; color: var(--clr-text); }
+    .search-bar-enhanced input::placeholder { color: var(--clr-text-faint); }
+    .filters-row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-bottom: .9rem; }
+    .filter-pill {
+      border-radius: var(--radius-full); padding: .45rem .9rem; font-size: .82rem;
+      border: 1.5px solid rgba(0,0,0,.08); background: rgba(255,255,255,.8);
+      backdrop-filter: blur(8px); transition: all .2s var(--ease); color: var(--clr-text);
+      cursor: pointer;
+    }
+    .filter-pill:hover, .filter-pill:focus { border-color: rgba(123,138,98,.35); background: rgba(255,255,255,.95); box-shadow: 0 2px 10px rgba(123,138,98,.1); outline: none; }
+    .amenity-row { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1rem; }
+    .amenity-toggle {
+      display: inline-flex; align-items: center; gap: 5px; padding: .35rem .8rem;
+      border-radius: var(--radius-full); border: 1.5px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.6); font-size: .8rem; font-weight: 500;
+      color: var(--clr-text-muted); cursor: pointer; transition: all .2s var(--ease);
+      user-select: none;
+    }
+    .amenity-toggle:has(input:checked), .amenity-toggle.checked {
+      background: rgba(123,138,98,.15); border-color: rgba(123,138,98,.4); color: var(--clr-brand-600); font-weight: 600;
+    }
+    .amenity-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+
+    /* ── Stats Section ── */
+    .stats-strip {
+      background: rgba(255,255,255,.6); backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255,255,255,.5); border-bottom: 1px solid var(--clr-border);
+      padding: 2rem var(--space-xl);
+    }
+    .stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; }
+    .stat-item-num { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--clr-brand-600); line-height: 1; }
+    .stat-item-label { font-size: .8rem; color: var(--clr-text-muted); font-weight: 500; margin-top: .25rem; }
+
+    /* ── Properties Grid ── */
+    .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-xl); }
+    .property-card { animation: cardReveal .5s var(--ease) both; }
+    @keyframes cardReveal { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .skeleton-card {
+      background: linear-gradient(90deg, rgba(0,0,0,.04) 25%, rgba(0,0,0,.07) 37%, rgba(0,0,0,.04) 63%);
+      background-size: 400% 100%; animation: shimmerSkeleton 1.4s ease infinite;
+      border-radius: var(--radius-xl); height: 320px;
+    }
+    @keyframes shimmerSkeleton { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+    /* ── Features ── */
+    .features { padding: var(--space-3xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
+    .section-label { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--clr-brand-500); background: rgba(123,138,98,.1); border: 1px solid rgba(123,138,98,.2); border-radius: var(--radius-full); padding: .3rem .9rem; margin-bottom: .75rem; }
+    .features-title { text-align: center; font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; margin-bottom: .5rem; letter-spacing: -.02em; }
+    .features-subtitle { text-align: center; color: var(--clr-text-muted); margin-bottom: var(--space-2xl); font-size: .95rem; max-width: 480px; margin-inline: auto; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: var(--space-xl); }
+    .feature-card {
+      background: var(--glass-bg-strong); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); padding: var(--space-xl);
+      transition: all .4s var(--ease-spring); position: relative; overflow: hidden;
+      box-shadow: var(--shadow-sm); cursor: default;
+    }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--clr-brand-500), var(--clr-brand-200)); opacity: 0; transition: opacity .25s; }
+    .feature-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg), var(--shadow-glow); border-color: rgba(123,138,98,.25); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon { width: 52px; height: 52px; border-radius: var(--radius-md); background: rgba(123,138,98,.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: var(--space-md); transition: transform .3s var(--ease-spring); }
+    .feature-card:hover .feature-icon { transform: scale(1.12) rotate(-4deg); background: rgba(123,138,98,.18); }
+    .feature-title { font-size: 1.05rem; font-weight: 700; margin-bottom: var(--space-sm); }
+    .feature-desc { color: var(--clr-text-muted); font-size: .875rem; line-height: 1.75; }
+
+    /* ── Roles ── */
+    .roles { padding: var(--space-3xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
+    .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-xl); max-width: 760px; margin: 0 auto; }
+    .role-card {
+      background: var(--glass-bg-strong); border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-xl); padding: var(--space-xl);
+      display: flex; flex-direction: column; gap: var(--space-md);
+      box-shadow: var(--shadow-sm); transition: all .4s var(--ease-spring); position: relative; overflow: hidden;
+    }
+    .role-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(123,138,98,.04), transparent); opacity: 0; transition: opacity .3s; pointer-events: none; }
+    .role-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg), var(--shadow-glow); border-color: rgba(123,138,98,.3); }
+    .role-card:hover::after { opacity: 1; }
+    .role-card-icon { font-size: 2.6rem; }
+    .role-card-title { font-size: 1.2rem; font-weight: 800; }
+    .role-card-desc { color: var(--clr-text-muted); font-size: .875rem; line-height: 1.75; flex: 1; }
+    .role-card-features { display: flex; flex-direction: column; gap: .4rem; }
+    .role-feature-item { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: var(--clr-text-muted); }
+    .role-feature-item::before { content: '✓'; color: var(--clr-brand-500); font-weight: 700; font-size: .85rem; }
+
+    /* ── Navbar ── */
+    .landing-nav {
+      position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+      width: calc(100% - 1.5rem); max-width: 1200px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .6rem 1.25rem; background: var(--glass-bg-strong);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-full);
+      z-index: 100; box-shadow: var(--shadow-md); transition: all .25s var(--ease);
+    }
+    .nav-logo { font-family: var(--font-head); font-size: 1.35rem; font-weight: 900; background: linear-gradient(135deg, var(--clr-brand-700), var(--clr-brand-400)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -.02em; text-decoration: none; }
+    .nav-links { display: flex; gap: .25rem; align-items: center; }
+    .nav-text-link { color: var(--clr-text-muted); font-size: .84rem; font-weight: 500; padding: .32rem .7rem; border-radius: var(--radius-full); transition: all .2s var(--ease); text-decoration: none; position: relative; }
+    .nav-text-link::after { content: ''; position: absolute; bottom: 2px; left: .7rem; right: .7rem; height: 2px; background: var(--clr-brand-400); border-radius: 2px; transform: scaleX(0); transition: transform .2s var(--ease); }
+    .nav-text-link:hover { color: var(--clr-brand-600); background: rgba(123,138,98,.07); }
+    .nav-text-link:hover::after { transform: scaleX(1); }
+    .hidden-mobile { display: flex; gap: .15rem; }
+
+    /* ── Footer ── */
+    .landing-footer { border-top: 1px solid var(--clr-border); padding: var(--space-2xl) var(--space-xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--space-xl); margin-bottom: var(--space-xl); }
+    .footer-brand-text { font-family: var(--font-head); font-size: 1.25rem; font-weight: 800; }
+    .footer-desc { font-size: .84rem; color: var(--clr-text-muted); line-height: 1.7; margin-top: var(--space-sm); max-width: 220px; }
+    .footer-heading { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--clr-text); margin-bottom: var(--space-md); }
+    .footer-link { display: block; color: var(--clr-text-muted); font-size: .84rem; margin-bottom: var(--space-sm); transition: all .2s var(--ease); padding: .1rem 0; }
+    .footer-link:hover { color: var(--clr-brand-500); transform: translateX(3px); }
+    .footer-bottom { text-align: center; color: var(--clr-text-muted); font-size: .78rem; padding-top: var(--space-lg); border-top: 1px solid var(--clr-border); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .landing-nav { border-radius: 16px; top: 8px; padding: .5rem 1rem; width: calc(100% - 1rem); }
+      .hidden-mobile { display: none; }
+      .nav-hamburger { display: flex; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+      .properties-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .hero { min-height: auto; padding: 5.5rem var(--space-md) var(--space-xl) !important; }
+      .search-container { padding: 1.1rem 1.1rem; }
+      .filters-row { gap: .4rem; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .roles-grid, .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-mesh">
+
+  <!-- Mobile Nav Overlay + Panel -->
+  <div class="mobile-nav-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel" id="mobile-panel">
+    <a href="#explore-section" onclick="closeMobileNav()">🔍 Explore PGs</a>
+    <a href="#features-section" onclick="closeMobileNav()">✨ Features</a>
+    <a href="#roles-section" onclick="closeMobileNav()">🏡 For Owners</a>
+    <div class="mobile-nav-divider"></div>
+    <a href="login.html">Resident Login</a>
+    <a href="owner-login.html">Owner Login</a>
+    <a href="register.html" class="btn btn-primary" style="text-align:center;justify-content:center;margin-top:.5rem;">Register Free →</a>
+  </div>
+
+  <!-- Fixed Floating Navbar -->
+  <nav class="landing-nav" id="main-nav">
+    <a href="index.html" class="nav-logo">PGDOST</a>
+    <div class="nav-links">
+      <div class="hidden-mobile">
+        <a href="#explore-section" class="nav-text-link">Explore PGs</a>
+        <a href="#features-section" class="nav-text-link">Features</a>
+        <a href="#roles-section" class="nav-text-link">For Owners</a>
+      </div>
+      <div id="nav-auth-area" style="display:flex;gap:var(--space-sm);align-items:center;"></div>
+      <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-decoration">
+      <div class="deco-orb deco-orb-1"></div>
+      <div class="deco-orb deco-orb-2"></div>
+      <div class="deco-orb deco-orb-3"></div>
+    </div>
+    <div class="hero-badge">🏠 Smart PG Management Platform</div>
+    <h1 class="hero-logo">PGDOST</h1>
+    <p class="hero-tagline">
+      Find, book and manage PG accommodations with ease.<br>
+      Built for residents, owners &amp; administrators.
+    </p>
+
+    <!-- Glass Search Container -->
+    <div class="search-container animate-fade-up" style="animation-delay:.45s">
+      <div class="search-bar-enhanced">
+        <span style="font-size:1.1rem;color:var(--clr-text-faint)">🔍</span>
+        <input id="search-input" type="text" placeholder="Search by city, area or PG name…" autocomplete="off" />
+      </div>
+      <div class="filters-row">
+        <select id="filter-type" class="filter-pill">
+          <option value="">All Types</option>
+          <option value="pg">PG</option>
+          <option value="hostel">Hostel</option>
+          <option value="apartment">Apartment</option>
+        </select>
+        <select id="filter-city" class="filter-pill">
+          <option value="">All Cities</option>
+        </select>
+        <input id="filter-min-price" type="number" placeholder="Min ₹" class="filter-pill" style="width:88px" />
+        <input id="filter-max-price" type="number" placeholder="Max ₹" class="filter-pill" style="width:88px" />
+        <select id="filter-sort" class="filter-pill">
+          <option value="">Sort by</option>
+          <option value="price_low_high">↑ Price</option>
+          <option value="price_high_low">↓ Price</option>
+        </select>
+      </div>
+      <div class="amenity-row">
+        <label class="amenity-toggle"><input type="checkbox" id="filter-wifi"> 📶 WiFi</label>
+        <label class="amenity-toggle"><input type="checkbox" id="filter-ac"> ❄️ AC</label>
+        <label class="amenity-toggle"><input type="checkbox" id="filter-food"> 🍽 Meals</label>
+        <label class="amenity-toggle"><input type="checkbox" id="filter-parking"> 🚗 Parking</label>
+      </div>
+      <div class="text-center">
+        <button id="btn-search" class="btn btn-primary btn-lg" style="min-width:200px">🔍 Search Properties</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Strip -->
+  <div class="stats-strip">
+    <div class="stats-inner">
+      <div><div class="stat-item-num">500+</div><div class="stat-item-label">Properties Listed</div></div>
+      <div><div class="stat-item-num">2,000+</div><div class="stat-item-label">Happy Residents</div></div>
+      <div><div class="stat-item-num">50+</div><div class="stat-item-label">Cities Covered</div></div>
+      <div><div class="stat-item-num">98%</div><div class="stat-item-label">Satisfaction Rate</div></div>
+    </div>
+  </div>
+
+
+  <!-- Properties Grid -->
+  <section id="explore-section" class="container py-xl" style="padding-top:var(--space-2xl)">
+    <div id="properties-header" class="section-header reveal">
+      <div>
+        <h2 class="section-title">Available Accommodations</h2>
+        <p id="result-count" class="section-subtitle text-muted">Loading…</p>
+      </div>
+    </div>
+    <div id="properties-grid" class="properties-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card" style="animation-delay:.15s"></div>
+      <div class="skeleton-card" style="animation-delay:.3s"></div>
+    </div>
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-state-icon">🏠</div>
+      <h3>No properties found</h3>
+      <p>Try adjusting your search filters.</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features-section" class="features">
+    <div class="text-center" style="margin-bottom:.75rem">
+      <span class="section-label">Platform Features</span>
+    </div>
+    <h2 class="features-title">Everything you need, nothing you don't</h2>
+    <p class="features-subtitle">A complete toolkit for residents, owners, and admins — all in one place.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Explore & Apply</div>
+        <div class="feature-desc">Browse verified PG listings, filter by location and amenities, and submit your application in minutes.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Rent & Payments</div>
+        <div class="feature-desc">Owners generate monthly invoices; residents pay and track them — all with full transaction history.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">📋</div>
+        <div class="feature-title">Complaints & Support</div>
+        <div class="feature-desc">Residents raise maintenance requests; owners manage and resolve them with priority-based tracking.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Visitor Management</div>
+        <div class="feature-desc">Owners log all visitor entries with check-in/out timestamps for complete security tracking.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Role-Based Access</div>
+        <div class="feature-desc">Separate, secure dashboards for residents, owners, and superadmin — each with the right tools.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">🏢</div>
+        <div class="feature-title">Property & Room Mgmt</div>
+        <div class="feature-desc">Owners list properties and manage rooms with type, capacity, rent and availability tracking.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles / CTA -->
+  <section id="roles-section" class="roles">
+    <div class="text-center" style="margin-bottom:.75rem">
+      <span class="section-label">Get Started</span>
+    </div>
+    <h2 class="features-title" style="margin-bottom:.5rem">Who uses PGDOST?</h2>
+    <p class="features-subtitle">Choose your role and get started in minutes.</p>
+    <div class="roles-grid">
+      <div class="role-card reveal reveal-delay-1">
+        <div class="role-card-icon">🧑‍🎓</div>
+        <div class="role-card-title">Residents</div>
+        <div class="role-card-desc">Find your ideal PG and manage your entire stay from one dashboard.</div>
+        <div class="role-card-features">
+          <div class="role-feature-item">Browse &amp; filter verified PG listings</div>
+          <div class="role-feature-item">Track payments &amp; invoices</div>
+          <div class="role-feature-item">Raise maintenance complaints</div>
+          <div class="role-feature-item">Monitor your visitor log</div>
+        </div>
+        <div class="flex gap-sm flex-wrap">
+          <a href="register.html" class="btn btn-primary">Register Free →</a>
+          <a href="login.html" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+      <div class="role-card reveal reveal-delay-2">
+        <div class="role-card-icon">🏡</div>
+        <div class="role-card-title">PG Owners</div>
+        <div class="role-card-desc">List your property and manage everything from one powerful dashboard.</div>
+        <div class="role-card-features">
+          <div class="role-feature-item">Add properties &amp; manage rooms</div>
+          <div class="role-feature-item">Approve bookings &amp; applications</div>
+          <div class="role-feature-item">Generate &amp; track invoices</div>
+          <div class="role-feature-item">Handle complaints &amp; visitors</div>
+        </div>
+        <div class="flex gap-sm flex-wrap">
+          <a href="register.html" class="btn btn-primary">Register Free →</a>
+          <a href="owner-login.html" class="btn btn-secondary" style="border-color:var(--clr-info);color:var(--clr-info)">Owner Login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-text gradient-text">PGDOST</div>
+        <p class="footer-desc">Smart PG Management Platform — find, book and manage paying-guest accommodations with ease.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Platform</div>
+        <a href="#explore-section" class="footer-link">Explore PGs</a>
+        <a href="#features-section" class="footer-link">Features</a>
+        <a href="register.html" class="footer-link">Register</a>
+      </div>
+      <div>
+        <div class="footer-heading">Login</div>
+        <a href="login.html" class="footer-link">Resident Login</a>
+        <a href="owner-login.html" class="footer-link">Owner Login</a>
+      </div>
+      <div>
+        <div class="footer-heading">Roles</div>
+        <a href="#roles-section" class="footer-link">For Residents</a>
+        <a href="#roles-section" class="footer-link">For Owners</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 PGDOST — PG Management Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Property Detail Modal -->
+  <div id="modal-detail" class="modal-overlay">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-prop-name">Property Details</h2>
+        <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+      </div>
+      <div id="modal-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- Apply Modal -->
+  <div id="modal-apply" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Apply for this PG</h2>
+        <button class="modal-close" onclick="closeModal('modal-apply')">✕</button>
+      </div>
+      <form id="apply-form">
+        <input type="hidden" id="apply-property-id" />
+        <div class="flex flex-col gap-md">
+          <div class="form-group">
+            <label class="form-label">Preferred Move-In Date</label>
+            <input id="apply-movein" type="date" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message to Owner (optional)</label>
+            <textarea id="apply-message" class="form-textarea" placeholder="Introduce yourself..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inquiry Modal -->
+  <div id="modal-inquiry" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Make an Inquiry</h2>
+        <button class="modal-close" onclick="closeModal('modal-inquiry')">✕</button>
+      </div>
+      <form id="inquiry-form">
+        <input type="hidden" id="inquiry-property-id" />
+        <div class="flex flex-col gap-md">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input id="inquiry-name" type="text" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input id="inquiry-email" type="email" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input id="inquiry-phone" type="text" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea id="inquiry-message" class="form-textarea" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full">Send Inquiry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Write Review Modal -->
+  <div id="modal-review" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Write a Review</h2>
+        <button class="modal-close" onclick="closeModal('modal-review')">✕</button>
+      </div>
+      <form id="review-form">
+        <input type="hidden" id="review-property-id" />
+        <div class="flex flex-col gap-md">
+          <div class="form-group">
+            <label class="form-label">Rating (1 to 5)</label>
+            <select id="review-rating" class="form-select" required>
+                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                <option value="3">⭐⭐⭐ (3/5)</option>
+                <option value="2">⭐⭐ (2/5)</option>
+                <option value="1">⭐ (1/5)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Review Comment</label>
+            <textarea id="review-text" class="form-textarea" placeholder="How was your stay?" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full">Submit Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script src="../scripts/api.js"></script>
+  <script>
+    let allProperties = [];
+
+    // Update nav
+    function updateNav() {
+      const area = document.getElementById('nav-auth-area');
+      if (Auth.isLoggedIn()) {
+        const user = Auth.getUser();
+        const role = user?.role;
+        const dashLinks = {
+          resident: 'resident-dashboard.html',
+          owner: 'owner-dashboard.html',
+          superadmin: 'admin-dashboard.html',
+        };
+        area.innerHTML = `
+          <a href="${dashLinks[role] || '#'}" class="btn btn-secondary btn-sm">My Dashboard</a>
+          <button onclick="Auth.logout()" class="btn btn-sm" style="color:var(--clr-text-muted)">Logout</button>
+        `;
+      } else {
+        area.innerHTML = `
+          <a href="login.html" class="btn btn-primary btn-sm">Resident Login</a>
+          <a href="owner-login.html" class="btn btn-secondary btn-sm" style="border-color: var(--clr-info); color: var(--clr-info);">Owner Login</a>
+        `;
+      }
+    }
+
+    // Load cities for filter
+    function populateCities(properties) {
+      const cities = [...new Set(properties.map(p => p.city).filter(Boolean))].sort();
+      const sel = document.getElementById('filter-city');
+      cities.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
+    }
+
+    // Amenity icons
+    const amenityIcons = {
+      has_wifi: '✓ WiFi',
+      has_ac: '✓ AC',
+      has_food: '✓ Meals',
+      has_parking: '✓ Parking',
+      has_laundry: '✓ Laundry',
+      has_gym: '✓ Gym',
+    };
+
+    function renderAmenities(prop) {
+      return Object.entries(amenityIcons)
+        .filter(([key]) => prop[key])
+        .map(([, label]) => `<span class="amenity-chip">${label}</span>`)
+        .join('');
+    }
+
+    function renderCard(prop) {
+      const minRent = prop.min_rent ? formatCurrency(prop.min_rent) : 'On request';
+      const imgSrc = prop.primary_image_url
+        ? prop.primary_image_url
+        : "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80";
+      
+      return `
+        <div class="property-card" onclick="showDetail(${prop.id})">
+          <div class="property-card-image" style="background-image: url('${imgSrc}'); background-size: cover; background-position: center;">
+            <div style="position: absolute; top: 12px; left: 12px; display: flex; gap: 8px;">
+              <span class="badge" style="background: #22c55e; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">\u2713 Verified</span>
+              <span class="badge" style="background: #eab308; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">\u2b50 Featured</span>
+            </div>
+            <span class="badge" style="position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,0.9); color: #6b21a8; padding: 4px 12px;">
+              \u26a5 Co-ed
+            </span>
+          </div>
+          <div class="property-card-body">
+            <h3 class="property-card-title">${prop.name}</h3>
+            <p class="property-card-location" style="margin-bottom: 0.5rem;">\ud83d\udccd ${prop.city}, ${prop.state}</p>
+            
+            <div class="flex items-center justify-between mt-md mb-md">
+              <div class="property-card-rent text-success" style="font-size: 1.5rem; font-weight: 800;">${minRent}<span style="font-size: 0.85rem; color: var(--clr-text-muted); margin-left: 4px;">/month</span></div>
+              <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                <span class="badge" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: var(--clr-text-muted); font-weight: normal; margin-bottom: 4px;">${prop.property_type_display}</span>
+                ${prop.avg_rating ? `<span style="font-size:0.85rem; color: #eab308; font-weight:600;">⭐ ${prop.avg_rating}/5</span>` : ''}
+              </div>
+            </div>
+            
+            <div class="property-card-amenities flex flex-wrap gap-xs" style="border-top: 1px solid var(--clr-border); padding-top: 0.75rem; margin-top: auto;">
+              ${renderAmenities(prop)}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderGrid(properties) {
+      const grid = document.getElementById('properties-grid');
+      const empty = document.getElementById('empty-state');
+      const count = document.getElementById('result-count');
+      if (!properties.length) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        count.textContent = 'No properties match your search.';
+        return;
+      }
+      empty.classList.add('hidden');
+      grid.innerHTML = properties.map(renderCard).join('');
+      count.textContent = `Showing ${properties.length} propert${properties.length !== 1 ? 'ies' : 'y'}`;
+    }
+
+    async function loadProperties() {
+      try {
+        let query = '/properties/?page_size=100';
+        const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+        const cityVal  = document.getElementById('filter-city').value;
+        const typeVal  = document.getElementById('filter-type').value;
+        const sortVal  = document.getElementById('filter-sort').value;
+        const minPrice = document.getElementById('filter-min-price').value;
+        const maxPrice = document.getElementById('filter-max-price').value;
+        
+        if (searchVal) query += `&search=${searchVal}`;
+        if (cityVal) query += `&city=${cityVal}`;
+        if (typeVal) query += `&property_type=${typeVal}`;
+        if (sortVal) query += `&ordering=${sortVal}`;
+        if (minPrice) query += `&min_price=${minPrice}`;
+        if (maxPrice) query += `&max_price=${maxPrice}`;
+        if (document.getElementById('filter-wifi').checked) query += `&has_wifi=true`;
+        if (document.getElementById('filter-ac').checked) query += `&has_ac=true`;
+        if (document.getElementById('filter-food').checked) query += `&has_food=true`;
+        if (document.getElementById('filter-parking').checked) query += `&has_parking=true`;
+
+        const res = await api.get(query);
+        allProperties = res.results || res; // handle pagination
+        
+        // Only populate cities on first load to preserve options
+        if (document.getElementById('filter-city').options.length === 1) {
+            populateCities(allProperties);
+        }
+        renderGrid(allProperties);
+      } catch (e) {
+        Toast.error('Failed to load properties. Is the server running?');
+        document.getElementById('result-count').textContent = 'Error loading data.';
+        document.getElementById('properties-grid').innerHTML = '';
+      }
+    }
+
+    function applyFilters() {
+      loadProperties().then(() => {
+        document.getElementById('explore-section').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    async function showDetail(id) {
+      const prop = allProperties.find(p => p.id === id);
+      if (!prop) return;
+      document.getElementById('modal-prop-name').textContent = prop.name;
+      // Fetch full detail with rooms
+      try {
+        const full = await api.get(`/properties/${id}/`);
+        const body = document.getElementById('modal-detail-body');
+        const amenities = renderAmenities(full);
+        const rooms = (full.rooms || []).map(r =>
+          `<tr><td>${r.room_number}</td><td>${r.room_type_display}</td><td>${r.total_beds} beds</td><td class="text-brand-light font-semibold">${formatCurrency(r.rent_per_month)}/mo</td><td>${r.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Full</span>'}</td></tr>`
+        ).join('');
+
+        const canApply = Auth.isLoggedIn() && Auth.getRole() === 'resident';
+        const applyBtn = canApply
+          ? `<button onclick="openApply(${full.id})" class="btn btn-primary btn-lg w-full mt-lg">Apply / Enquire</button>`
+          : Auth.isLoggedIn()
+          ? ''
+          : `<a href="register.html" class="btn btn-primary btn-lg w-full mt-lg">Register to Apply</a>`;
+
+        const imagesHtml = full.images && full.images.length > 0
+          ? `<div style="display:flex; overflow-x:auto; gap:10px; margin-bottom:1rem; padding-bottom:10px; scroll-snap-type: x mandatory;">
+               ${full.images.map(img => `<img src="${img.image_url}" style="height:240px; border-radius:8px; object-fit:cover; scroll-snap-align: start; flex-shrink:0;" alt="Property Image"/>`).join('')}
+             </div>`
+          : `<div style="height:200px; background:var(--clr-bg-3); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem;">
+               <span style="font-size:3rem;">🏢</span>
+             </div>`;
+
+        body.innerHTML = `
+          <div class="flex flex-col gap-md">
+            ${imagesHtml}
+            <div class="flex items-center gap-sm flex-wrap">${amenities || '<span class="text-muted text-sm">No amenities listed</span>'}</div>
+            <p class="text-muted text-sm">\ud83d\udccd ${full.address}, ${full.city}, ${full.state} — ${full.pincode}</p>
+            ${full.description ? `<p class="text-sm" style="color:var(--clr-text-muted)">${full.description}</p>` : ''}
+            <div class="divider"></div>
+            <h4 class="font-semibold mb-sm">Rooms & Pricing</h4>
+            ${rooms ? `<div class="table-wrapper"><table class="table"><thead><tr><th>Room</th><th>Type</th><th>Beds</th><th>Rent</th><th>Status</th></tr></thead><tbody>${rooms}</tbody></table></div>` : '<p class="text-muted text-sm">No rooms listed yet.</p>'}
+            
+            <div class="divider"></div>
+            <h4 class="font-semibold mb-sm flex justify-between items-center">
+                <span>Reviews</span>
+                ${canApply ? `<button onclick="openReview(${full.id})" class="btn btn-secondary btn-sm">Write Review</button>` : ''}
+            </h4>
+            <div id="reviews-container-${full.id}" class="mb-sm text-sm"><p class="text-muted">Loading reviews...</p></div>
+            
+            <div class="divider"></div>
+            <div class="flex gap-sm">
+                <button onclick="openInquiry(${full.id})" class="btn btn-secondary w-full">Make an Inquiry</button>
+                ${applyBtn.replace('mt-lg', '').replace('w-full', 'w-full')}
+            </div>
+          </div>`;
+        openModal('modal-detail');
+        
+        // Load reviews
+        try {
+            const reviews = await api.get(`/properties/${full.id}/reviews/`);
+            const revContainer = document.getElementById(`reviews-container-${full.id}`);
+            if (reviews.length === 0) {
+                revContainer.innerHTML = '<p class="text-muted">No reviews yet.</p>';
+            } else {
+                revContainer.innerHTML = reviews.map(r => `
+                    <div style="margin-bottom:8px; padding:8px; background:var(--clr-bg-3); border-radius:6px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <strong style="color:var(--clr-text);">${r.username}</strong>
+                            <span style="color:#eab308;">${'⭐'.repeat(r.rating)}</span>
+                        </div>
+                        <p style="color:var(--clr-text-muted); margin:0;">${r.review_text || ''}</p>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            document.getElementById(`reviews-container-${full.id}`).innerHTML = '<p class="text-muted">Failed to load reviews.</p>';
+        }
+      } catch (e) {
+        Toast.error('Could not load property details.');
+      }
+    }
+
+    function openApply(propertyId) {
+      document.getElementById('apply-property-id').value = propertyId;
+      closeModal('modal-detail');
+      openModal('modal-apply');
+    }
+
+    document.getElementById('apply-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.disabled = true; btn.textContent = 'Submitting…';
+      try {
+        await api.post('/bookings/apply/', {
+          property: parseInt(document.getElementById('apply-property-id').value),
+          move_in_date: document.getElementById('apply-movein').value || null,
+          message: document.getElementById('apply-message').value,
+        });
+        closeModal('modal-apply');
+        Toast.success('Application submitted! Check your dashboard for status updates.');
+        e.target.reset();
+      } catch (err) {
+        Toast.error(err.message || 'Failed to submit application.');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Submit Application';
+      }
+    });
+
+    document.getElementById('btn-search').addEventListener('click', applyFilters);
+    document.getElementById('search-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
+
+    function openInquiry(propertyId) {
+        document.getElementById('inquiry-property-id').value = propertyId;
+        if (Auth.isLoggedIn()) {
+            const user = Auth.getUser();
+            document.getElementById('inquiry-name').value = user.username;
+        }
+        closeModal('modal-detail');
+        openModal('modal-inquiry');
+    }
+
+    document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type=submit]');
+        btn.disabled = true; btn.textContent = 'Sending...';
+        try {
+            const propId = document.getElementById('inquiry-property-id').value;
+            await api.post(`/properties/${propId}/inquire/`, {
+                sender_name: document.getElementById('inquiry-name').value,
+                sender_email: document.getElementById('inquiry-email').value,
+                sender_phone: document.getElementById('inquiry-phone').value,
+                message: document.getElementById('inquiry-message').value,
+            });
+            closeModal('modal-inquiry');
+            Toast.success('Inquiry sent successfully!');
+            e.target.reset();
+        } catch (err) {
+            Toast.error('Failed to send inquiry.');
+        } finally {
+            btn.disabled = false; btn.textContent = 'Send Inquiry';
+        }
+    });
+
+    function openReview(propertyId) {
+        document.getElementById('review-property-id').value = propertyId;
+        closeModal('modal-detail');
+        openModal('modal-review');
+    }
+
+    document.getElementById('review-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type=submit]');
+        btn.disabled = true; btn.textContent = 'Submitting...';
+        try {
+            const propId = document.getElementById('review-property-id').value;
+            await api.post(`/properties/${propId}/reviews/`, {
+                rating: parseInt(document.getElementById('review-rating').value),
+                review_text: document.getElementById('review-text').value,
+            });
+            closeModal('modal-review');
+            Toast.success('Review submitted successfully!');
+            e.target.reset();
+            loadProperties();
+        } catch (err) {
+            Toast.error(err.message || 'Failed to submit review. You must have an approved booking here to review.');
+        } finally {
+            btn.disabled = false; btn.textContent = 'Submit Review';
+        }
+    });
+
+    // ── Mobile Nav ──
+    function toggleMobileNav() {
+      const panel = document.getElementById('mobile-panel');
+      const overlay = document.getElementById('mobile-overlay');
+      const btn = document.getElementById('hamburger');
+      panel.classList.toggle('open');
+      overlay.classList.toggle('open');
+      btn.classList.toggle('open');
+      document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : '';
+    }
+    function closeMobileNav() {
+      document.getElementById('mobile-panel').classList.remove('open');
+      document.getElementById('mobile-overlay').classList.remove('open');
+      document.getElementById('hamburger').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // ── Scroll shadow on nav ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // ── Amenity toggle visual state sync ──
+    document.querySelectorAll('.amenity-toggle input').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.amenity-toggle').classList.toggle('checked', cb.checked);
+      });
+    });
+
+    // Init
+    updateNav();
+    loadProperties();
+
+    // Scroll reveal observer
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  </script>
+</body>
+</html>

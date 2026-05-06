@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGDOST — Private Admin Portal</title>
+  <!-- No meta description intentionally — keep this page hidden from search engines -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="../../css/style.css" />
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(248,113,113,0.06);
+      filter: blur(100px);
+      top: -100px; right: -100px;
+    }
+    body::after {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(248,113,113,0.05);
+      filter: blur(80px);
+      bottom: -80px; left: -80px;
+    }
+    .portal-wrap { width: 100%; max-width: 420px; position: relative; z-index: 1; }
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      color: var(--clr-danger);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 1rem;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-md);
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    .portal-lock {
+      width: 64px; height: 64px;
+      margin: 0 auto var(--space-md);
+      border-radius: 50%;
+      background: rgba(248,113,113,0.08);
+      border: 2px solid rgba(248,113,113,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      animation: float 5s ease-in-out infinite;
+    }
+    .portal-logo {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .portal-title { font-size: 1.15rem; font-weight: 700; color: var(--clr-text); margin-bottom: var(--space-xs); }
+    .portal-subtitle { font-size: 0.85rem; color: var(--clr-text-muted); margin-bottom: var(--space-xl); line-height: 1.6; }
+    .security-note {
+      background: rgba(248,113,113,0.06);
+      border: 1px solid rgba(248,113,113,0.15);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-size: 0.78rem;
+      color: var(--clr-text-muted);
+      margin-top: var(--space-lg);
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body class="bg-gradient-mesh">
+  <div class="portal-wrap animate-scale-in">
+    <div class="text-center mb-xl">
+      <div class="portal-lock">🔒</div>
+      <div class="portal-badge">🔒 Restricted Access</div>
+      <div class="portal-logo gradient-text">PGDOST</div>
+      <div class="portal-title">Admin Control Portal</div>
+      <p class="portal-subtitle">This portal is for platform administrators only.<br>Unauthorised access is strictly prohibited.</p>
+    </div>
+
+    <div class="card">
+      <form id="admin-login-form" class="flex flex-col gap-md">
+        <div class="form-group">
+          <label class="form-label" for="admin-username">Admin Username</label>
+          <input id="admin-username" type="text" class="form-input" placeholder="superadmin" autocomplete="off" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="admin-password">Password</label>
+          <input id="admin-password" type="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <p id="admin-error" class="form-error hidden"></p>
+        <button id="admin-login-btn" type="submit" class="btn btn-primary btn-lg w-full" style="background: linear-gradient(135deg, #c0392b, #e74c3c); box-shadow: 0 4px 20px rgba(220,38,38,0.3);">
+          🔓 Access Admin Portal
+        </button>
+      </form>
+
+      <div class="security-note">
+        🛡️ This session is monitored.<br>
+        All access attempts are logged.
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../../scripts/api.js"></script>
+  <script>
+    // If already logged in as superadmin, redirect directly
+    if (Auth.isLoggedIn() && Auth.getRole() === 'superadmin') {
+      window.location.href = '../admin-dashboard.html';
+    }
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('admin-login-btn');
+      const errorEl = document.getElementById('admin-error');
+      errorEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Verifying…';
+
+      try {
+        const data = await api.post('/auth/login/', {
+          username: document.getElementById('admin-username').value.trim(),
+          password: document.getElementById('admin-password').value,
+        });
+
+        // STRICT CHECK: Only superadmin role is allowed
+        if (data.role !== 'superadmin') {
+          throw new Error('Access denied. This portal is restricted to platform administrators only.');
+        }
+
+        Auth.setTokens(data.access, data.refresh);
+        Auth.setUser({ username: data.username, role: data.role });
+        Toast.success(`Welcome, ${data.username}. Redirecting to admin dashboard…`);
+
+        setTimeout(() => {
+          window.location.href = '../admin-dashboard.html';
+        }, 1000);
+
+      } catch (err) {
+        errorEl.textContent = err.message || 'Authentication failed.';
+        errorEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '🔓 Access Admin Portal';
+      }
+    });
+  </script>
+</body>
+</html>

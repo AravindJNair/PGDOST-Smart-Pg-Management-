@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow" />
+  <title>PGDOST — Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css?v=2"/>
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── PG Folder Cards ── */
+    .pg-folder {
+      background: var(--glass-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-lg);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--dur-base) var(--ease);
+    }
+    .pg-folder:hover { box-shadow: var(--shadow-md); }
+    .pg-folder-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg) var(--space-xl);
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease);
+      border-bottom: 1px solid transparent;
+    }
+    .pg-folder-header:hover { background: rgba(143,173,114,0.05); }
+    .pg-folder-header.open { border-bottom-color: var(--border); background: rgba(143,173,114,0.08); }
+    .pg-folder-info { display: flex; align-items: center; gap: var(--space-md); }
+    .pg-folder-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      background: rgba(143,173,114,0.15);
+      color: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .pg-folder-name { font-weight: 700; font-size: 1.05rem; color: var(--navy); }
+    .pg-folder-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .pg-folder-stats { display: flex; gap: var(--space-lg); align-items: center; }
+    .pg-stat { text-align: center; }
+    .pg-stat-value { font-weight: 800; font-size: 1.1rem; line-height: 1; margin-bottom: 3px; }
+    .pg-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .pg-folder-chevron { color: var(--text-muted); font-size: 1.2rem; transition: transform var(--dur-fast) var(--ease); }
+    .pg-folder-header.open .pg-folder-chevron { transform: rotate(90deg); }
+    .pg-folder-body { display: none; padding: var(--space-lg) var(--space-xl); background: #fff; }
+    .pg-folder-body.open { display: block; }
+  </style>
+</head>
+<body class="bg-gradient-mesh">
+<div class="ds-shell">
+
+  <!-- Sidebar -->
+  <aside class="ds-sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo-icon">👑</div>
+      <div class="sb-logo-text">PGDOST<br><span style="font-size:0.6rem;opacity:0.7;font-weight:500;">Admin Portal</span></div>
+    </div>
+    
+    <nav class="sb-nav">
+      <div class="sb-section">General</div>
+      <a class="sb-item active" data-tab="overview" onclick="switchTab('overview')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+        Overview
+      </a>
+      <a class="sb-item" data-tab="properties" onclick="switchTab('properties')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h6"></path></svg>
+        All Properties
+      </a>
+      <a class="sb-item" data-tab="residents" onclick="switchTab('residents')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Residents by PG
+      </a>
+
+      <div class="sb-section">User Management</div>
+      <a class="sb-item" data-tab="owners" onclick="switchTab('owners')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        PG Owners
+      </a>
+      <a class="sb-item" data-tab="all-residents" onclick="switchTab('all-residents')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        All Residents
+      </a>
+    </nav>
+    
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="avatar-text" style="background: linear-gradient(135deg,#c0392b,#e74c3c);">A</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sidebar-username">Admin</div>
+          <div class="sb-user-role">Superadmin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ds-main">
+    <header class="ds-topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="page-title">Admin Overview</div>
+        <div class="topbar-subtitle">System administration and property management</div>
+      </div>
+      <div class="topbar-right">
+        <button onclick="adminLogout()" class="btn btn-secondary btn-sm" style="color:var(--clr-danger);border-color:rgba(248,113,113,0.3);">🔓 Logout</button>
+      </div>
+    </header>
+    
+    <div class="ds-content">
+      <!-- Overview -->
+      <div id="tab-overview" class="tab-content active">
+        <div class="ds-stats">
+          <div class="ds-stat">
+            <div class="stat-icon-box" style="background:rgba(59,130,246,0.1);color:#3b82f6;">🏢</div>
+            <div class="stat-info">
+              <div class="stat-val" id="stat-total-props">—</div>
+              <div class="stat-label">Total Properties</div>
+            </div>
+          </div>
+          <div class="ds-stat">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.1);color:#f59e0b;">⏳</div>
+            <div class="stat-info">
+              <div class="stat-val text-warning" id="stat-pending-props">—</div>
+              <div class="stat-label">Pending Approval</div>
+            </div>
+          </div>
+          <div class="ds-stat">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.1);color:#10b981;">🏠</div>
+            <div class="stat-info">
+              <div class="stat-val text-success" id="stat-total-bookings">—</div>
+              <div class="stat-label">Active Residents</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 class="font-bold mb-md">⏳ Properties Awaiting Approval</h3>
+          <div id="pending-props-list"><div class="flex justify-center py-lg"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Properties -->
+      <div id="tab-properties" class="tab-content">
+        <div class="section-header"><div><h2 class="section-title">All Properties</h2><p class="section-subtitle text-muted">Approve or reject PG listings</p></div></div>
+        <div class="card p-0">
+          <div id="all-properties-list"><div class="flex justify-center py-xl"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Residents by PG -->
+      <div id="tab-residents" class="tab-content">
+        <div class="section-header">
+          <div><h2 class="section-title">Residents by PG</h2><p class="section-subtitle text-muted">Click a PG folder to see all its residents</p></div>
+        </div>
+        <div id="residents-by-pg-list"><div class="flex justify-center py-xl"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- Owners -->
+      <div id="tab-owners" class="tab-content">
+        <div class="section-header"><div><h2 class="section-title">Registered Owners</h2><p class="section-subtitle text-muted">Property owners account details</p></div></div>
+        <div class="card p-0">
+          <div id="owners-list"><div class="flex justify-center py-xl"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+      <!-- All Residents -->
+      <div id="tab-all-residents" class="tab-content">
+        <div class="section-header"><div><h2 class="section-title">Registered Residents</h2><p class="section-subtitle text-muted">Resident account details</p></div></div>
+        <div class="card p-0">
+          <div id="all-residents-list"><div class="flex justify-center py-xl"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<script src="../scripts/api.js"></script>
+<script>
+  requireAuth('superadmin');
+  const user = Auth.getUser();
+  document.getElementById('sidebar-username').textContent = user?.username || 'Admin';
+  document.getElementById('avatar-text').textContent = (user?.username || 'A')[0].toUpperCase();
+
+  // ── Private logout — goes back to admin portal, NOT public site ──
+  function adminLogout() {
+    Auth.clear();
+    window.location.href = 'admin-portal/login.html';
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sb-item[data-tab]').forEach(i => i.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelector(`.sb-item[data-tab="${tab}"]`)?.classList.add('active');
+    const titles = {
+      overview:       'Admin Overview',
+      properties:     'All Properties',
+      residents:      'Residents by PG',
+      owners:         'PG Owners',
+      'all-residents':'All Residents'
+    };
+    document.getElementById('page-title').textContent = titles[tab] || tab;
+    const loaders = {
+      properties:      loadAllProperties,
+      residents:       loadResidentsByPG,
+      owners:          loadOwners,
+      'all-residents': loadAllResidents
+    };
+    if (loaders[tab]) loaders[tab]();
+  }
+
+  // ── Overview ──────────────────────────────────────────────
+  async function loadOverview() {
+    try {
+      const [props, bookings] = await Promise.all([
+        api.get('/properties/admin/all/'),
+        api.get('/bookings/all/'),
+      ]);
+      document.getElementById('stat-total-props').textContent    = props.length;
+      document.getElementById('stat-pending-props').textContent  = props.filter(p => !p.is_approved).length;
+      document.getElementById('stat-total-bookings').textContent = bookings.filter(b => b.status === 'approved').length;
+
+      const pending = props.filter(p => !p.is_approved);
+      const el = document.getElementById('pending-props-list');
+      if (!pending.length) {
+        el.innerHTML = '<p class="text-muted text-sm">✅ All properties have been reviewed. No pending approvals.</p>';
+        return;
+      }
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>Property</th><th>Owner</th><th>City</th><th>Type</th><th>Submitted</th><th>Action</th></tr></thead>
+        <tbody>${pending.map(p => `
+          <tr><td class="font-semibold">${p.name}</td><td>${p.owner_username}</td><td>${p.city}</td>
+          <td>${p.property_type_display}</td><td>${formatDate(p.created_at)}</td>
+          <td class="flex gap-sm">
+            <button onclick="approveProperty(${p.id}, true)"  class="btn btn-success btn-sm">✓ Approve</button>
+            <button onclick="approveProperty(${p.id}, false)" class="btn btn-warning btn-sm">✗ Reject</button>
+            <button onclick="deleteProperty(${p.id})" class="btn btn-danger btn-sm">🗑️ Delete</button>
+          </td></tr>`).join('')}
+        </tbody></table></div>`;
+    } catch (e) { Toast.error('Failed to load overview data.'); }
+  }
+
+  async function approveProperty(id, approve) {
+    try {
+      await api.patch(`/properties/admin/${id}/approve/`, { is_approved: approve });
+      Toast.success(`Property ${approve ? 'approved ✅' : 'rejected ✗'} successfully!`);
+      loadOverview();
+      if (document.getElementById('tab-properties').classList.contains('active')) loadAllProperties();
+    } catch (err) { Toast.error(err.message); }
+  }
+
+  async function deleteProperty(id) {
+    if (!confirm('Are you sure you want to permanently delete this property? This action cannot be undone.')) return;
+    try {
+      await api.delete(`/properties/admin/${id}/`);
+      Toast.success('Property deleted successfully!');
+      loadOverview();
+      if (document.getElementById('tab-properties').classList.contains('active')) loadAllProperties();
+    } catch (err) { Toast.error(err.message); }
+  }
+
+  // ── All Properties ────────────────────────────────────────
+  async function loadAllProperties() {
+    const el = document.getElementById('all-properties-list');
+    try {
+      const props = await api.get('/properties/admin/all/');
+      if (!props.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><h3>No Properties</h3></div>'; return; }
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>Property</th><th>Owner</th><th>City</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>${props.map(p => `
+          <tr><td class="font-semibold">${p.name}</td><td>${p.owner_username}</td><td>${p.city}</td>
+          <td>${p.property_type_display}</td><td>${p.is_approved ? '<span class="badge badge-green">Approved</span>' : '<span class="badge badge-yellow">Pending</span>'}</td>
+          <td class="flex gap-sm">
+            ${!p.is_approved
+              ? `<button onclick="approveProperty(${p.id}, true)" class="btn btn-success btn-sm">✓ Approve</button>`
+              : `<button onclick="approveProperty(${p.id}, false)" class="btn btn-warning btn-sm">✗ Revoke</button>`}
+            <button onclick="deleteProperty(${p.id})" class="btn btn-danger btn-sm">🗑️ Delete</button>
+          </td></tr>`).join('')}
+        </tbody></table></div>`;
+    } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load properties.</p>'; }
+  }
+
+  // ── Residents grouped by PG ───────────────────────────────
+  async function loadResidentsByPG() {
+    const el = document.getElementById('residents-by-pg-list');
+    try {
+      const [props, bookings] = await Promise.all([
+        api.get('/properties/admin/all/'),
+        api.get('/bookings/all/'),
+      ]);
+
+      // Group bookings by property id
+      const byProp = {};
+      bookings.forEach(b => {
+        if (!byProp[b.property]) byProp[b.property] = [];
+        byProp[b.property].push(b);
+      });
+
+      const approvedProps = props.filter(p => p.is_approved);
+
+      if (!approvedProps.length) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><h3>No Approved Properties</h3><p>Approve some PG properties first.</p></div>';
+        return;
+      }
+
+      el.innerHTML = approvedProps.map(p => {
+        const residents = byProp[p.id] || [];
+        const active = residents.filter(b => b.status === 'approved').length;
+        const pending = residents.filter(b => b.status === 'pending').length;
+        const folderId = `pg-folder-${p.id}`;
+
+        const residentRows = residents.length
+          ? `<div class="table-wrapper"><table class="table">
+              <thead><tr><th>Resident</th><th>Room</th><th>Move-In</th><th>Status</th><th>Applied</th></tr></thead>
+              <tbody>${residents.map(b => `
+                <tr>
+                  <td class="font-semibold">👤 ${b.resident_username}</td>
+                  <td>${b.room_number || '—'}</td>
+                  <td>${formatDate(b.move_in_date)}</td>
+                  <td>${statusBadge(b.status)}</td>
+                  <td>${formatDate(b.applied_at)}</td>
+                </tr>`).join('')}
+              </tbody></table></div>`
+          : '<p class="text-muted text-sm py-md text-center">No resident applications yet for this PG.</p>';
+
+        return `
+          <div class="pg-folder">
+            <div class="pg-folder-header" id="header-${folderId}" onclick="toggleFolder('${folderId}')">
+              <div class="pg-folder-info">
+                <div class="pg-folder-icon">🏢</div>
+                <div>
+                  <div class="pg-folder-name">${p.name}</div>
+                  <div class="pg-folder-meta">📍 ${p.city}, ${p.state} &nbsp;·&nbsp; ${p.property_type_display} &nbsp;·&nbsp; Owner: ${p.owner_username}</div>
+                </div>
+              </div>
+              <div class="pg-folder-stats">
+                <div class="pg-stat"><div class="pg-stat-value text-success">${active}</div><div class="pg-stat-label">Active</div></div>
+                <div class="pg-stat"><div class="pg-stat-value text-warning">${pending}</div><div class="pg-stat-label">Pending</div></div>
+                <div class="pg-stat"><div class="pg-stat-value">${residents.length}</div><div class="pg-stat-label">Total</div></div>
+                <span class="pg-folder-chevron">›</span>
+              </div>
+            </div>
+            <div class="pg-folder-body" id="body-${folderId}">
+              ${residentRows}
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (e) { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load residents.</p>'; }
+  }
+
+  function toggleFolder(folderId) {
+    const header = document.getElementById(`header-${folderId}`);
+    const body   = document.getElementById(`body-${folderId}`);
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+  }
+
+
+  // ── User Management ───────────────────────────────────────
+  async function loadUsersByRole(role, containerId) {
+    const el = document.getElementById(containerId);
+    try {
+      const users = await api.get('/auth/users/');
+      const filtered = users.filter(u => u.role === role);
+      
+      if (!filtered.length) { 
+        el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👥</div><h3>No ${role}s found</h3></div>`; 
+        return; 
+      }
+      
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>Username</th><th>Name</th><th>Contact</th><th>Joined</th><th>Status</th></tr></thead>
+        <tbody>${filtered.map(u => `
+          <tr>
+            <td class="font-semibold">👤 ${u.username}</td>
+            <td>${u.first_name || u.last_name ? `${u.first_name} ${u.last_name}` : '—'}</td>
+            <td>
+              <div class="text-sm">${u.email || '—'}</div>
+              <div class="text-xs text-muted">${u.phone_number || '—'}</div>
+            </td>
+            <td>${formatDate(u.date_joined)}</td>
+            <td>${u.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-red">Disabled</span>'}</td>
+          </tr>`).join('')}
+        </tbody></table></div>`;
+    } catch { 
+      el.innerHTML = `<p class="text-muted text-center py-xl">Failed to load ${role}s.</p>`; 
+    }
+  }
+
+  function loadOwners() { loadUsersByRole('owner', 'owners-list'); }
+  function loadAllResidents() { loadUsersByRole('resident', 'all-residents-list'); }
+
+  loadOverview();
+</script>
+</body>
+</html>

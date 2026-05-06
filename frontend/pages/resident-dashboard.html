@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PGDOST — Resident Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css?v=2"/>
+  <style>
+    /* ── Resident-specific overrides ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .priority-urgent { color: var(--status-red); font-weight: 600; }
+    .priority-high { color: var(--status-yellow); font-weight: 600; }
+    .booking-status-card { background: linear-gradient(135deg, rgba(143,173,114,0.12), rgba(143,173,114,0.04)); border: 1px solid rgba(143,173,114,0.25); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; transition: transform var(--dur-base) var(--ease-spring); }
+    .booking-status-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .pending-banner { background: rgba(229,155,34,0.08); border: 1px solid rgba(229,155,34,0.3); border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="ds-overlay" id="ds-overlay" onclick="closeSidebar()"></div>
+
+<div class="ds-shell">
+  <!-- SIDEBAR -->
+  <aside class="ds-sidebar" id="ds-sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo-box">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none"><path d="M6 22V10l8-5 8 5v12H6z" fill="white"/><rect x="11" y="15" width="6" height="7" rx="1" fill="#3A5C2A"/></svg>
+      </div>
+      <span class="sb-title">PG<strong>DOST</strong></span>
+    </div>
+    <div class="sb-role">Resident Portal</div>
+    <div class="sb-section">My Stay</div>
+    <nav class="sb-nav">
+      <button class="sb-item active" data-tab="overview" onclick="switchTab('overview')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 16V7l7-4 7 4v9H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><rect x="7" y="11" width="4" height="5" rx=".8" stroke="currentColor" stroke-width="1.3"/></svg>
+        Overview
+      </button>
+      <button class="sb-item" data-tab="payments" onclick="switchTab('payments')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M1 8h16" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="4" height="1.5" rx=".5" fill="currentColor"/></svg>
+        Payments
+        <span class="sb-badge" id="sb-due-badge" style="display:none">!</span>
+      </button>
+      <button class="sb-item" data-tab="complaints" onclick="switchTab('complaints')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M9 5.5v4M9 11.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Complaints
+        <span class="sb-badge" id="sb-ticket-badge" style="display:none">0</span>
+      </button>
+      <button class="sb-item" data-tab="visitors" onclick="switchTab('visitors')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 15c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Visitors
+      </button>
+    </nav>
+    <div class="sb-section">Links</div>
+    <nav class="sb-nav">
+      <a class="sb-item" href="index.html#explore-section">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Explore PGs
+      </a>
+      <a class="sb-item" href="index.html">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9l7-7 7 7M3 8v7h4v-4h4v4h4V8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Back to Home
+      </a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="avatar-text">R</div>
+        <div>
+          <div class="sb-user-name" id="sidebar-username">Resident</div>
+          <div class="sb-user-role">PG Resident</div>
+        </div>
+        <button class="sb-logout" onclick="residentLogout()" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 5l3 3-3 3M14 8H6M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="ds-main">
+    <header class="ds-topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="page-title">Overview</div>
+        <div class="topbar-subtitle" id="topbar-date"></div>
+      </div>
+      <div class="topbar-search">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#6B7B5A" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#6B7B5A" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" placeholder="Search…"/>
+      </div>
+      <div class="topbar-actions">
+        <div style="position:relative;">
+          <button class="topbar-icon-btn" onclick="toggleNotifications()" title="Notifications">
+            <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M8.5 1.5a5.5 5.5 0 0 0-5.5 5.5v3l-1 2h13l-1-2V7A5.5 5.5 0 0 0 8.5 1.5z" stroke="currentColor" stroke-width="1.4"/><path d="M7 13.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3"/></svg>
+            <span class="notif-dot-badge" id="notif-badge"></span>
+          </button>
+          <div class="notif-panel" id="notif-dropdown">
+            <h4>Notifications</h4>
+            <div id="notif-list"><p style="font-size:.85rem;color:#6B7B5A;text-align:center;padding:10px 0">Loading...</p></div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('complaints');setTimeout(()=>openModal('modal-new-ticket'),100)">+ Complaint</button>
+      </div>
+    </header>
+
+    <div class="ds-body">
+
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-content active">
+        <div id="status-section" class="mb-xl">
+          <div style="display:flex;align-items:center;justify-content:center;min-height:100px;"><div class="spinner"></div></div>
+        </div>
+        <div id="stats-row" style="display:none;">
+          <div class="ds-stats" style="margin-bottom:26px;">
+            <div class="ds-stat">
+              <div class="stat-icon-box" style="background:rgba(229,155,34,0.1)">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke="#E59B22" stroke-width="1.6"/><path d="M2 9h18" stroke="#E59B22" stroke-width="1.5"/><path d="M6 14h4" stroke="#E59B22" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="stat-info"><div class="stat-val" id="stat-due" style="color:#E59B22;">₹0</div><div class="stat-lbl">Amount Due</div></div>
+              <div class="stat-trend trend-down">pending</div>
+            </div>
+            <div class="ds-stat">
+              <div class="stat-icon-box" style="background:rgba(224,86,86,0.1)">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="#e05656" stroke-width="1.6"/><path d="M11 7v4.5M11 14v.5" stroke="#e05656" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <div class="stat-info"><div class="stat-val" id="stat-open-tickets" style="color:#e05656;">0</div><div class="stat-lbl">Open Complaints</div></div>
+              <div class="stat-trend trend-down">open</div>
+            </div>
+            <div class="ds-stat">
+              <div class="stat-icon-box" style="background:rgba(67,160,106,0.1)">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="#43A06A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="stat-info"><div class="stat-val" id="stat-paid" style="color:#43A06A;">0</div><div class="stat-lbl">Payments Made</div></div>
+              <div class="stat-trend trend-up">paid</div>
+            </div>
+          </div>
+          <!-- Quick actions for resident -->
+          <div class="dash-grid" style="grid-template-columns:1fr 300px;">
+            <div class="ds-card">
+              <div class="ds-card-header"><div class="ds-card-title">Your Stay</div></div>
+              <div class="ds-card-body" id="stay-detail"><p style="color:#6B7B5A;">Loading stay details...</p></div>
+            </div>
+            <div class="ds-card">
+              <div class="ds-card-header"><div class="ds-card-title">Quick Actions</div></div>
+              <div class="qa-grid">
+                <button class="qa-btn" onclick="switchTab('payments')">
+                  <div class="qa-icon" style="background:rgba(67,160,106,0.1)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="5" width="18" height="12" rx="2" stroke="#43A06A" stroke-width="1.5"/><path d="M1 9h18M5 13h5" stroke="#43A06A" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                  Pay Rent
+                </button>
+                <button class="qa-btn" onclick="switchTab('complaints');setTimeout(()=>openModal('modal-new-ticket'),100)">
+                  <div class="qa-icon" style="background:rgba(224,86,86,0.1)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#e05656" stroke-width="1.5"/><path d="M10 6v4.5M10 13v.5" stroke="#e05656" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+                  Complaint
+                </button>
+                <button class="qa-btn" onclick="switchTab('visitors')">
+                  <div class="qa-icon" style="background:rgba(168,85,247,0.1)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#A855F7" stroke-width="1.5"/><path d="M4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                  Visitors
+                </button>
+                <a class="qa-btn" href="index.html#explore-section">
+                  <div class="qa-icon" style="background:rgba(108,99,255,0.1)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="#6C63FF" stroke-width="1.5"/><path d="M14 14l4 4" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                  Explore PGs
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments Tab -->
+      <div id="tab-payments" class="tab-content">
+        <div class="section-header">
+          <div><h2 class="section-title">My Invoices</h2><p class="section-subtitle">Rent invoices from your PG owner</p></div>
+        </div>
+        <div id="invoices-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- Complaints Tab -->
+      <div id="tab-complaints" class="tab-content">
+        <div class="section-header">
+          <div><h2 class="section-title">My Complaints</h2><p class="section-subtitle">Track your maintenance requests</p></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-new-ticket')">+ New Complaint</button>
+        </div>
+        <div id="tickets-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- Visitors Tab -->
+      <div id="tab-visitors" class="tab-content">
+        <div class="section-header">
+          <div><h2 class="section-title">Visitor Log</h2><p class="section-subtitle">Track who has visited you</p></div>
+        </div>
+        <div id="visitors-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+      </div>
+
+    </div><!-- /ds-body -->
+  </div><!-- /ds-main -->
+</div><!-- /ds-shell -->
+
+<!-- ── MODALS ── -->
+<!-- New Ticket Modal -->
+<div id="modal-new-ticket" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Raise New Complaint</h3>
+      <button class="modal-close" onclick="closeModal('modal-new-ticket')">✕</button>
+    </div>
+    <form id="new-ticket-form" class="flex flex-col gap-md">
+      <input type="hidden" id="ticket-property-id" />
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" id="ticket-title" class="form-input" placeholder="E.g., Leaking tap in bathroom" required />
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="ticket-category" class="form-select" required>
+            <option value="maintenance">Maintenance</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="security">Security</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select id="ticket-priority" class="form-select" required>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="ticket-desc" class="form-textarea" rows="3" placeholder="Provide details..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg w-full">Submit Complaint</button>
+    </form>
+  </div>
+</div>
+
+<!-- Pay Invoice Modal -->
+<div id="modal-pay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Make a Payment</h3>
+      <button class="modal-close" onclick="closeModal('modal-pay')">✕</button>
+    </div>
+    <form id="pay-form" class="flex flex-col gap-md">
+      <input type="hidden" id="pay-invoice-id" />
+      <div class="form-group">
+        <label class="form-label">Transaction ID / UTR (Optional)</label>
+        <input type="text" id="pay-txn" class="form-input" placeholder="E.g., UPI ref number" />
+      </div>
+      <button type="submit" class="btn btn-success btn-lg w-full">Confirm Payment</button>
+    </form>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div id="modal-receipt" class="modal-overlay">
+  <div class="modal" style="max-width: 600px;">
+    <div class="modal-header no-print">
+      <h3 class="modal-title">Payment Receipt</h3>
+      <button class="modal-close" onclick="closeModal('modal-receipt')">✕</button>
+    </div>
+    <div id="receipt-printable" style="padding: 10px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--sage-dark); padding-bottom:16px; margin-bottom:20px;">
+        <div>
+          <div style="font-size:1.6rem; font-weight:900; color:var(--sage-dark); letter-spacing:-1px;">PGDOST</div>
+          <div style="font-size:0.78rem; color:var(--text-muted);">Smart PG Management</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:1.1rem; font-weight:700; color:var(--navy);">PAYMENT RECEIPT</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Invoice <span id="rcpt-id" style="font-weight:600;"></span></div>
+        </div>
+      </div>
+      <div style="background:var(--cream-light); border:1px solid var(--border); border-radius:8px; padding:10px 16px; display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+        <span style="font-size:1.4rem;">✅</span>
+        <div>
+          <div style="font-weight:700; color:var(--status-green); font-size:0.95rem;">Payment Confirmed</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Paid on: <span id="rcpt-paid-on"></span></div>
+        </div>
+      </div>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:0.88rem;">
+        <tr style="background:#f9fafb;">
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); width:45%; border-bottom:1px solid var(--border);">Resident</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border);" id="rcpt-resident"></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Property</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border);" id="rcpt-property"></td>
+        </tr>
+        <tr style="background:#f9fafb;">
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Period</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border);" id="rcpt-period"></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Due Date</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border);" id="rcpt-due"></td>
+        </tr>
+        <tr style="background:#f9fafb;">
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Transaction ID</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border); font-family:monospace;" id="rcpt-txn"></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border);">Notes</td>
+          <td style="padding:10px 12px; color:var(--navy); border-bottom:1px solid var(--border);" id="rcpt-notes"></td>
+        </tr>
+      </table>
+      <div style="text-align:right; margin-top:20px;">
+        <div style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Amount Paid</div>
+        <div style="font-size:1.8rem; font-weight:800; color:var(--sage-dark);" id="rcpt-amount"></div>
+      </div>
+    </div>
+    <div class="no-print" style="margin-top:24px; text-align:right;">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Receipt</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../scripts/api.js"></script>
+<script>
+  // Strict guard — only 'resident' role allowed
+  if (!Auth.isLoggedIn() || Auth.getRole() !== 'resident') {
+    Auth.clear();
+    window.location.href = 'login.html';
+  }
+
+  function residentLogout() {
+    Auth.clear();
+    window.location.href = 'login.html';
+  }
+
+  function toggleSidebar() {
+    document.getElementById('ds-sidebar').classList.toggle('open');
+    document.getElementById('ds-overlay').classList.toggle('active');
+  }
+  function closeSidebar() {
+    document.getElementById('ds-sidebar').classList.remove('open');
+    document.getElementById('ds-overlay').classList.remove('active');
+  }
+
+  const user = Auth.getUser();
+  document.getElementById('sidebar-username').textContent = user?.username || 'Resident';
+  document.getElementById('avatar-text').textContent = (user?.username || 'R')[0].toUpperCase();
+
+  let activeBooking = null;
+  let activeTab = 'overview';
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sb-item[data-tab]').forEach(i => i.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelector(`.sb-item[data-tab="${tab}"]`)?.classList.add('active');
+    document.getElementById('page-title').textContent = { overview:'Overview', payments:'My Payments', complaints:'Complaints', visitors:'Visitor Log' }[tab] || tab;
+    activeTab = tab;
+    closeSidebar();
+    if (tab === 'payments') loadInvoices();
+    if (tab === 'complaints') loadTickets();
+    if (tab === 'visitors') loadVisitors();
+  }
+
+  // ── Overview: Load booking status ──────────────────────────
+  async function loadOverview() {
+    const section = document.getElementById('status-section');
+    try {
+      activeBooking = await api.get('/bookings/active/');
+      section.innerHTML = `
+        <div class="booking-status-card">
+          <div class="flex items-center justify-between flex-wrap gap-md">
+            <div>
+              <div class="text-xs text-muted font-semibold uppercase mb-sm" style="letter-spacing:.1em">Current Stay</div>
+              <h3 class="text-2xl font-bold mb-xs">${activeBooking.property_name}</h3>
+              <div class="flex items-center gap-sm flex-wrap">
+                ${statusBadge(activeBooking.status)}
+                ${activeBooking.room_number ? `<span class="tag">Room ${activeBooking.room_number}</span>` : ''}
+                ${activeBooking.move_in_date ? `<span class="tag">Since ${formatDate(activeBooking.move_in_date)}</span>` : ''}
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="text-5xl">🏠</div>
+              <p class="text-xs text-muted mt-sm">Your PG</p>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('stats-row').style.display = '';
+      // Populate stay detail card
+      const sd = document.getElementById('stay-detail');
+      if (sd) sd.innerHTML = `
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div style="font-size:3rem;">🏠</div>
+          <div>
+            <div style="font-size:1.15rem;font-weight:800;color:#3A5C2A;margin-bottom:4px;">${activeBooking.property_name}</div>
+            <div style="font-size:.82rem;color:#6B7B5A;margin-bottom:6px;">
+              ${activeBooking.room_number ? '<span style="background:rgba(92,122,74,0.1);padding:2px 10px;border-radius:20px;font-weight:600;">Room '+activeBooking.room_number+'</span>' : ''}
+              ${activeBooking.move_in_date ? ' &nbsp; Since '+formatDate(activeBooking.move_in_date) : ''}
+            </div>
+            <span style="background:rgba(67,160,106,0.12);color:#43A06A;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;">✓ Active</span>
+          </div>
+        </div>`;
+      loadStats();
+    } catch (err) {
+      // No active booking — show pending or explore state
+      try {
+        const bookings = await api.get('/bookings/my/');
+        const pending = bookings.find(b => b.status === 'pending');
+        if (pending) {
+          section.innerHTML = `
+            <div class="pending-banner">
+              <div class="text-4xl mb-md">⏳</div>
+              <h3 class="text-xl font-bold mb-sm">Application Pending</h3>
+              <p class="text-muted mb-md">Your application to <strong>${pending.property_name}</strong> is awaiting owner approval.</p>
+              ${statusBadge('pending')}
+            </div>`;
+        } else {
+          section.innerHTML = `
+            <div class="card text-center">
+              <div class="text-4xl mb-md">🔍</div>
+              <h3 class="text-xl font-bold mb-sm">No Active Booking</h3>
+              <p class="text-muted mb-lg">You haven't moved into any PG yet. Browse the marketplace to apply.</p>
+              <a href="index.html#explore-section" class="btn btn-primary">Explore PGs</a>
+            </div>`;
+        }
+      } catch { section.innerHTML = '<p class="text-muted text-center">Could not load booking status.</p>'; }
+    }
+  }
+
+  async function loadStats() {
+    try {
+      const [invoices, tickets] = await Promise.all([
+        api.get('/payments/my/'),
+        api.get('/complaints/my/'),
+      ]);
+      const due = invoices.filter(i => i.status !== 'paid').reduce((s, i) => s + parseFloat(i.amount), 0);
+      const openTickets = tickets.filter(t => t.status === 'open' || t.status === 'in_progress').length;
+      const paid = invoices.filter(i => i.status === 'paid').length;
+      document.getElementById('stat-due').textContent = formatCurrency(due);
+      document.getElementById('stat-open-tickets').textContent = openTickets;
+      document.getElementById('stat-paid').textContent = paid;
+    } catch {}
+  }
+
+  // ── Invoices ───────────────────────────────────────────
+  const residentInvoicesMap = {};
+
+  async function loadInvoices() {
+    const el = document.getElementById('invoices-list');
+    try {
+      const invoices = await api.get('/payments/my/');
+      invoices.forEach(inv => residentInvoicesMap[inv.id] = inv);
+      if (!invoices.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💳</div><h3>No Invoices</h3><p>Your rent invoices will appear here.</p></div>'; return; }
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>#</th><th>Period</th><th>Amount</th><th>Due Date</th><th>Txn ID</th><th>Status</th><th>Receipt</th></tr></thead>
+        <tbody>${invoices.map(inv => `
+          <tr>
+            <td class="font-semibold text-muted">#${inv.id}</td>
+            <td>${inv.month_display} ${inv.year}</td>
+            <td class="font-bold text-brand-light">${formatCurrency(inv.amount)}</td>
+            <td>${formatDate(inv.due_date)}</td>
+            <td class="text-sm text-muted">${inv.transaction_id || '—'}</td>
+            <td>${statusBadge(inv.status)}</td>
+            <td>
+              ${inv.status !== 'paid'
+                ? `<button onclick="openPayModal(${inv.id})" class="btn btn-success btn-sm">Pay Now</button>`
+                : `<button onclick="showReceipt(${inv.id})" class="btn btn-secondary btn-sm">📰 Receipt</button>`
+              }
+            </td>
+          </tr>`).join('')}
+        </tbody></table></div>`;
+    } catch (e) { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load invoices.</p>'; }
+  }
+
+  function showReceipt(idOrObj) {
+    const inv = (typeof idOrObj === 'object') ? idOrObj : residentInvoicesMap[idOrObj];
+    if (!inv) { Toast.error('Receipt data not found.'); return; }
+    document.getElementById('rcpt-id').textContent       = '#' + inv.id;
+    document.getElementById('rcpt-resident').textContent  = inv.resident_username || inv.resident;
+    document.getElementById('rcpt-property').textContent  = inv.property_name;
+    document.getElementById('rcpt-period').textContent    = inv.month_display + ' ' + inv.year;
+    document.getElementById('rcpt-amount').textContent    = formatCurrency(inv.amount);
+    document.getElementById('rcpt-due').textContent       = formatDate(inv.due_date);
+    document.getElementById('rcpt-paid-on').textContent   = formatDate(inv.payment_date || inv.paid_at);
+    document.getElementById('rcpt-txn').textContent       = inv.transaction_id || 'N/A';
+    document.getElementById('rcpt-notes').textContent     = inv.notes || '—';
+    openModal('modal-receipt');
+  }
+
+  function openPayModal(invoiceId) {
+    document.getElementById('pay-invoice-id').value = invoiceId;
+    document.getElementById('pay-txn').value = '';
+    openModal('modal-pay');
+  }
+
+  document.getElementById('pay-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Processing…';
+    try {
+      const paidInv = await api.patch(`/payments/my/${document.getElementById('pay-invoice-id').value}/pay/`, {
+        transaction_id: document.getElementById('pay-txn').value,
+      });
+      closeModal('modal-pay');
+      Toast.success('Payment successful! Your receipt is ready.');
+      await loadInvoices();
+      // Auto-show receipt after payment
+      if (paidInv) showReceipt(paidInv);
+    } catch (err) { Toast.error(err.message); }
+    finally { btn.disabled = false; btn.textContent = 'Confirm Payment'; }
+  });
+
+  // ── Tickets ───────────────────────────────────────────────
+  async function loadTickets() {
+    const el = document.getElementById('tickets-list');
+    if (activeBooking) document.getElementById('ticket-property-id').value = activeBooking.property;
+    try {
+      const tickets = await api.get('/complaints/my/');
+      const openT = tickets.filter(t => t.status !== 'resolved').length;
+      const tb = document.getElementById('sb-ticket-badge');
+      if (tb) { if(openT>0){tb.textContent=openT;tb.style.display='';}else{tb.style.display='none';} }
+      if (!tickets.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><h3>No Complaints</h3><p>Raise a complaint if you have a maintenance or service issue.</p></div>'; return; }
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>#</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>${tickets.map(t => `
+          <tr><td>#${t.id}</td><td class="font-semibold">${t.title}<br><span class="text-xs text-muted">${t.owner_response ? `<b>Owner Reply:</b> ${t.owner_response}` : 'No reply yet'}</span></td><td>${t.category_display}</td>
+          <td class="${t.priority === 'urgent' ? 'priority-urgent' : t.priority === 'high' ? 'priority-high' : ''} font-semibold">${t.priority_display}</td>
+          <td>${statusBadge(t.status)}</td><td>${formatDate(t.created_at)}</td></tr>`).join('')}
+        </tbody></table></div>`;
+    } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load complaints.</p>'; }
+  }
+
+  document.getElementById('new-ticket-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!activeBooking) { Toast.warning('You need an active booking to raise a complaint.'); return; }
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    try {
+      await api.post('/complaints/my/', {
+        property: activeBooking.property,
+        title: document.getElementById('ticket-title').value,
+        category: document.getElementById('ticket-category').value,
+        priority: document.getElementById('ticket-priority').value,
+        description: document.getElementById('ticket-desc').value,
+      });
+      closeModal('modal-new-ticket');
+      Toast.success('Complaint submitted successfully!');
+      e.target.reset();
+      loadTickets();
+    } catch (err) { Toast.error(err.message); }
+    finally { btn.disabled = false; btn.textContent = 'Submit Complaint'; }
+  });
+
+  // ── Visitors ──────────────────────────────────────────────
+  async function loadVisitors() {
+    const el = document.getElementById('visitors-list');
+    try {
+      const logs = await api.get('/visitors/my/');
+      if (!logs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👤</div><h3>No Visitor Records</h3><p>Your visitor log will be maintained by the PG owner.</p></div>'; return; }
+      el.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>Visitor</th><th>Phone</th><th>Purpose</th><th>Check In</th><th>Check Out</th></tr></thead>
+        <tbody>${logs.map(v => `
+          <tr><td class="font-semibold">${v.visitor_name}</td><td class="text-muted">${v.visitor_phone || '—'}</td>
+          <td>${v.purpose_display}</td><td>${formatDate(v.check_in)}</td><td>${v.check_out ? formatDate(v.check_out) : '<span class="badge badge-yellow">Still Inside</span>'}</td></tr>`).join('')}
+        </tbody></table></div>`;
+    } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load visitor log.</p>'; }
+  }
+
+  // ── Notifications ───────────────────────────────────────
+  async function loadNotifications() {
+      try {
+          const notifs = await api.get('/auth/notifications/');
+          const unreadCount = notifs.filter(n => !n.is_read).length;
+          const badge = document.getElementById('notif-badge');
+          if (unreadCount > 0) {
+              badge.style.display = 'block';
+          } else {
+              badge.style.display = 'none';
+          }
+          
+          const list = document.getElementById('notif-list');
+          if (notifs.length === 0) {
+              list.innerHTML = '<p class="text-sm text-muted text-center py-sm">No notifications.</p>';
+          } else {
+              list.innerHTML = notifs.map(n => `
+                  <div style="padding:10px; border-bottom:1px solid var(--border); ${n.is_read ? 'opacity:0.6;' : 'background:rgba(92,122,74,0.06);'} border-radius:4px; margin-bottom:5px; cursor:pointer;" onclick="markNotifRead(${n.id})">
+                      <p style="font-size:0.85rem; margin:0;">${n.message}</p>
+                      <span style="font-size:0.7rem; color:var(--text-muted);">${formatDate(n.created_at)}</span>
+                  </div>
+              `).join('');
+          }
+      } catch (e) {
+          console.error(e);
+      }
+  }
+
+  function toggleNotifications() {
+      const el = document.getElementById('notif-dropdown');
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      if (el.style.display === 'block') loadNotifications();
+  }
+
+  async function markNotifRead(id) {
+      try {
+          await api.patch(`/auth/notifications/${id}/`, { is_read: true });
+          loadNotifications();
+      } catch (e) {}
+  }
+
+  // Init
+  loadOverview();
+  loadNotifications();
+  // Topbar date
+  const tdate = document.getElementById('topbar-date');
+  if (tdate) tdate.textContent = new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+</script>
+</body>
+</html>
