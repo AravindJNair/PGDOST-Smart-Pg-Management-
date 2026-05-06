@@ -11,30 +11,30 @@
     .auth-split { display: flex; min-height: 100vh; width: 100%; }
     .auth-panel {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: linear-gradient(160deg, #1e3a5f 0%, #2a5d8f 40%, #3b82f6 100%);
-      color: #fff; padding: var(--space-2xl); position: relative; overflow: hidden;
+      background: linear-gradient(160deg, #0891b2 0%, #06b6d4 40%, #00d9ff 100%);
+      color: #000; padding: var(--space-2xl); position: relative; overflow: hidden;
     }
-    .auth-panel .deco-orb { filter: blur(80px); opacity: 0.2; }
+    .auth-panel .deco-orb { display: none; }
     .auth-panel-content { position: relative; z-index: 1; text-align: center; max-width: 380px; }
-    .auth-panel-logo { font-family: var(--font-head); font-size: 3rem; font-weight: 900; margin-bottom: var(--space-md); letter-spacing: -0.03em; }
-    .auth-panel-tagline { font-size: 1.1rem; opacity: 0.85; line-height: 1.7; margin-bottom: var(--space-xl); }
+    .auth-panel-logo { font-family: var(--font-head); font-size: 3rem; font-weight: 900; margin-bottom: var(--space-md); letter-spacing: -0.03em; color: #000; }
+    .auth-panel-tagline { font-size: 1.1rem; opacity: 0.95; line-height: 1.7; margin-bottom: var(--space-xl); color: #000; }
     .auth-panel-features { text-align: left; display: flex; flex-direction: column; gap: var(--space-md); }
-    .auth-panel-feature { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9rem; opacity: 0.8; }
+    .auth-panel-feature { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9rem; opacity: 0.9; color: #000; }
     .auth-panel-feature span { font-size: 1.2rem; }
     .auth-form-side {
       flex: 1; display: flex; align-items: center; justify-content: center;
-      padding: var(--space-2xl); position: relative;
+      padding: var(--space-2xl); position: relative; background: #0f172a;
     }
     .auth-card { width: 100%; max-width: 420px; }
     .auth-logo { text-align: center; margin-bottom: var(--space-xl); }
-    .auth-logo-text { font-family: var(--font-head); font-size: 2rem; font-weight: 800; }
-    .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: var(--space-xs); letter-spacing: -0.02em; }
+    .auth-logo-text { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--clr-text); }
+    .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: var(--space-xs); letter-spacing: -0.02em; color: var(--clr-text); }
     .auth-subtitle { text-align: center; color: var(--clr-text-muted); font-size: 0.88rem; margin-bottom: var(--space-xl); }
     .role-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
-      color: var(--clr-info); font-size: 0.72rem; font-weight: 700;
-      padding: 0.35rem 1rem; border-radius: var(--radius-full);
+      background: rgba(0,217,255,0.15); border: 1.5px solid rgba(0,217,255,0.3);
+      color: var(--clr-brand-300); font-size: 0.72rem; font-weight: 700;
+      padding: 0.4rem 1.1rem; border-radius: var(--radius-full);
       text-transform: uppercase; letter-spacing: 0.06em;
     }
     @media (max-width: 768px) {
@@ -45,10 +45,8 @@
 </head>
 <body class="bg-gradient-mesh">
   <div class="auth-split">
-    <!-- Decorative Panel -->
+    <!-- Brand Panel -->
     <div class="auth-panel">
-      <div class="deco-orb" style="width:300px;height:300px;background:rgba(96,165,250,0.4);top:-80px;right:-60px;position:absolute;border-radius:50%;"></div>
-      <div class="deco-orb" style="width:200px;height:200px;background:rgba(59,130,246,0.3);bottom:-40px;left:-40px;position:absolute;border-radius:50%;"></div>
       <div class="auth-panel-content">
         <div class="auth-panel-logo animate-fade-up">🏡 PGDOST</div>
         <p class="auth-panel-tagline animate-fade-up" style="animation-delay:0.1s">Manage your PG properties, residents, and operations from one powerful dashboard.</p>
@@ -87,7 +85,7 @@
               <input id="password" type="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" required />
             </div>
             <p id="login-error" class="form-error hidden"></p>
-            <button id="login-btn" type="submit" class="btn btn-primary btn-lg w-full mt-sm" style="background: linear-gradient(135deg, var(--clr-brand-600), var(--clr-brand-400));">
+            <button id="login-btn" type="submit" class="btn btn-primary btn-lg w-full mt-sm">
               Sign In as Owner
             </button>
           </form>
