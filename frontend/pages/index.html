@@ -237,9 +237,9 @@
     <a href="index.html" class="nav-logo">PGDOST</a>
     <div class="nav-links">
       <div class="hidden-mobile">
-        <a href="#explore-section" class="nav-text-link">Explore PGs</a>
-        <a href="#features-section" class="nav-text-link">Features</a>
-        <a href="#roles-section" class="nav-text-link">For Owners</a>
+        <a href="index.html" class="nav-text-link">Home</a>
+        <a href="#explore-section" class="nav-text-link">Explore</a>
+        <a href="#features-section" class="nav-text-link">Services</a>
       </div>
       <div id="nav-auth-area" style="display:flex;gap:var(--space-sm);align-items:center;"></div>
       <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
@@ -255,11 +255,10 @@
       <div class="deco-orb deco-orb-2"></div>
       <div class="deco-orb deco-orb-3"></div>
     </div>
-    <div class="hero-badge">🏠 Smart PG Management Platform</div>
-    <h1 class="hero-logo">PGDOST</h1>
+    <div class="hero-badge">Premium PG Discovery</div>
+    <h1 class="hero-logo">Find Your Perfect Sanctuary in the City.</h1>
     <p class="hero-tagline">
-      Find, book and manage PG accommodations with ease.<br>
-      Built for residents, owners &amp; administrators.
+      Experience a new standard of living with PGDOST. We curate premium spaces that blend professional reliability with the tranquillity of a nature-inspired home.
     </p>
 
     <!-- Glass Search Container -->
@@ -293,7 +292,38 @@
         <label class="amenity-toggle"><input type="checkbox" id="filter-parking"> 🚗 Parking</label>
       </div>
       <div class="text-center">
-        <button id="btn-search" class="btn btn-primary btn-lg" style="min-width:200px">🔍 Search Properties</button>
+        <button id="btn-search" class="btn btn-primary btn-lg" style="min-width:200px">Search</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-slider">
+        <button type="button" class="hero-slide hero-slide-1 active" data-hero-index="0" onclick="showHeroProperty('Greenfield Estate')" aria-label="View Greenfield Estate details">
+          <div class="hero-rating-card">
+            <strong>4.9/5</strong>
+            <span>Greenfield Estate<br>Indiranagar</span>
+          </div>
+        </button>
+        <button type="button" class="hero-slide hero-slide-2 next" data-hero-index="1" onclick="showHeroProperty('Sage Residency')" aria-label="View Sage Residency details">
+          <div class="hero-rating-card">
+            <strong>4.8/5</strong>
+            <span>Sage Residency<br>Koramangala</span>
+          </div>
+        </button>
+        <button type="button" class="hero-slide hero-slide-3" data-hero-index="2" onclick="showHeroProperty('Manyata Executive Stay')" aria-label="View Manyata Executive Stay details">
+          <div class="hero-rating-card">
+            <strong>4.9/5</strong>
+            <span>Manyata Executive Stay<br>Nagavara</span>
+          </div>
+        </button>
+        <button type="button" class="hero-slide hero-slide-4 prev" data-hero-index="3" onclick="showHeroProperty('Bellandur Lakeview Suites')" aria-label="View Bellandur Lakeview Suites details">
+          <div class="hero-rating-card">
+            <strong>4.8/5</strong>
+            <span>Bellandur Lakeview Suites<br>Outer Ring Road</span>
+          </div>
+        </button>
+        <div class="hero-slide-dots">
+          <span class="active"></span><span></span><span></span><span></span>
+        </div>
       </div>
     </div>
   </section>
@@ -313,7 +343,7 @@
   <section id="explore-section" class="container py-xl" style="padding-top:var(--space-2xl)">
     <div id="properties-header" class="section-header reveal">
       <div>
-        <h2 class="section-title">Available Accommodations</h2>
+        <h2 class="section-title">Featured Properties</h2>
         <p id="result-count" class="section-subtitle text-muted">Loading…</p>
       </div>
     </div>
@@ -321,6 +351,9 @@
       <div class="skeleton-card"></div>
       <div class="skeleton-card" style="animation-delay:.15s"></div>
       <div class="skeleton-card" style="animation-delay:.3s"></div>
+    </div>
+    <div class="see-more-wrap">
+      <button id="btn-see-more" type="button" class="btn btn-secondary see-more-btn hidden">See More</button>
     </div>
     <div id="empty-state" class="empty-state hidden">
       <div class="empty-state-icon">🏠</div>
@@ -334,8 +367,8 @@
     <div class="text-center" style="margin-bottom:.75rem">
       <span class="section-label">Platform Features</span>
     </div>
-    <h2 class="features-title">Everything you need, nothing you don't</h2>
-    <p class="features-subtitle">A complete toolkit for residents, owners, and admins — all in one place.</p>
+    <h2 class="features-title">Discover Top Services</h2>
+    <p class="features-subtitle">Premium management services across fast-growing PG communities.</p>
     <div class="features-grid">
       <div class="feature-card reveal reveal-delay-1">
         <div class="feature-icon">🔍</div>
@@ -375,8 +408,8 @@
     <div class="text-center" style="margin-bottom:.75rem">
       <span class="section-label">Get Started</span>
     </div>
-    <h2 class="features-title" style="margin-bottom:.5rem">Who uses PGDOST?</h2>
-    <p class="features-subtitle">Choose your role and get started in minutes.</p>
+    <h2 class="features-title" style="margin-bottom:.5rem">Trusted by Residents and Owners</h2>
+    <p class="features-subtitle">Choose your role and step into a calmer, better managed PG experience.</p>
     <div class="roles-grid">
       <div class="role-card reveal reveal-delay-1">
         <div class="role-card-icon">🧑‍🎓</div>
@@ -543,6 +576,10 @@
   <script src="../scripts/api.js"></script>
   <script>
     let allProperties = [];
+    let visiblePropertyCount = 6;
+    const propertyPageSize = 6;
+    let activeHeroIndex = 0;
+    let heroTimer = null;
 
     // Update nav
     function updateNav() {
@@ -591,11 +628,104 @@
         .join('');
     }
 
+    const realisticPropertyImages = {
+      'greenfield estate': [
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'sage residency': [
+        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'whitefield urban nest': [
+        'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1502672260266-1c1e5240980c?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'hsr comfort house': [
+        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1560448075-bb485b067938?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'manyata executive stay': [
+        'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'electronic city coliving': [
+        'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'jayanagar garden pg': [
+        'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1560440021-33f9b867899d?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'bellandur lakeview suites': [
+        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=90'
+      ],
+      'varathans': [
+        'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=90',
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=90'
+      ]
+    };
+
+    const fallbackPropertyImages = [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=90',
+      'https://images.unsplash.com/photo-1502672260266-1c1e5240980c?auto=format&fit=crop&w=1200&q=90',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=90',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=90'
+    ];
+
+    function getPropertyImages(prop) {
+      const key = (prop.name || '').toLowerCase().trim();
+      const curated = realisticPropertyImages[key];
+      if (curated) return curated;
+
+      const uploaded = (prop.images || []).map(img => img.image_url).filter(Boolean);
+      if (uploaded.length) return uploaded;
+
+      const start = Math.abs((prop.id || 0) % fallbackPropertyImages.length);
+      return [
+        fallbackPropertyImages[start],
+        fallbackPropertyImages[(start + 1) % fallbackPropertyImages.length],
+        fallbackPropertyImages[(start + 2) % fallbackPropertyImages.length]
+      ];
+    }
+
+    function setMainPropertyImage(propId, url, index) {
+      const main = document.getElementById(`detail-main-image-${propId}`);
+      if (main) main.src = url;
+      document.querySelectorAll(`[data-gallery-for="${propId}"]`).forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+    }
+
+    function renderPropertyGallery(prop) {
+      const images = getPropertyImages(prop);
+      const safeName = (prop.name || 'Property').replace(/"/g, '&quot;');
+      return `
+        <div class="property-detail-gallery">
+          <img id="detail-main-image-${prop.id}" class="property-detail-main-image" src="${images[0]}" alt="${safeName} photo" />
+          <div class="property-detail-thumbs">
+            ${images.map((url, index) => `
+              <button type="button" class="property-detail-thumb ${index === 0 ? 'active' : ''}" data-gallery-for="${prop.id}" onclick="setMainPropertyImage(${prop.id}, '${url}', ${index})" aria-label="View property photo ${index + 1}">
+                <img src="${url}" alt="${safeName} thumbnail ${index + 1}" />
+              </button>
+            `).join('')}
+          </div>
+        </div>`;
+    }
+
     function renderCard(prop) {
       const minRent = prop.min_rent ? formatCurrency(prop.min_rent) : 'On request';
-      const imgSrc = prop.primary_image_url
-        ? prop.primary_image_url
-        : "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80";
+      const imgSrc = getPropertyImages(prop)[0];
       
       return `
         <div class="property-card" onclick="showDetail(${prop.id})">
@@ -631,15 +761,24 @@
       const grid = document.getElementById('properties-grid');
       const empty = document.getElementById('empty-state');
       const count = document.getElementById('result-count');
+      const seeMoreBtn = document.getElementById('btn-see-more');
       if (!properties.length) {
         grid.innerHTML = '';
         empty.classList.remove('hidden');
         count.textContent = 'No properties match your search.';
+        seeMoreBtn?.classList.add('hidden');
         return;
       }
       empty.classList.add('hidden');
-      grid.innerHTML = properties.map(renderCard).join('');
-      count.textContent = `Showing ${properties.length} propert${properties.length !== 1 ? 'ies' : 'y'}`;
+      const visibleProperties = properties.slice(0, visiblePropertyCount);
+      grid.innerHTML = visibleProperties.map(renderCard).join('');
+      count.textContent = `Showing ${visibleProperties.length} of ${properties.length} propert${properties.length !== 1 ? 'ies' : 'y'}`;
+
+      if (seeMoreBtn) {
+        const remaining = Math.max(0, properties.length - visiblePropertyCount);
+        seeMoreBtn.classList.toggle('hidden', remaining === 0);
+        seeMoreBtn.textContent = `See More (${Math.min(propertyPageSize, remaining)} more)`;
+      }
     }
 
     async function loadProperties() {
@@ -665,6 +804,7 @@
 
         const res = await api.get(query);
         allProperties = res.results || res; // handle pagination
+        visiblePropertyCount = propertyPageSize;
         
         // Only populate cities on first load to preserve options
         if (document.getElementById('filter-city').options.length === 1) {
@@ -684,13 +824,61 @@
       });
     }
 
+    async function showHeroProperty(name) {
+      const localMatch = allProperties.find(p => (p.name || '').toLowerCase() === name.toLowerCase());
+      if (localMatch) {
+        showDetail(localMatch.id);
+        return;
+      }
+
+      try {
+        const res = await api.get(`/properties/?page_size=100&search=${encodeURIComponent(name)}`);
+        const matches = res.results || res;
+        const match = matches.find(p => (p.name || '').toLowerCase() === name.toLowerCase()) || matches[0];
+        if (match) {
+          showDetail(match.id);
+        } else {
+          Toast.info('This PG is not available right now.');
+        }
+      } catch (e) {
+        Toast.error('Could not load this PG right now.');
+      }
+    }
+
+    function updateHeroSlides() {
+      const slides = [...document.querySelectorAll('.hero-slide')];
+      const dots = [...document.querySelectorAll('.hero-slide-dots span')];
+      if (!slides.length) return;
+      const lastIndex = slides.length - 1;
+
+      slides.forEach((slide, index) => {
+        slide.classList.remove('active', 'prev', 'next');
+        if (index === activeHeroIndex) slide.classList.add('active');
+        if (index === (activeHeroIndex + 1) % slides.length) slide.classList.add('next');
+        if (index === (activeHeroIndex + lastIndex) % slides.length) slide.classList.add('prev');
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === activeHeroIndex);
+      });
+    }
+
+    function initHeroShowcase() {
+      updateHeroSlides();
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => {
+        activeHeroIndex = (activeHeroIndex + 1) % document.querySelectorAll('.hero-slide').length;
+        updateHeroSlides();
+      }, 4500);
+    }
+
     async function showDetail(id) {
       const prop = allProperties.find(p => p.id === id);
-      if (!prop) return;
-      document.getElementById('modal-prop-name').textContent = prop.name;
+      document.getElementById('modal-prop-name').textContent = prop?.name || 'Property Details';
       // Fetch full detail with rooms
       try {
         const full = await api.get(`/properties/${id}/`);
+        document.getElementById('modal-prop-name').textContent = full.name;
         const body = document.getElementById('modal-detail-body');
         const amenities = renderAmenities(full);
         const rooms = (full.rooms || []).map(r =>
@@ -704,13 +892,7 @@
           ? ''
           : `<a href="register.html" class="btn btn-primary btn-lg w-full mt-lg">Register to Apply</a>`;
 
-        const imagesHtml = full.images && full.images.length > 0
-          ? `<div style="display:flex; overflow-x:auto; gap:10px; margin-bottom:1rem; padding-bottom:10px; scroll-snap-type: x mandatory;">
-               ${full.images.map(img => `<img src="${img.image_url}" style="height:240px; border-radius:8px; object-fit:cover; scroll-snap-align: start; flex-shrink:0;" alt="Property Image"/>`).join('')}
-             </div>`
-          : `<div style="height:200px; background:var(--clr-bg-3); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem;">
-               <span style="font-size:3rem;">🏢</span>
-             </div>`;
+        const imagesHtml = renderPropertyGallery(full);
 
         body.innerHTML = `
           <div class="flex flex-col gap-md">
@@ -790,6 +972,10 @@
 
     document.getElementById('btn-search').addEventListener('click', applyFilters);
     document.getElementById('search-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
+    document.getElementById('btn-see-more')?.addEventListener('click', () => {
+      visiblePropertyCount += propertyPageSize;
+      renderGrid(allProperties);
+    });
 
     function openInquiry(propertyId) {
         document.getElementById('inquiry-property-id').value = propertyId;
@@ -881,6 +1067,7 @@
 
     // Init
     updateNav();
+    initHeroShowcase();
     loadProperties();
 
     // Scroll reveal observer
