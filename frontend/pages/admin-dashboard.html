@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="robots" content="noindex, nofollow" />
   <title>PGDOST — Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
   <link rel="stylesheet" href="../css/dashboard.css?v=2"/>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pgdost-theme') === 'dark' ? 'dark' : 'light';
+        document.documentElement.classList.add(t + '-mode');
+      } catch (e) {
+        document.documentElement.classList.add('light-mode');
+      }
+    })();
+  </script>
   <style>
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -58,7 +69,7 @@
     .pg-folder-body.open { display: block; }
   </style>
 </head>
-<body class="bg-gradient-mesh">
+<body class="bg-gradient-mesh light-mode">
 <div class="ds-shell">
 
   <!-- Sidebar -->

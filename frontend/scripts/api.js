@@ -9,6 +9,107 @@
 
 const API_BASE = 'http://127.0.0.1:8000/api';
 
+const Theme = {
+  storageKey: 'pgdost-theme',
+  initialized: false,
+  getStoredTheme() {
+    try {
+      const val = localStorage.getItem(this.storageKey);
+      return val === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  },
+  saveTheme(theme) {
+    try {
+      localStorage.setItem(this.storageKey, theme === 'dark' ? 'dark' : 'light');
+    } catch {}
+  },
+  apply(theme) {
+    const mode = theme === 'dark' ? 'dark' : 'light';
+    const isDark = mode === 'dark';
+    document.documentElement.classList.toggle('dark-mode', isDark);
+    document.documentElement.classList.toggle('light-mode', !isDark);
+    if (document.body) {
+      document.body.classList.toggle('dark-mode', isDark);
+      document.body.classList.toggle('light-mode', !isDark);
+      document.body.dataset.theme = mode;
+    }
+    this.syncToggleState(mode);
+  },
+  set(theme) {
+    const mode = theme === 'dark' ? 'dark' : 'light';
+    this.saveTheme(mode);
+    this.apply(mode);
+  },
+  toggle() {
+    const current = this.getCurrent();
+    this.set(current === 'dark' ? 'light' : 'dark');
+  },
+  getCurrent() {
+    if (document.documentElement.classList.contains('dark-mode')) return 'dark';
+    if (document.body && document.body.classList.contains('dark-mode')) return 'dark';
+    return this.getStoredTheme();
+  },
+  syncToggleState(mode) {
+    const isDark = mode === 'dark';
+    const controls = document.querySelectorAll('#theme-toggle, #global-theme-toggle');
+    controls.forEach((control) => {
+      control.setAttribute('aria-pressed', String(isDark));
+      control.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      control.classList.toggle('is-dark', isDark);
+    });
+  },
+  ensureGlobalToggle() {
+    if (document.getElementById('theme-toggle') || document.getElementById('global-theme-toggle')) return;
+    const btn = document.createElement('button');
+    btn.id = 'global-theme-toggle';
+    btn.type = 'button';
+    btn.className = 'global-theme-toggle';
+    btn.setAttribute('aria-label', 'Switch to dark mode');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.innerHTML = '<span class="theme-toggle-sun">&#9728;</span><span class="theme-toggle-moon">&#9790;</span>';
+    btn.addEventListener('click', () => this.toggle());
+    document.body.appendChild(btn);
+  },
+  attachToggleHandlers() {
+    const controls = document.querySelectorAll('#theme-toggle, #global-theme-toggle');
+    controls.forEach((control) => {
+      if (control.dataset.themeBound === '1') return;
+      control.dataset.themeBound = '1';
+      control.addEventListener('click', () => this.toggle());
+    });
+  },
+  initAtmosphereLayer() {
+    if (!document.body || document.querySelector('.theme-atmosphere')) return;
+    const layer = document.createElement('div');
+    layer.className = 'theme-atmosphere';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = [
+      '<span class="ambient-glow ambient-glow-1"></span>',
+      '<span class="ambient-glow ambient-glow-2"></span>',
+      '<span class="ambient-glow ambient-glow-3"></span>',
+      '<span class="floating-leaf leaf-1"></span>',
+      '<span class="floating-leaf leaf-2"></span>',
+      '<span class="floating-leaf leaf-3"></span>',
+      '<span class="floating-leaf leaf-4"></span>',
+      '<span class="ambient-particle particle-1"></span>',
+      '<span class="ambient-particle particle-2"></span>',
+      '<span class="ambient-particle particle-3"></span>',
+    ].join('');
+    document.body.prepend(layer);
+  },
+  init() {
+    if (this.initialized) return;
+    this.initialized = true;
+    this.apply(this.getStoredTheme());
+    this.initAtmosphereLayer();
+    this.ensureGlobalToggle();
+    this.attachToggleHandlers();
+    this.syncToggleState(this.getCurrent());
+  },
+};
+
 // ── Smart Page Navigation ─────────────────────────────────────
 // Works whether the app is opened via http:// OR file://, and works 
 // regardless of the live server root.
@@ -191,17 +292,16 @@ function redirectIfLoggedIn() {
 // ── Modal Helpers ───────────────────────────────────────────────
 function openModal(id) {
   const el = document.getElementById(id);
-  if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  if (el) { el.classList.add('open'); }
 }
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) { el.classList.remove('open'); document.body.style.overflow = ''; }
+  if (el) { el.classList.remove('open'); }
 }
 // Close modal on overlay click
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('modal-overlay')) {
     e.target.classList.remove('open');
-    document.body.style.overflow = '';
   }
 });
 
@@ -248,3 +348,10 @@ window.formatDate = formatDate;
 window.formatCurrency = formatCurrency;
 window.statusBadge = statusBadge;
 window.ApiError = ApiError;
+window.Theme = Theme;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => Theme.init(), { once: true });
+} else {
+  Theme.init();
+}

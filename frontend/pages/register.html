@@ -6,6 +6,16 @@
   <title>PGDOST — Create Account</title>
   <meta name="description" content="Create your PGDOST account as a resident or PG owner." />
   <link rel="stylesheet" href="../css/style.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pgdost-theme') === 'dark' ? 'dark' : 'light';
+        document.documentElement.classList.add(t + '-mode');
+      } catch (e) {
+        document.documentElement.classList.add('light-mode');
+      }
+    })();
+  </script>
   <style>
     body { display: flex; min-height: 100vh; margin: 0; }
     .auth-split { display: flex; min-height: 100vh; width: 100%; }
@@ -50,7 +60,7 @@
     }
   </style>
 </head>
-<body class="bg-gradient-mesh">
+<body class="bg-gradient-mesh light-mode">
   <div class="auth-split">
     <!-- Decorative Panel -->
     <div class="auth-panel">

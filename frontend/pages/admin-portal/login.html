@@ -7,6 +7,16 @@
   <!-- No meta description intentionally — keep this page hidden from search engines -->
   <meta name="robots" content="noindex, nofollow" />
   <link rel="stylesheet" href="../../css/style.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pgdost-theme') === 'dark' ? 'dark' : 'light';
+        document.documentElement.classList.add(t + '-mode');
+      } catch (e) {
+        document.documentElement.classList.add('light-mode');
+      }
+    })();
+  </script>
   <style>
     body {
       display: flex;
@@ -15,7 +25,6 @@
       justify-content: center;
       padding: var(--space-xl);
       position: relative;
-      overflow: hidden;
     }
     body::before {
       content: '';
@@ -83,7 +92,7 @@
     }
   </style>
 </head>
-<body class="bg-gradient-mesh">
+<body class="bg-gradient-mesh light-mode">
   <div class="portal-wrap animate-scale-in">
     <div class="text-center mb-xl">
       <div class="portal-lock">🔒</div>

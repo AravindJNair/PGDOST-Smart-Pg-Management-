@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('pgdost-theme') || 'light';
+      document.documentElement.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
+    })();
+  </script>
   <style>
     :root { --font-head: 'Poppins', 'Plus Jakarta Sans', system-ui, sans-serif; }
 
@@ -218,7 +224,27 @@
     }
   </style>
 </head>
-<body class="bg-gradient-mesh">
+<body class="bg-gradient-mesh light-mode">
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('pgdost-theme') || 'light';
+      document.body.classList.remove('light-mode', 'dark-mode');
+      document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
+    })();
+  </script>
+
+  <div class="theme-atmosphere" aria-hidden="true">
+    <span class="ambient-glow ambient-glow-1"></span>
+    <span class="ambient-glow ambient-glow-2"></span>
+    <span class="ambient-glow ambient-glow-3"></span>
+    <span class="floating-leaf leaf-1"></span>
+    <span class="floating-leaf leaf-2"></span>
+    <span class="floating-leaf leaf-3"></span>
+    <span class="floating-leaf leaf-4"></span>
+    <span class="ambient-particle particle-1"></span>
+    <span class="ambient-particle particle-2"></span>
+    <span class="ambient-particle particle-3"></span>
+  </div>
 
   <!-- Mobile Nav Overlay + Panel -->
   <div class="mobile-nav-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
@@ -234,13 +260,17 @@
 
   <!-- Fixed Floating Navbar -->
   <nav class="landing-nav" id="main-nav">
-    <a href="index.html" class="nav-logo">PGDOST</a>
+    <a href="index.html" class="nav-logo"><span class="nav-logo-mark">⌂</span> PGDOST</a>
     <div class="nav-links">
       <div class="hidden-mobile">
         <a href="index.html" class="nav-text-link">Home</a>
         <a href="#explore-section" class="nav-text-link">Explore</a>
         <a href="#features-section" class="nav-text-link">Services</a>
       </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <span class="theme-toggle-sun">☀</span>
+        <span class="theme-toggle-moon">☾</span>
+      </button>
       <div id="nav-auth-area" style="display:flex;gap:var(--space-sm);align-items:center;"></div>
       <button class="nav-hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -255,8 +285,8 @@
       <div class="deco-orb deco-orb-2"></div>
       <div class="deco-orb deco-orb-3"></div>
     </div>
-    <div class="hero-badge">Premium PG Discovery</div>
-    <h1 class="hero-logo">Find Your Perfect Sanctuary in the City.</h1>
+    <div class="hero-badge">✦ Premium PG Accommodations</div>
+    <h1 class="hero-logo">Find Your Perfect <span>Sanctuary</span> in <span>Bangalore</span> <i class="hero-leaf-mark"></i></h1>
     <p class="hero-tagline">
       Experience a new standard of living with PGDOST. We curate premium spaces that blend professional reliability with the tranquillity of a nature-inspired home.
     </p>
@@ -265,7 +295,7 @@
     <div class="search-container animate-fade-up" style="animation-delay:.45s">
       <div class="search-bar-enhanced">
         <span style="font-size:1.1rem;color:var(--clr-text-faint)">🔍</span>
-        <input id="search-input" type="text" placeholder="Search by city, area or PG name…" autocomplete="off" />
+        <input id="search-input" type="text" placeholder="Search by area or PG name..." autocomplete="off" />
       </div>
       <div class="filters-row">
         <select id="filter-type" class="filter-pill">
@@ -275,12 +305,12 @@
           <option value="apartment">Apartment</option>
         </select>
         <select id="filter-city" class="filter-pill">
-          <option value="">All Cities</option>
+          <option value="">All Areas</option>
         </select>
         <input id="filter-min-price" type="number" placeholder="Min ₹" class="filter-pill" style="width:88px" />
         <input id="filter-max-price" type="number" placeholder="Max ₹" class="filter-pill" style="width:88px" />
         <select id="filter-sort" class="filter-pill">
-          <option value="">Sort by</option>
+          <option value="">Sort</option>
           <option value="price_low_high">↑ Price</option>
           <option value="price_high_low">↓ Price</option>
         </select>
@@ -298,29 +328,47 @@
     <div class="hero-visual">
       <div class="hero-slider">
         <button type="button" class="hero-slide hero-slide-1 active" data-hero-index="0" onclick="showHeroProperty('Greenfield Estate')" aria-label="View Greenfield Estate details">
+          <span class="hero-slide-score">★ 4.9</span>
           <div class="hero-rating-card">
-            <strong>4.9/5</strong>
-            <span>Greenfield Estate<br>Indiranagar</span>
+            <em>Executive</em>
+            <strong>Greenfield Estate</strong>
+            <span>📍 Indiranagar, Bangalore</span>
+            <b>₹17,500<small>/mo</small></b>
+            <span class="hero-card-cta">View Details →</span>
           </div>
         </button>
         <button type="button" class="hero-slide hero-slide-2 next" data-hero-index="1" onclick="showHeroProperty('Sage Residency')" aria-label="View Sage Residency details">
+          <span class="hero-slide-score">★ 4.8</span>
           <div class="hero-rating-card">
-            <strong>4.8/5</strong>
-            <span>Sage Residency<br>Koramangala</span>
+            <em>Luxury</em>
+            <strong>Sage Residency</strong>
+            <span>📍 Koramangala, Bangalore</span>
+            <b>₹20,000<small>/mo</small></b>
+            <span class="hero-card-cta">View Details →</span>
           </div>
         </button>
         <button type="button" class="hero-slide hero-slide-3" data-hero-index="2" onclick="showHeroProperty('Manyata Executive Stay')" aria-label="View Manyata Executive Stay details">
+          <span class="hero-slide-score">★ 4.9</span>
           <div class="hero-rating-card">
-            <strong>4.9/5</strong>
-            <span>Manyata Executive Stay<br>Nagavara</span>
+            <em>Executive</em>
+            <strong>Manyata Executive Stay</strong>
+            <span>📍 Nagavara, Bangalore</span>
+            <b>₹18,000<small>/mo</small></b>
+            <span class="hero-card-cta">View Details →</span>
           </div>
         </button>
         <button type="button" class="hero-slide hero-slide-4 prev" data-hero-index="3" onclick="showHeroProperty('Bellandur Lakeview Suites')" aria-label="View Bellandur Lakeview Suites details">
+          <span class="hero-slide-score">★ 4.8</span>
           <div class="hero-rating-card">
-            <strong>4.8/5</strong>
-            <span>Bellandur Lakeview Suites<br>Outer Ring Road</span>
+            <em>New</em>
+            <strong>Bellandur Lakeview Suites</strong>
+            <span>📍 Outer Ring Road, Bangalore</span>
+            <b>₹21,000<small>/mo</small></b>
+            <span class="hero-card-cta">View Details →</span>
           </div>
         </button>
+        <button type="button" class="hero-arrow hero-arrow-prev" onclick="event.stopPropagation(); moveHeroSlide(-1)" aria-label="Previous showcase">‹</button>
+        <button type="button" class="hero-arrow hero-arrow-next" onclick="event.stopPropagation(); moveHeroSlide(1)" aria-label="Next showcase">›</button>
         <div class="hero-slide-dots">
           <span class="active"></span><span></span><span></span><span></span>
         </div>
@@ -331,10 +379,10 @@
   <!-- Stats Strip -->
   <div class="stats-strip">
     <div class="stats-inner">
-      <div><div class="stat-item-num">500+</div><div class="stat-item-label">Properties Listed</div></div>
-      <div><div class="stat-item-num">2,000+</div><div class="stat-item-label">Happy Residents</div></div>
-      <div><div class="stat-item-num">50+</div><div class="stat-item-label">Cities Covered</div></div>
-      <div><div class="stat-item-num">98%</div><div class="stat-item-label">Satisfaction Rate</div></div>
+      <div class="stat-item"><span class="stat-icon">⌂</span><div><div class="stat-item-num">500+</div><div class="stat-item-label">Properties Listed<br>Across Bangalore</div></div></div>
+      <div class="stat-item"><span class="stat-icon">●●</span><div><div class="stat-item-num">2,000+</div><div class="stat-item-label">Happy Residents<br>Living Comfortably</div></div></div>
+      <div class="stat-item"><span class="stat-icon">⌖</span><div><div class="stat-item-num">25+</div><div class="stat-item-label">Bangalore Areas<br>Covered</div></div></div>
+      <div class="stat-item"><span class="stat-icon">◇</span><div><div class="stat-item-num">98%</div><div class="stat-item-label">Satisfaction Rate<br>From Our Residents</div></div></div>
     </div>
   </div>
 
@@ -343,9 +391,10 @@
   <section id="explore-section" class="container py-xl" style="padding-top:var(--space-2xl)">
     <div id="properties-header" class="section-header reveal">
       <div>
-        <h2 class="section-title">Featured Properties</h2>
+        <h2 class="section-title">Explore Premium Properties</h2>
         <p id="result-count" class="section-subtitle text-muted">Loading…</p>
       </div>
+      <a href="#explore-section" class="view-all-link">View all properties →</a>
     </div>
     <div id="properties-grid" class="properties-grid">
       <div class="skeleton-card"></div>
@@ -628,6 +677,21 @@
         .join('');
     }
 
+    function getPropertyBadge(prop, index = 0) {
+      const labels = ['Popular', 'New', 'Luxury'];
+      if (prop.avg_rating && Number(prop.avg_rating) >= 4.8) return 'Luxury';
+      return labels[index % labels.length];
+    }
+
+    function toggleFavorite(event, id) {
+      event.stopPropagation();
+      const btn = event.currentTarget;
+      const active = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!active));
+      btn.classList.toggle('active', !active);
+      Toast.info(!active ? 'Added to favourites.' : 'Removed from favourites.');
+    }
+
     const realisticPropertyImages = {
       'greenfield estate': [
         'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=90',
@@ -723,30 +787,36 @@
         </div>`;
     }
 
-    function renderCard(prop) {
+    function renderCard(prop, index = 0) {
       const minRent = prop.min_rent ? formatCurrency(prop.min_rent) : 'On request';
       const imgSrc = getPropertyImages(prop)[0];
+      const premiumBadge = getPropertyBadge(prop, index);
+      const rating = prop.avg_rating ? Number(prop.avg_rating).toFixed(1) : '4.9';
       
       return `
         <div class="property-card" onclick="showDetail(${prop.id})">
           <div class="property-card-image" style="background-image: url('${imgSrc}'); background-size: cover; background-position: center;">
-            <div style="position: absolute; top: 12px; left: 12px; display: flex; gap: 8px;">
-              <span class="badge" style="background: #22c55e; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">\u2713 Verified</span>
-              <span class="badge" style="background: #eab308; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">\u2b50 Featured</span>
+            <div class="property-card-badges">
+              <span class="premium-badge premium-badge-verified">✓ Verified</span>
+              <span class="premium-badge premium-badge-accent">${premiumBadge}</span>
             </div>
-            <span class="badge" style="position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,0.9); color: #6b21a8; padding: 4px 12px;">
-              \u26a5 Co-ed
-            </span>
+            <button type="button" class="favorite-btn" onclick="toggleFavorite(event, ${prop.id})" aria-label="Save ${prop.name}" aria-pressed="false">♡</button>
           </div>
           <div class="property-card-body">
-            <h3 class="property-card-title">${prop.name}</h3>
-            <p class="property-card-location" style="margin-bottom: 0.5rem;">\ud83d\udccd ${prop.city}, ${prop.state}</p>
+            <div class="property-card-heading">
+              <div>
+                <h3 class="property-card-title">${prop.name}</h3>
+                <p class="property-card-location">📍 ${prop.city}, ${prop.state}</p>
+              </div>
+              <span class="property-rating">★ ${rating}</span>
+            </div>
             
             <div class="flex items-center justify-between mt-md mb-md">
               <div class="property-card-rent text-success" style="font-size: 1.5rem; font-weight: 800;">${minRent}<span style="font-size: 0.85rem; color: var(--clr-text-muted); margin-left: 4px;">/month</span></div>
               <div style="display:flex; flex-direction:column; align-items:flex-end;">
                 <span class="badge" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: var(--clr-text-muted); font-weight: normal; margin-bottom: 4px;">${prop.property_type_display}</span>
                 ${prop.avg_rating ? `<span style="font-size:0.85rem; color: #eab308; font-weight:600;">⭐ ${prop.avg_rating}/5</span>` : ''}
+                <span class="property-card-link">View Details →</span>
               </div>
             </div>
             
@@ -861,6 +931,18 @@
       dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === activeHeroIndex);
       });
+    }
+
+    function moveHeroSlide(direction) {
+      const slides = document.querySelectorAll('.hero-slide');
+      if (!slides.length) return;
+      activeHeroIndex = (activeHeroIndex + direction + slides.length) % slides.length;
+      updateHeroSlides();
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => {
+        activeHeroIndex = (activeHeroIndex + 1) % document.querySelectorAll('.hero-slide').length;
+        updateHeroSlides();
+      }, 4500);
     }
 
     function initHeroShowcase() {
@@ -1044,13 +1126,11 @@
       panel.classList.toggle('open');
       overlay.classList.toggle('open');
       btn.classList.toggle('open');
-      document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : '';
     }
     function closeMobileNav() {
       document.getElementById('mobile-panel').classList.remove('open');
       document.getElementById('mobile-overlay').classList.remove('open');
       document.getElementById('hamburger').classList.remove('open');
-      document.body.style.overflow = '';
     }
 
     // ── Scroll shadow on nav ──
@@ -1065,7 +1145,36 @@
       });
     });
 
+    function applyTheme(theme) {
+      if (window.Theme) {
+        window.Theme.set(theme);
+        return;
+      }
+      const isDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark-mode', isDark);
+      document.documentElement.classList.toggle('light-mode', !isDark);
+      document.body.classList.toggle('dark-mode', isDark);
+      document.body.classList.toggle('light-mode', !isDark);
+      localStorage.setItem('pgdost-theme', isDark ? 'dark' : 'light');
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) {
+        toggle.setAttribute('aria-pressed', String(isDark));
+        toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+    }
+
+    if (!window.Theme) {
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
+      });
+    }
+
     // Init
+    if (window.Theme) {
+      window.Theme.init();
+    } else {
+      applyTheme(localStorage.getItem('pgdost-theme') || 'light');
+    }
     updateNav();
     initHeroShowcase();
     loadProperties();
