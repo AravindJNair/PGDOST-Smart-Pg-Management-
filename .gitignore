@@ -1,0 +1,52 @@
+# ── Python / Django ──────────────────────────────────────────
+venv/
+env/
+.env
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Django specific
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Migrations (keep if you want to track schema history)
+# */migrations/
+
+# ── Secrets ──────────────────────────────────────────────────
+.env
+.env.*
+secrets.json
+*.key
+*.pem
+
+# ── OS Files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# ── IDE / Editor ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+*.vsidx
+.vs/
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ── Node (if any tooling added later) ────────────────────────
+node_modules/

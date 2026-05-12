@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGDOST — Create Account</title>
+  <meta name="description" content="Create your PGDOST account as a resident or PG owner." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body { display: flex; min-height: 100vh; margin: 0; }
+    .auth-split { display: flex; min-height: 100vh; width: 100%; }
+    .auth-panel {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, var(--clr-brand-700) 0%, var(--clr-brand-600) 40%, var(--clr-brand-500) 100%);
+      color: #fff; padding: var(--space-2xl); position: relative; overflow: hidden;
+    }
+    .auth-panel .deco-orb { filter: blur(80px); opacity: 0.25; }
+    .auth-panel-content { position: relative; z-index: 1; text-align: center; max-width: 380px; }
+    .auth-panel-logo { font-family: var(--font-head); font-size: 3rem; font-weight: 900; margin-bottom: var(--space-md); letter-spacing: -0.03em; }
+    .auth-panel-tagline { font-size: 1.1rem; opacity: 0.85; line-height: 1.7; margin-bottom: var(--space-xl); }
+    .auth-panel-steps { text-align: left; display: flex; flex-direction: column; gap: var(--space-lg); }
+    .auth-panel-step { display: flex; align-items: flex-start; gap: var(--space-sm); }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0; }
+    .step-text { font-size: 0.88rem; opacity: 0.85; line-height: 1.5; }
+    .auth-form-side {
+      flex: 1.2; display: flex; align-items: center; justify-content: center;
+      padding: var(--space-2xl); position: relative; overflow-y: auto;
+    }
+    .auth-card { width: 100%; max-width: 480px; }
+    .auth-logo { text-align: center; margin-bottom: var(--space-lg); }
+    .auth-logo-text { font-family: var(--font-head); font-size: 2rem; font-weight: 800; }
+    .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: var(--space-xs); letter-spacing: -0.02em; }
+    .auth-subtitle { text-align: center; color: var(--clr-text-muted); font-size: 0.88rem; margin-bottom: var(--space-xl); }
+    .role-selector { display: flex; gap: var(--space-sm); }
+    .role-btn {
+      flex: 1; padding: 0.85rem; background: rgba(255,255,255,0.6);
+      border: 2px solid rgba(0,0,0,0.06); border-radius: var(--radius-md);
+      color: var(--clr-text-muted); font-weight: 600; font-size: 0.88rem;
+      text-align: center; transition: all var(--dur-base) var(--ease-spring);
+      cursor: pointer; font-family: var(--font-body);
+    }
+    .role-btn:hover { border-color: rgba(123,138,98,0.3); background: rgba(255,255,255,0.8); }
+    .role-btn.selected {
+      border-color: var(--clr-brand-400); color: var(--clr-brand-600);
+      background: rgba(123,138,98,0.08); box-shadow: 0 0 0 3px rgba(123,138,98,0.1);
+    }
+    @media (max-width: 768px) {
+      .auth-panel { display: none; }
+      .auth-form-side { padding: var(--space-xl); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-mesh">
+  <div class="auth-split">
+    <!-- Decorative Panel -->
+    <div class="auth-panel">
+      <div class="deco-orb" style="width:300px;height:300px;background:rgba(188,204,154,0.4);top:-80px;right:-60px;position:absolute;border-radius:50%;"></div>
+      <div class="deco-orb" style="width:200px;height:200px;background:rgba(167,185,133,0.3);bottom:-40px;left:-40px;position:absolute;border-radius:50%;"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-logo animate-fade-up">✨ PGDOST</div>
+        <p class="auth-panel-tagline animate-fade-up" style="animation-delay:0.1s">Join our PG management platform in three easy steps.</p>
+        <div class="auth-panel-steps animate-fade-up" style="animation-delay:0.2s">
+          <div class="auth-panel-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Choose your role</strong> — Resident or PG Owner</div>
+          </div>
+          <div class="auth-panel-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Fill your details</strong> — name, email & password</div>
+          </div>
+          <div class="auth-panel-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Start exploring</strong> — find or manage PGs instantly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Side -->
+    <div class="auth-form-side">
+      <a href="index.html" class="back-to-home">‹ Back to Home</a>
+      <div class="auth-card animate-scale-in">
+        <div class="auth-logo">
+          <div class="auth-logo-text gradient-text">PGDOST</div>
+          <p style="color:var(--clr-text-muted); font-size:0.8rem; margin-top: 4px;">PG Management Platform</p>
+        </div>
+
+        <div class="card">
+          <h1 class="auth-title">Create Account</h1>
+          <p class="auth-subtitle">Join PGDOST to find or manage PGs</p>
+
+          <form id="register-form" class="flex flex-col gap-md">
+            <!-- Role Selector -->
+            <div class="form-group animate-fade-up" style="animation-delay: 0.1s">
+              <label class="form-label">I am a…</label>
+              <div class="role-selector">
+                <button type="button" class="role-btn selected" data-role="resident" id="role-resident">🏡 Resident</button>
+                <button type="button" class="role-btn" data-role="owner" id="role-owner">🏢 PG Owner</button>
+              </div>
+              <input type="hidden" id="role" value="resident" />
+            </div>
+
+            <div class="form-grid animate-fade-up" style="animation-delay: 0.2s">
+              <div class="form-group">
+                <label class="form-label" for="first_name">First Name</label>
+                <input id="first_name" type="text" class="form-input" placeholder="John" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="last_name">Last Name</label>
+                <input id="last_name" type="text" class="form-input" placeholder="Doe" required />
+              </div>
+            </div>
+
+            <div class="form-group animate-fade-up" style="animation-delay: 0.3s">
+              <label class="form-label" for="username">Username</label>
+              <input id="username" type="text" class="form-input" placeholder="Choose a username" autocomplete="username" required />
+            </div>
+
+            <div class="form-group animate-fade-up" style="animation-delay: 0.4s">
+              <label class="form-label" for="email">Email Address</label>
+              <input id="email" type="email" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+            </div>
+
+            <div class="form-group animate-fade-up" style="animation-delay: 0.5s">
+              <label class="form-label" for="phone_number">Phone Number</label>
+              <input id="phone_number" type="tel" class="form-input" placeholder="+91 9876543210" />
+            </div>
+
+            <div class="form-grid animate-fade-up" style="animation-delay: 0.6s">
+              <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input id="password" type="password" class="form-input" placeholder="Min 8 characters" autocomplete="new-password" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="password2">Confirm Password</label>
+                <input id="password2" type="password" class="form-input" placeholder="Repeat password" autocomplete="new-password" required />
+              </div>
+            </div>
+
+            <p id="reg-error" class="form-error hidden animate-fade-up" style="animation-delay: 0.7s"></p>
+
+            <button id="reg-btn" type="submit" class="btn btn-primary btn-lg w-full mt-sm animate-fade-up" style="animation-delay: 0.8s">Create Account</button>
+          </form>
+
+          <div class="divider"></div>
+          <p class="text-center text-sm text-muted">
+            Already have an account? <a href="login.html" class="text-brand">Sign in →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../scripts/api.js"></script>
+  <script>
+    redirectIfLoggedIn();
+
+    // Role button toggle
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('role').value = btn.dataset.role;
+      });
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('reg-error');
+      errorEl.classList.add('hidden');
+      const btn = document.getElementById('reg-btn');
+
+      const password  = document.getElementById('password').value;
+      const password2 = document.getElementById('password2').value;
+      if (password !== password2) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Creating account…';
+
+      try {
+        await api.post('/auth/register/', {
+          username:     document.getElementById('username').value.trim(),
+          email:        document.getElementById('email').value.trim(),
+          first_name:   document.getElementById('first_name').value.trim(),
+          last_name:    document.getElementById('last_name').value.trim(),
+          phone_number: document.getElementById('phone_number').value.trim(),
+          role:         document.getElementById('role').value,
+          password:     password,
+        });
+        Toast.success('Account created! Redirecting to login…');
+        setTimeout(() => window.location.href = 'login.html', 1200);
+      } catch (err) {
+        errorEl.textContent = err.message || 'Registration failed. Please try again.';
+        errorEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>
