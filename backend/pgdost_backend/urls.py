@@ -23,6 +23,7 @@ from pgdost_backend.views import api_docs
 
 urlpatterns = [
     path('', api_docs, name='api_home'),
+    path('api/', api_docs, name='api_root'),
     path('api/docs/', api_docs, name='api_docs'),
     path('api/auth/', include('accounts.urls')),
     path('api/properties/', include('properties.urls')),
