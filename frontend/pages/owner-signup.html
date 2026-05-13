@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGDOST — Owner Signup</title>
+  <meta name="description" content="Create your PGDOST owner account and start owner verification." />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pgdost-theme') === 'dark' ? 'dark' : 'light';
+        document.documentElement.classList.add(t + '-mode');
+      } catch (e) {
+        document.documentElement.classList.add('light-mode');
+      }
+    })();
+  </script>
+  <style>
+    body { display: flex; min-height: 100vh; margin: 0; }
+    .auth-split { display: flex; min-height: 100vh; width: 100%; }
+    .auth-panel {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #1e3a5f 0%, #2a5d8f 40%, #3b82f6 100%);
+      color: #fff; padding: var(--space-2xl); position: relative; overflow: hidden;
+    }
+    .auth-panel .deco-orb { filter: blur(80px); opacity: 0.2; }
+    .auth-panel-content { position: relative; z-index: 1; text-align: center; max-width: 390px; }
+    .auth-panel-logo { font-family: var(--font-head); font-size: 3rem; font-weight: 900; margin-bottom: var(--space-md); }
+    .auth-panel-tagline { font-size: 1.08rem; opacity: 0.88; line-height: 1.7; margin-bottom: var(--space-xl); }
+    .auth-panel-steps { text-align: left; display: flex; flex-direction: column; gap: var(--space-lg); }
+    .auth-panel-step { display: flex; align-items: flex-start; gap: var(--space-sm); }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
+    }
+    .step-text { font-size: 0.88rem; opacity: 0.88; line-height: 1.5; }
+    .auth-form-side {
+      flex: 1.1; display: flex; align-items: center; justify-content: center;
+      padding: var(--space-2xl); position: relative; overflow-y: auto;
+    }
+    .auth-card { width: 100%; max-width: 480px; }
+    .auth-logo { text-align: center; margin-bottom: var(--space-lg); }
+    .auth-logo-text { font-family: var(--font-head); font-size: 2rem; font-weight: 800; }
+    .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: var(--space-xs); }
+    .auth-subtitle { text-align: center; color: var(--clr-text-muted); font-size: 0.88rem; margin-bottom: var(--space-xl); }
+    .password-wrap { position: relative; }
+    .password-toggle {
+      position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%);
+      font-size: 0.78rem; font-weight: 700; color: var(--clr-text-muted);
+      background: transparent; border: 0; cursor: pointer;
+    }
+    .google-btn { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); color: var(--clr-text); }
+    .hidden { display: none !important; }
+    @media (max-width: 768px) {
+      .auth-panel { display: none; }
+      .auth-form-side { padding: var(--space-xl); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-mesh light-mode">
+  <div class="auth-split">
+    <div class="auth-panel">
+      <div class="deco-orb" style="width:300px;height:300px;background:rgba(96,165,250,0.35);top:-80px;right:-60px;position:absolute;border-radius:50%;"></div>
+      <div class="deco-orb" style="width:200px;height:200px;background:rgba(59,130,246,0.25);bottom:-40px;left:-40px;position:absolute;border-radius:50%;"></div>
+      <div class="auth-panel-content">
+        <div class="auth-panel-logo animate-fade-up">PGDOST</div>
+        <p class="auth-panel-tagline animate-fade-up" style="animation-delay:0.1s">Launch your owner workspace with trusted onboarding in just a few steps.</p>
+        <div class="auth-panel-steps animate-fade-up" style="animation-delay:0.2s">
+          <div class="auth-panel-step"><div class="step-num">1</div><div class="step-text"><strong>Create account</strong> with owner credentials.</div></div>
+          <div class="auth-panel-step"><div class="step-num">2</div><div class="step-text"><strong>Verify email + identity</strong> to unlock listings.</div></div>
+          <div class="auth-panel-step"><div class="step-num">3</div><div class="step-text"><strong>Complete profile</strong> and start managing properties.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-form-side">
+      <a href="index.html" class="back-to-home">‹ Back to Home</a>
+      <div class="auth-card animate-scale-in">
+        <div class="auth-logo">
+          <div class="auth-logo-text gradient-text">PGDOST</div>
+          <p style="color:var(--clr-text-muted); font-size:0.8rem; margin-top:4px;">Owner Registration</p>
+        </div>
+        <div class="card">
+          <h1 class="auth-title">Create Owner Account</h1>
+          <p class="auth-subtitle">Get verified and list your properties</p>
+
+          <form id="owner-signup-form" class="flex flex-col gap-md">
+            <div class="form-group">
+              <label class="form-label" for="full-name">Full Name</label>
+              <input id="full-name" type="text" class="form-input" placeholder="Your full name" required />
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input id="email" type="email" class="form-input" placeholder="owner@domain.com" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="phone">Phone Number</label>
+                <input id="phone" type="tel" class="form-input" placeholder="+91 9876543210" required />
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-wrap">
+                  <input id="password" type="password" class="form-input" placeholder="Min 8 characters" autocomplete="new-password" required />
+                  <button id="toggle-password" type="button" class="password-toggle">Show</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="confirm-password">Confirm Password</label>
+                <div class="password-wrap">
+                  <input id="confirm-password" type="password" class="form-input" placeholder="Repeat password" autocomplete="new-password" required />
+                  <button id="toggle-confirm-password" type="button" class="password-toggle">Show</button>
+                </div>
+              </div>
+            </div>
+            <p id="signup-error" class="form-error hidden"></p>
+            <p id="signup-success" class="text-success text-sm hidden"></p>
+            <button id="signup-btn" type="submit" class="btn btn-primary btn-lg w-full">Create Account</button>
+            <button type="button" class="btn btn-secondary btn-lg w-full google-btn">Continue with Google</button>
+          </form>
+
+          <div class="divider"></div>
+          <p class="text-center text-sm text-muted">
+            Already registered? <a href="owner-login.html" class="text-brand">Owner Login →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../scripts/api.js"></script>
+  <script>
+    (function prefillFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get('name');
+      const email = params.get('email');
+      const phone = params.get('phone');
+      if (name) document.getElementById('full-name').value = name;
+      if (email) document.getElementById('email').value = email;
+      if (phone) document.getElementById('phone').value = phone;
+    })();
+
+    function togglePassword(inputId, buttonId) {
+      const input = document.getElementById(inputId);
+      const button = document.getElementById(buttonId);
+      button.addEventListener('click', () => {
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        button.textContent = show ? 'Hide' : 'Show';
+      });
+    }
+    togglePassword('password', 'toggle-password');
+    togglePassword('confirm-password', 'toggle-confirm-password');
+
+    function validatePhone(value) {
+      return /^[+\d][\d\s-]{7,15}$/.test(value.trim());
+    }
+
+    document.getElementById('owner-signup-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fullName = document.getElementById('full-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const btn = document.getElementById('signup-btn');
+      const err = document.getElementById('signup-error');
+      const success = document.getElementById('signup-success');
+
+      err.classList.add('hidden');
+      success.classList.add('hidden');
+
+      if (!fullName || fullName.length < 3) {
+        err.textContent = 'Please enter your full name.';
+        err.classList.remove('hidden');
+        return;
+      }
+      if (!validatePhone(phone)) {
+        err.textContent = 'Enter a valid phone number.';
+        err.classList.remove('hidden');
+        return;
+      }
+      if (password.length < 8) {
+        err.textContent = 'Password must be at least 8 characters long.';
+        err.classList.remove('hidden');
+        return;
+      }
+      if (password !== confirmPassword) {
+        err.textContent = 'Passwords do not match.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Creating account...';
+      try {
+        await api.post('/auth/owner/signup/', {
+          full_name: fullName,
+          email,
+          phone_number: phone,
+          password,
+          confirm_password: confirmPassword,
+        });
+        success.textContent = 'Account created. Complete email verification to continue.';
+        success.classList.remove('hidden');
+        Toast.success('Signup successful. Verify your email OTP.');
+        setTimeout(() => {
+          window.location.href = `owner-onboarding.html?email=${encodeURIComponent(email)}`;
+        }, 900);
+      } catch (error) {
+        err.textContent = error.message || 'Signup failed. Please try again.';
+        err.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

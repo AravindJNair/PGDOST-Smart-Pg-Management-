@@ -1,10 +1,5 @@
 /**
- * PGDOST — API Interceptor (api.js)
- * Centralized Fetch wrapper that:
- *  - Automatically attaches Bearer JWT from localStorage
- *  - Parses JSON responses
- *  - Handles 401 Unauthorized (redirects to login)
- *  - Exposes token / user helpers
+ * PGDOST API utilities
  */
 
 const API_BASE = 'http://127.0.0.1:8000/api';
@@ -14,8 +9,8 @@ const Theme = {
   initialized: false,
   getStoredTheme() {
     try {
-      const val = localStorage.getItem(this.storageKey);
-      return val === 'dark' ? 'dark' : 'light';
+      const value = localStorage.getItem(this.storageKey);
+      return value === 'dark' ? 'dark' : 'light';
     } catch {
       return 'light';
     }
@@ -43,8 +38,7 @@ const Theme = {
     this.apply(mode);
   },
   toggle() {
-    const current = this.getCurrent();
-    this.set(current === 'dark' ? 'light' : 'dark');
+    this.set(this.getCurrent() === 'dark' ? 'light' : 'dark');
   },
   getCurrent() {
     if (document.documentElement.classList.contains('dark-mode')) return 'dark';
@@ -61,6 +55,7 @@ const Theme = {
     });
   },
   ensureGlobalToggle() {
+    if (!document.body) return;
     if (document.getElementById('theme-toggle') || document.getElementById('global-theme-toggle')) return;
     const btn = document.createElement('button');
     btn.id = 'global-theme-toggle';
@@ -110,81 +105,86 @@ const Theme = {
   },
 };
 
-// ── Smart Page Navigation ─────────────────────────────────────
-// Works whether the app is opened via http:// OR file://, and works 
-// regardless of the live server root.
 function _goTo(pageName) {
   if (window.location.pathname.includes('/pages/')) {
-    // Already inside pages/ — sibling file
     window.location.href = pageName;
   } else {
-    // At root (e.g. index.html) — go into pages/
     window.location.href = 'pages/' + pageName;
   }
 }
 
-// ── Token Helpers ────────────────────────────────────────────
 const Auth = {
-  setTokens(access, refresh) {
-    localStorage.setItem('access_token', access);
-    localStorage.setItem('refresh_token', refresh);
+  _storage(mode) {
+    return mode === 'session' ? sessionStorage : localStorage;
   },
-  getAccess()  { return localStorage.getItem('access_token'); },
-  getRefresh() { return localStorage.getItem('refresh_token'); },
+  setTokens(access, refresh, persist = true) {
+    const storage = this._storage(persist ? 'local' : 'session');
+    const other = this._storage(persist ? 'session' : 'local');
+    storage.setItem('access_token', access);
+    storage.setItem('refresh_token', refresh);
+    other.removeItem('access_token');
+    other.removeItem('refresh_token');
+  },
+  getAccess() {
+    return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+  },
+  getRefresh() {
+    return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
+  },
+  setUser(user, persist = true) {
+    const storage = this._storage(persist ? 'local' : 'session');
+    const other = this._storage(persist ? 'session' : 'local');
+    storage.setItem('user', JSON.stringify(user));
+    other.removeItem('user');
+  },
+  getUser() {
+    try {
+      const raw = localStorage.getItem('user') || sessionStorage.getItem('user');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
   clear() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('user');
   },
-  setUser(user) { localStorage.setItem('user', JSON.stringify(user)); },
-  getUser() {
-    try { return JSON.parse(localStorage.getItem('user')); }
-    catch { return null; }
+  isLoggedIn() {
+    return !!this.getAccess();
   },
-  isLoggedIn() { return !!Auth.getAccess(); },
-  getRole() { return Auth.getUser()?.role || null; },
+  getRole() {
+    return this.getUser()?.role || null;
+  },
   logout() {
-    Auth.clear();
+    this.clear();
     _goTo('login.html');
   },
 };
 
-// ── Core Fetch Wrapper ───────────────────────────────────────
-async function apiFetch(endpoint, options = {}) {
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-
-  const token = Auth.getAccess();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  let response = await fetch(url, { ...options, headers });
-
-  // Attempt token refresh on 401
-  if (response.status === 401 && Auth.getRefresh()) {
-    const refreshed = await refreshToken();
-    if (refreshed) {
-      headers['Authorization'] = `Bearer ${Auth.getAccess()}`;
-      response = await fetch(url, { ...options, headers });
-    } else {
-      Auth.logout();
-      return;
-    }
+class ApiError extends Error {
+  constructor(message, status, data) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
   }
-
-  // Handle non-2xx without body (204 No Content)
-  if (response.status === 204) return null;
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const errorMsg = extractError(data) || `HTTP ${response.status}`;
-    throw new ApiError(errorMsg, response.status, data);
-  }
-
-  return data;
 }
 
-// ── Token Refresh ─────────────────────────────────────────────
+function extractError(data) {
+  if (!data) return null;
+  if (typeof data === 'string') return data;
+  if (data.detail) return data.detail;
+  if (data.non_field_errors) return data.non_field_errors.join(', ');
+  const firstKey = Object.keys(data)[0];
+  if (!firstKey) return JSON.stringify(data);
+  const value = data[firstKey];
+  return `${firstKey}: ${Array.isArray(value) ? value.join(', ') : value}`;
+}
+
 async function refreshToken() {
   try {
     const refresh = Auth.getRefresh();
@@ -196,75 +196,75 @@ async function refreshToken() {
     });
     if (!res.ok) return false;
     const data = await res.json();
-    localStorage.setItem('access_token', data.access);
+    const persistInLocal = !!localStorage.getItem('refresh_token');
+    Auth.setTokens(data.access, refresh, persistInLocal);
     return true;
-  } catch { return false; }
-}
-
-// ── ApiError Class ─────────────────────────────────────────────
-class ApiError extends Error {
-  constructor(message, status, data) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-    this.data = data;
+  } catch {
+    return false;
   }
 }
 
-// ── Error Extractor ─────────────────────────────────────────────
-function extractError(data) {
-  if (!data) return null;
-  if (typeof data === 'string') return data;
-  if (data.detail) return data.detail;
-  if (data.non_field_errors) return data.non_field_errors.join(', ');
-  // First field error
-  const firstKey = Object.keys(data)[0];
-  if (firstKey) {
-    const val = data[firstKey];
-    return `${firstKey}: ${Array.isArray(val) ? val.join(', ') : val}`;
+async function apiFetch(endpoint, options = {}) {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const token = Auth.getAccess();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let response = await fetch(url, { ...options, headers });
+  if (response.status === 401 && Auth.getRefresh()) {
+    const refreshed = await refreshToken();
+    if (refreshed) {
+      headers.Authorization = `Bearer ${Auth.getAccess()}`;
+      response = await fetch(url, { ...options, headers });
+    } else {
+      Auth.logout();
+      return;
+    }
   }
-  return JSON.stringify(data);
+
+  if (response.status === 204) return null;
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new ApiError(extractError(data) || `HTTP ${response.status}`, response.status, data);
+  }
+  return data;
 }
 
-// ── Convenience Methods ─────────────────────────────────────────
 const api = {
-  get:    (endpoint)         => apiFetch(endpoint, { method: 'GET' }),
-  post:   (endpoint, body)   => apiFetch(endpoint, { method: 'POST',   body: JSON.stringify(body) }),
-  patch:  (endpoint, body)   => apiFetch(endpoint, { method: 'PATCH',  body: JSON.stringify(body) }),
-  put:    (endpoint, body)   => apiFetch(endpoint, { method: 'PUT',    body: JSON.stringify(body) }),
-  delete: (endpoint)         => apiFetch(endpoint, { method: 'DELETE' }),
+  get: (endpoint) => apiFetch(endpoint, { method: 'GET' }),
+  post: (endpoint, body) => apiFetch(endpoint, { method: 'POST', body: JSON.stringify(body) }),
+  patch: (endpoint, body) => apiFetch(endpoint, { method: 'PATCH', body: JSON.stringify(body) }),
+  put: (endpoint, body) => apiFetch(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (endpoint) => apiFetch(endpoint, { method: 'DELETE' }),
 };
 
-// ── Toast Notification System ───────────────────────────────────
 const Toast = {
   _container: null,
   _getContainer() {
     if (!this._container) {
-      this._container = document.createElement('div');
-      this._container.id = 'toast-container';
-      document.body.appendChild(this._container);
+      this._container = document.getElementById('toast-container') || document.createElement('div');
+      if (!this._container.id) this._container.id = 'toast-container';
+      if (!this._container.parentNode) document.body.appendChild(this._container);
     }
     return this._container;
   },
   show(message, type = 'info', duration = 4000) {
     const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-    const container = this._getContainer();
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
-    container.appendChild(toast);
+    this._getContainer().appendChild(toast);
     setTimeout(() => {
       toast.classList.add('removing');
-      setTimeout(() => toast.remove(), 200);
+      setTimeout(() => toast.remove(), 220);
     }, duration);
   },
-  success: (msg) => Toast.show(msg, 'success'),
-  error:   (msg) => Toast.show(msg, 'error'),
-  warning: (msg) => Toast.show(msg, 'warning'),
-  info:    (msg) => Toast.show(msg, 'info'),
+  success(message) { this.show(message, 'success'); },
+  error(message) { this.show(message, 'error'); },
+  warning(message) { this.show(message, 'warning'); },
+  info(message) { this.show(message, 'info'); },
 };
 
-// ── Auth Guard ──────────────────────────────────────────────────
 function requireAuth(role = null) {
   if (!Auth.isLoggedIn()) {
     _goTo('login.html');
@@ -282,67 +282,66 @@ function redirectIfLoggedIn() {
   if (!Auth.isLoggedIn()) return;
   const role = Auth.getRole();
   const pages = {
-    resident:   'resident-dashboard.html',
-    owner:      'owner-dashboard.html',
+    resident: 'resident-dashboard.html',
+    owner: 'owner-dashboard.html',
     superadmin: 'admin-dashboard.html',
   };
   _goTo(pages[role] || 'index.html');
 }
 
-// ── Modal Helpers ───────────────────────────────────────────────
 function openModal(id) {
   const el = document.getElementById(id);
-  if (el) { el.classList.add('open'); }
+  if (el) el.classList.add('open');
 }
+
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) { el.classList.remove('open'); }
+  if (el) el.classList.remove('open');
 }
-// Close modal on overlay click
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('modal-overlay')) {
-    e.target.classList.remove('open');
+
+document.addEventListener('click', (event) => {
+  if (event.target.classList.contains('modal-overlay')) {
+    event.target.classList.remove('open');
   }
 });
 
-// ── Utility: Format Date ─────────────────────────────────────────
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric'
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   });
 }
 
 function formatCurrency(amount) {
-  if (amount == null) return '—';
-  return '₹' + parseFloat(amount).toLocaleString('en-IN');
+  if (amount == null || amount === '') return '—';
+  return `₹${parseFloat(amount).toLocaleString('en-IN')}`;
 }
 
-// ── Render Status Badge ──────────────────────────────────────────
 function statusBadge(status) {
   const map = {
-    pending:     ['badge-yellow', 'Pending'],
-    approved:    ['badge-green',  'Approved'],
-    rejected:    ['badge-red',    'Rejected'],
-    vacated:     ['badge-blue',   'Vacated'],
-    paid:        ['badge-green',  'Paid'],
-    overdue:     ['badge-red',    'Overdue'],
-    open:        ['badge-yellow', 'Open'],
-    in_progress: ['badge-blue',   'In Progress'],
-    resolved:    ['badge-green',  'Resolved'],
-    closed:      ['badge-blue',   'Closed'],
+    pending: ['badge-yellow', 'Pending'],
+    approved: ['badge-green', 'Approved'],
+    rejected: ['badge-red', 'Rejected'],
+    vacated: ['badge-blue', 'Vacated'],
+    paid: ['badge-green', 'Paid'],
+    overdue: ['badge-red', 'Overdue'],
+    open: ['badge-yellow', 'Open'],
+    in_progress: ['badge-blue', 'In Progress'],
+    resolved: ['badge-green', 'Resolved'],
+    closed: ['badge-blue', 'Closed'],
   };
   const [cls, label] = map[status] || ['badge-blue', status];
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
-// Expose globally
-window.api   = api;
-window.Auth  = Auth;
+window.api = api;
+window.Auth = Auth;
 window.Toast = Toast;
 window.requireAuth = requireAuth;
 window.redirectIfLoggedIn = redirectIfLoggedIn;
-window.openModal  = openModal;
+window.openModal = openModal;
 window.closeModal = closeModal;
 window.formatDate = formatDate;
 window.formatCurrency = formatCurrency;

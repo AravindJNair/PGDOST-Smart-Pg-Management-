@@ -89,10 +89,23 @@ WSGI_APPLICATION = 'pgdost_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+DEFAULT_DB_PATH = BASE_DIR / 'db.sqlite3'
+DB_PATH_OVERRIDE = os.environ.get('PGDOST_DB_PATH')
+FALLBACK_DB_PATH = Path(r'C:\tmp\pgdost\db.sqlite3')
+
+if DB_PATH_OVERRIDE:
+    DB_PATH = Path(DB_PATH_OVERRIDE)
+elif 'OneDrive' in str(DEFAULT_DB_PATH):
+    DB_PATH = FALLBACK_DB_PATH
+else:
+    DB_PATH = DEFAULT_DB_PATH
+
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 
@@ -127,7 +140,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

@@ -2,6 +2,17 @@ from django.db import models
 from django.conf import settings
 
 
+def default_nearby_places():
+    return {
+        'grocery_stores': [],
+        'hospitals': [],
+        'restaurants': [],
+        'gyms': [],
+        'cafes': [],
+        'colleges': [],
+    }
+
+
 class Property(models.Model):
     """A PG Building registered by an Owner."""
     PROPERTY_TYPE_CHOICES = (
@@ -31,6 +42,28 @@ class Property(models.Model):
     has_parking = models.BooleanField(default=False)
     has_laundry = models.BooleanField(default=False)
     has_gym = models.BooleanField(default=False)
+    custom_amenities = models.JSONField(default=list, blank=True)
+    # Owner-managed detail sections
+    lifestyle_highlights = models.TextField(blank=True)
+    suitable_for = models.CharField(max_length=50, blank=True, default='students_and_professionals')
+    overview_custom_text = models.TextField(blank=True)
+    smoking_policy = models.CharField(max_length=120, blank=True, default='Not allowed indoors')
+    visitor_rules = models.CharField(max_length=160, blank=True, default='Day visitors till 8:00 PM')
+    gate_closing_time = models.CharField(max_length=60, blank=True, default='11:00 PM')
+    drinking_rules = models.CharField(max_length=160, blank=True, default='No public-area drinking')
+    quiet_hours = models.CharField(max_length=120, blank=True, default='10:30 PM to 6:30 AM')
+    nearby_landmarks = models.JSONField(default=list, blank=True)
+    nearby_colleges = models.JSONField(default=list, blank=True)
+    nearby_transit = models.JSONField(default=list, blank=True)
+    google_maps_url = models.URLField(blank=True)
+    nearby_places = models.JSONField(default=default_nearby_places, blank=True)
+    pricing_monthly_rent = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    pricing_security_deposit = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    pricing_maintenance_charge = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    pricing_food_charge = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    whatsapp_number = models.CharField(max_length=15, blank=True)
+    alternate_contact = models.CharField(max_length=15, blank=True)
+    videos = models.JSONField(default=list, blank=True)
     # Admin approval gate
     is_approved = models.BooleanField(default=False)
     approved_at = models.DateTimeField(null=True, blank=True)
@@ -116,6 +149,8 @@ class Review(models.Model):
     )
     rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     review_text = models.TextField(blank=True)
+    stay_duration = models.CharField(max_length=120, blank=True)
+    is_verified_resident = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -48,6 +48,12 @@ class PropertySerializer(serializers.ModelSerializer):
             'property_type', 'property_type_display',
             'address', 'city', 'state', 'pincode', 'phone', 'email',
             'has_wifi', 'has_ac', 'has_food', 'has_parking', 'has_laundry', 'has_gym',
+            'custom_amenities',
+            'lifestyle_highlights', 'suitable_for', 'overview_custom_text',
+            'smoking_policy', 'visitor_rules', 'gate_closing_time', 'drinking_rules', 'quiet_hours',
+            'nearby_landmarks', 'nearby_colleges', 'nearby_transit', 'google_maps_url', 'nearby_places',
+            'pricing_monthly_rent', 'pricing_security_deposit', 'pricing_maintenance_charge', 'pricing_food_charge',
+            'whatsapp_number', 'alternate_contact', 'videos',
             'is_approved', 'approved_at',
             'created_at', 'updated_at', 'rooms', 'images', 'primary_image_url', 'avg_rating'
         ]
@@ -114,11 +120,18 @@ class PropertyListSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    review_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ['id', 'property', 'user', 'username', 'rating', 'review_text', 'created_at']
-        read_only_fields = ['id', 'property', 'user', 'created_at']
+        fields = [
+            'id', 'property', 'user', 'username', 'rating', 'review_text',
+            'stay_duration', 'is_verified_resident', 'created_at', 'review_date'
+        ]
+        read_only_fields = ['id', 'property', 'user', 'is_verified_resident', 'created_at', 'review_date']
+
+    def get_review_date(self, obj):
+        return obj.created_at.date().isoformat() if obj.created_at else None
 
 
 class InquirySerializer(serializers.ModelSerializer):
@@ -128,4 +141,3 @@ class InquirySerializer(serializers.ModelSerializer):
         model = Inquiry
         fields = ['id', 'property', 'property_name', 'sender_name', 'sender_email', 'sender_phone', 'message', 'created_at']
         read_only_fields = ['id', 'property', 'created_at']
-

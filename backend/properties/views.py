@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Min
+from django.db.models import Min, Avg
 from .models import Property, Room, PropertyImage, Review, Inquiry
 from .serializers import PropertySerializer, PropertyListSerializer, RoomSerializer, PropertyImageSerializer, ReviewSerializer, InquirySerializer
 from bookings.models import Booking
@@ -12,6 +12,13 @@ from bookings.models import Booking
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == 'owner'
+
+
+class IsVerifiedOwner(permissions.BasePermission):
+    message = "Verify your account to continue listing properties."
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'owner' and request.user.can_list_properties
 
 
 class IsSuperAdmin(permissions.BasePermission):
@@ -79,18 +86,30 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         prop_id = self.kwargs['property_pk']
-        # Check if user has an approved booking for this property
-        has_booking = Booking.objects.filter(
+        # Check if user has a verified stay/booking for this property
+        booking = Booking.objects.filter(
             property_id=prop_id,
             resident=self.request.user,
-            status='approved'
-        ).exists()
-        
-        if not has_booking:
+            status__in=['approved', 'vacated']
+        ).order_by('-updated_at').first()
+
+        if not booking:
             from rest_framework.exceptions import ValidationError
             raise ValidationError("You can only review a property you have booked.")
-            
-        serializer.save(user=self.request.user, property_id=prop_id)
+
+        stay_duration = serializer.validated_data.get('stay_duration', '').strip()
+        if not stay_duration and booking.move_in_date:
+            end_date = booking.move_out_date or timezone.now().date()
+            total_days = max((end_date - booking.move_in_date).days, 0)
+            months = max(round(total_days / 30), 1)
+            stay_duration = f"{months} month{'s' if months != 1 else ''}"
+
+        serializer.save(
+            user=self.request.user,
+            property_id=prop_id,
+            is_verified_resident=True,
+            stay_duration=stay_duration
+        )
 
 
 class InquiryCreateView(generics.CreateAPIView):
@@ -123,7 +142,7 @@ class InquiryCreateView(generics.CreateAPIView):
 
 class OwnerPropertyListCreateView(generics.ListCreateAPIView):
     """Owner lists and creates their properties."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
     serializer_class = PropertySerializer
 
     def get_queryset(self):
@@ -135,7 +154,7 @@ class OwnerPropertyListCreateView(generics.ListCreateAPIView):
 
 class OwnerPropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Owner retrieves, updates, or deletes a specific property."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
     serializer_class = PropertySerializer
 
     def get_queryset(self):
@@ -147,16 +166,45 @@ class OwnerPropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class OwnerInquiryListView(generics.ListAPIView):
     """Owner views inquiries for their properties."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
     serializer_class = InquirySerializer
 
     def get_queryset(self):
         return Inquiry.objects.filter(property__owner=self.request.user)
 
+class OwnerPropertyReviewsAnalyticsView(APIView):
+    """Owner gets read-only review analytics for one of their properties."""
+    permission_classes = [IsVerifiedOwner]
+
+    def get(self, request, property_pk):
+        try:
+            prop = Property.objects.get(pk=property_pk, owner=request.user)
+        except Property.DoesNotExist:
+            return Response({'detail': 'Property not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        reviews = Review.objects.filter(property=prop)
+        total_reviews = reviews.count()
+        average_rating = reviews.aggregate(avg=Avg('rating'))['avg']
+        rating_counts = {
+            str(star): reviews.filter(rating=star).count()
+            for star in range(1, 6)
+        }
+        serialized_reviews = ReviewSerializer(
+            reviews[:100], many=True, context={'request': request}
+        ).data
+        return Response({
+            'property_id': prop.id,
+            'property_name': prop.name,
+            'total_reviews': total_reviews,
+            'average_rating': round(average_rating, 1) if average_rating else 0,
+            'rating_counts': rating_counts,
+            'reviews': serialized_reviews,
+        })
+
 
 class OwnerRoomListCreateView(generics.ListCreateAPIView):
     """Owner manages rooms for a specific property."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
     serializer_class = RoomSerializer
 
     def get_queryset(self):
@@ -172,7 +220,7 @@ class OwnerRoomListCreateView(generics.ListCreateAPIView):
 
 class OwnerRoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Owner manages a single room."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
     serializer_class = RoomSerializer
 
     def get_queryset(self):
@@ -183,7 +231,7 @@ class OwnerRoomDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class OwnerPropertyImageUploadView(APIView):
     """Owner uploads photos for a specific property."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
 
     def get(self, request, property_pk):
         """List all images for a property."""
@@ -220,7 +268,7 @@ class OwnerPropertyImageUploadView(APIView):
 
 class OwnerPropertyImageDetailView(APIView):
     """Owner manages a single property image."""
-    permission_classes = [IsOwner]
+    permission_classes = [IsVerifiedOwner]
 
     def patch(self, request, property_pk, image_pk):
         """Update image (e.g. set as primary or update caption)."""

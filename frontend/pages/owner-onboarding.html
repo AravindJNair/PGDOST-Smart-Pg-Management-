@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PGDOST — Owner Onboarding</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .onboard-shell { max-width: 1100px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
+    .onboard-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; }
+    .onboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.1rem; }
+    .onboard-card { background: var(--glass-bg-strong); border: 1px solid var(--clr-border); border-radius: var(--radius-xl); padding: 1.2rem; box-shadow: var(--shadow-sm); }
+    .onboard-card h3 { margin-bottom: 0.3rem; }
+    .otp-row { display: grid; grid-template-columns: repeat(6, minmax(42px, 52px)); gap: 0.55rem; margin: 0.8rem 0; }
+    .otp-box { text-align: center; font-size: 1.05rem; font-weight: 700; }
+    .upload-zone {
+      border: 2px dashed rgba(143,173,114,0.35); border-radius: 12px; padding: 1rem;
+      text-align: center; cursor: pointer; background: rgba(255,255,255,0.46);
+    }
+    .upload-zone.dragover { border-color: var(--clr-brand-500); background: rgba(143,173,114,0.09); }
+    .upload-list { display: grid; grid-template-columns: 1fr; gap: 0.6rem; margin-top: 0.8rem; }
+    .upload-item { border: 1px solid var(--clr-border); border-radius: 10px; padding: 0.65rem; background: #fff; display: flex; justify-content: space-between; gap: 0.6rem; align-items: center; }
+    .upload-item .meta { min-width: 0; }
+    .progress-bar { height: 6px; border-radius: 999px; background: rgba(0,0,0,0.08); overflow: hidden; margin-top: 0.4rem; }
+    .progress-bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--clr-brand-500), var(--clr-brand-300)); }
+    .status-pill { font-size: 0.72rem; font-weight: 700; border-radius: 999px; padding: 0.2rem 0.55rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    .status-pill.pending { background: rgba(245,158,11,0.18); color: #b45309; }
+    .status-pill.verified { background: rgba(16,185,129,0.16); color: #047857; }
+    .status-pill.rejected { background: rgba(239,68,68,0.16); color: #b91c1c; }
+    .status-pill.not_submitted { background: rgba(100,116,139,0.16); color: #475569; }
+    .badge-box { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid rgba(16,185,129,0.3); color: #047857; background: rgba(16,185,129,0.12); border-radius: 999px; padding: 0.32rem 0.8rem; font-weight: 700; font-size: 0.82rem; }
+    .alert-box { border-radius: 12px; border: 1px solid rgba(59,130,246,0.3); background: rgba(59,130,246,0.08); padding: 0.8rem; font-size: 0.9rem; }
+    .hidden { display: none !important; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0.75rem; }
+    .form-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.75rem; }
+    .check-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    @media (max-width: 900px) {
+      .form-grid-3 { grid-template-columns: 1fr; }
+      .form-grid-2 { grid-template-columns: 1fr; }
+      .onboard-head { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-mesh light-mode">
+  <div class="onboard-shell">
+    <div class="onboard-head">
+      <div>
+        <h1 class="section-title">Owner Onboarding</h1>
+        <p class="section-subtitle text-muted">Complete verification and profile setup to list properties.</p>
+      </div>
+      <div class="check-row">
+        <span id="verified-badge" class="badge-box hidden">✓ Verified Owner Badge</span>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='owner-login.html'" id="login-shortcut">Owner Login</button>
+        <button class="btn btn-primary btn-sm hidden" onclick="window.location.href='owner-dashboard.html'" id="dashboard-shortcut">Go to Dashboard</button>
+      </div>
+    </div>
+
+    <div id="onboard-alert" class="alert-box hidden"></div>
+
+    <div class="onboard-grid">
+      <section class="onboard-card" id="email-card">
+        <h3>Email OTP Verification</h3>
+        <p class="text-sm text-muted">Signup → receive OTP → verify email.</p>
+        <div class="form-grid-2" style="margin-top:0.8rem;">
+          <div class="form-group">
+            <label class="form-label" for="email-input">Owner Email</label>
+            <input id="email-input" class="form-input" type="email" placeholder="owner@domain.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div style="margin-top:0.45rem;">
+              <span id="email-status-pill" class="status-pill not_submitted">Not Verified</span>
+            </div>
+          </div>
+        </div>
+        <div class="otp-row" id="otp-row">
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+          <input class="form-input otp-box" maxlength="1" inputmode="numeric" />
+        </div>
+        <div class="check-row">
+          <button class="btn btn-secondary btn-sm" id="send-otp-btn">Send OTP</button>
+          <button class="btn btn-primary btn-sm" id="verify-otp-btn">Verify OTP</button>
+          <button class="btn btn-secondary btn-sm" id="resend-otp-btn" disabled>Resend OTP</button>
+          <span class="text-sm text-muted" id="otp-timer">00:00</span>
+        </div>
+        <p class="text-sm text-muted" style="margin-top:0.6rem;">Use a valid 6-digit OTP. Incorrect OTPs show inline errors.</p>
+        <p class="text-sm text-muted" style="margin-top:0.35rem;">In this development setup, OTPs are printed in the Django backend terminal, not sent to your email inbox.</p>
+        <p id="otp-error" class="form-error hidden" style="margin-top:0.5rem;"></p>
+      </section>
+
+      <section class="onboard-card" id="identity-card">
+        <h3>Identity Verification Upload</h3>
+        <p class="text-sm text-muted">Upload Aadhaar, PAN, Government ID, and optional Business Proof.</p>
+        <div class="upload-zone" id="upload-zone">
+          <input id="doc-file-input" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp" class="hidden" />
+          <p><strong>Drag and drop</strong> your document here or click to select.</p>
+          <p class="text-sm text-muted">Supported formats: JPG, PNG, WEBP, PDF</p>
+        </div>
+        <div class="form-group" style="margin-top:0.8rem;">
+          <label class="form-label" for="doc-type">Document Type</label>
+          <select id="doc-type" class="form-select">
+            <option value="aadhaar">Aadhaar Card</option>
+            <option value="pan">PAN Card</option>
+            <option value="government_id">Government ID</option>
+            <option value="business_proof">Business Proof (Optional)</option>
+          </select>
+        </div>
+        <div id="upload-progress-wrap" class="hidden">
+          <div class="progress-bar"><span id="upload-progress-bar"></span></div>
+          <p id="upload-progress-label" class="text-sm text-muted" style="margin-top:0.35rem;">Uploading...</p>
+        </div>
+        <div id="doc-preview" class="upload-list"></div>
+        <p id="doc-error" class="form-error hidden"></p>
+      </section>
+
+      <section class="onboard-card" id="profile-card">
+        <h3>Owner Profile Setup</h3>
+        <p class="text-sm text-muted">Basic profile, owner details, and communication settings.</p>
+        <form id="profile-form" class="flex flex-col gap-md" style="margin-top:0.8rem;">
+          <div class="form-group">
+            <label class="form-label" for="profile-photo">Profile Photo</label>
+            <input id="profile-photo" type="file" class="form-input" accept=".jpg,.jpeg,.png,.webp" />
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Full Name</label><input id="full-name" class="form-input" disabled /></div>
+            <div class="form-group"><label class="form-label">Business/Hostel Name</label><input id="business-name" class="form-input" /></div>
+          </div>
+          <div class="form-grid-3">
+            <div class="form-group"><label class="form-label">Email</label><input id="profile-email" class="form-input" disabled /></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input id="profile-phone" class="form-input" disabled /></div>
+            <div class="form-group"><label class="form-label">Alternate Phone</label><input id="alternate-phone" class="form-input" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Address</label><textarea id="address" class="form-textarea" rows="2"></textarea></div>
+          <div class="form-grid-3">
+            <div class="form-group"><label class="form-label">City</label><input id="city" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">State</label><input id="state" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Pincode</label><input id="pincode" class="form-input" /></div>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group"><label class="form-label">Years of Experience</label><input id="years-exp" type="number" min="0" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Number of Properties</label><input id="num-properties" type="number" min="0" class="form-input" /></div>
+            <div class="form-group">
+              <label class="form-label">Property Type</label>
+              <select id="property-type" class="form-select">
+                <option value="">Select</option>
+                <option value="pg">PG</option>
+                <option value="hostel">Hostel</option>
+                <option value="apartment">Apartment</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label">Preferred Tenant Type</label>
+              <select id="tenant-type" class="form-select">
+                <option value="">Select</option>
+                <option value="students">Students</option>
+                <option value="professionals">Professionals</option>
+                <option value="families">Families</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">WhatsApp Number</label><input id="whatsapp-number" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Emergency Contact</label><input id="emergency-contact" class="form-input" /></div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Preferred Contact Method</label>
+              <select id="contact-method" class="form-select">
+                <option value="phone">Phone</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="email">Email</option>
+              </select>
+            </div>
+            <div class="check-row" style="align-self:end; padding-bottom:0.3rem;">
+              <label><input id="show-phone" type="checkbox" checked /> Show phone publicly</label>
+              <label><input id="show-whatsapp" type="checkbox" /> Show WhatsApp publicly</label>
+            </div>
+          </div>
+          <p id="profile-error" class="form-error hidden"></p>
+          <button id="profile-save-btn" type="submit" class="btn btn-primary btn-lg">Save / Update Profile</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../scripts/api.js"></script>
+  <script>
+    const qs = new URLSearchParams(window.location.search);
+    const guestEmail = qs.get('email') || '';
+    const otpInputs = Array.from(document.querySelectorAll('#otp-row .otp-box'));
+    let countdown = 0;
+    let countdownTimer = null;
+    let otpRequested = false;
+    let onboardingStatus = null;
+
+    const ui = {
+      emailInput: document.getElementById('email-input'),
+      otpError: document.getElementById('otp-error'),
+      otpTimer: document.getElementById('otp-timer'),
+      resendBtn: document.getElementById('resend-otp-btn'),
+      sendBtn: document.getElementById('send-otp-btn'),
+      verifyBtn: document.getElementById('verify-otp-btn'),
+      emailStatus: document.getElementById('email-status-pill'),
+      alert: document.getElementById('onboard-alert'),
+      verifiedBadge: document.getElementById('verified-badge'),
+      loginShortcut: document.getElementById('login-shortcut'),
+      dashboardShortcut: document.getElementById('dashboard-shortcut'),
+      identityCard: document.getElementById('identity-card'),
+      profileCard: document.getElementById('profile-card'),
+      docError: document.getElementById('doc-error'),
+      docPreview: document.getElementById('doc-preview'),
+      profileError: document.getElementById('profile-error'),
+      profileSaveBtn: document.getElementById('profile-save-btn'),
+      progressWrap: document.getElementById('upload-progress-wrap'),
+      progressBar: document.getElementById('upload-progress-bar'),
+      progressLabel: document.getElementById('upload-progress-label'),
+    };
+
+    function isOwnerSession() {
+      return Auth.isLoggedIn() && Auth.getRole() === 'owner';
+    }
+
+    function setStatusPill(element, status, label) {
+      element.className = `status-pill ${status}`;
+      element.textContent = label;
+    }
+
+    function startCountdown(seconds) {
+      countdown = seconds;
+      if (countdownTimer) clearInterval(countdownTimer);
+      ui.resendBtn.disabled = true;
+      ui.otpTimer.textContent = `00:${String(countdown).padStart(2, '0')}`;
+      countdownTimer = setInterval(() => {
+        countdown -= 1;
+        ui.otpTimer.textContent = `00:${String(Math.max(countdown, 0)).padStart(2, '0')}`;
+        if (countdown <= 0) {
+          clearInterval(countdownTimer);
+          ui.resendBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+    function getOtpValue() {
+      return otpInputs.map((input) => input.value).join('');
+    }
+
+    function bindOtpInputs() {
+      otpInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/\D/g, '').slice(0, 1);
+          if (input.value && otpInputs[index + 1]) otpInputs[index + 1].focus();
+        });
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Backspace' && !input.value && otpInputs[index - 1]) {
+            otpInputs[index - 1].focus();
+          }
+        });
+      });
+    }
+
+    function updateOnboardingUI() {
+      if (!onboardingStatus) return;
+      if (onboardingStatus.prompt_message) {
+        ui.alert.textContent = onboardingStatus.prompt_message;
+        ui.alert.classList.remove('hidden');
+      } else {
+        ui.alert.classList.add('hidden');
+      }
+      if (onboardingStatus.email_verified) {
+        setStatusPill(ui.emailStatus, 'verified', 'Email Verified');
+      } else {
+        setStatusPill(ui.emailStatus, 'pending', 'Verification Pending');
+      }
+      if (onboardingStatus.verification_badge) {
+        ui.verifiedBadge.classList.remove('hidden');
+      } else {
+        ui.verifiedBadge.classList.add('hidden');
+      }
+      if (onboardingStatus.can_list_properties && onboardingStatus.profile_completed) {
+        ui.dashboardShortcut.classList.remove('hidden');
+      }
+    }
+
+    async function loadOnboardingStatus() {
+      if (!isOwnerSession()) return;
+      onboardingStatus = await api.get('/auth/owner/onboarding-status/');
+      updateOnboardingUI();
+    }
+
+    async function requestOtp() {
+      const email = ui.emailInput.value.trim().toLowerCase();
+      ui.otpError.classList.add('hidden');
+      if (!email) {
+        ui.otpError.textContent = 'Enter a valid email address.';
+        ui.otpError.classList.remove('hidden');
+        return;
+      }
+      ui.sendBtn.disabled = true;
+      ui.sendBtn.textContent = 'Sending...';
+      try {
+        const response = await api.post('/auth/owner/verify-email/request/', { email });
+        Toast.success('OTP sent successfully.');
+        otpRequested = true;
+        otpInputs.forEach((input) => { input.value = ''; });
+        if (response.otp_code) {
+          ui.otpError.classList.remove('hidden');
+          ui.otpError.style.color = '#047857';
+          ui.otpError.style.background = 'rgba(16,185,129,0.1)';
+          ui.otpError.style.border = '1px solid rgba(16,185,129,0.3)';
+          ui.otpError.textContent = `📋 Development OTP: ${response.otp_code}`;
+        }
+        startCountdown(60);
+      } catch (error) {
+        ui.otpError.textContent = error.message || 'Failed to send OTP.';
+        ui.otpError.classList.remove('hidden');
+      } finally {
+        ui.sendBtn.disabled = false;
+        ui.sendBtn.textContent = 'Send OTP';
+      }
+    }
+
+    async function verifyOtp() {
+      const email = ui.emailInput.value.trim().toLowerCase();
+      const otp = getOtpValue();
+      ui.otpError.classList.add('hidden');
+      if (!otpRequested) {
+        ui.otpError.textContent = 'Please request an OTP first.';
+        ui.otpError.classList.remove('hidden');
+        return;
+      }
+      if (!email || otp.length !== 6) {
+        ui.otpError.textContent = 'Enter a valid email and 6-digit OTP.';
+        ui.otpError.classList.remove('hidden');
+        return;
+      }
+      ui.verifyBtn.disabled = true;
+      ui.verifyBtn.textContent = 'Verifying...';
+      try {
+        await api.post('/auth/owner/verify-email/confirm/', { email, otp });
+        Toast.success('Email verification successful.');
+        setStatusPill(ui.emailStatus, 'verified', 'Email Verified');
+        if (isOwnerSession()) {
+          await loadOnboardingStatus();
+        } else {
+          ui.alert.textContent = 'Email verified. Continue to Owner Login to complete identity and profile setup.';
+          ui.alert.classList.remove('hidden');
+        }
+      } catch (error) {
+        ui.otpError.textContent = error.message || 'Invalid OTP.';
+        ui.otpError.classList.remove('hidden');
+      } finally {
+        ui.verifyBtn.disabled = false;
+        ui.verifyBtn.textContent = 'Verify OTP';
+      }
+    }
+
+    function sanitizeDocType(value) {
+      const allowed = ['aadhaar', 'pan', 'government_id', 'business_proof'];
+      return allowed.includes(value) ? value : 'aadhaar';
+    }
+
+    function renderDocuments(documents) {
+      if (!documents.length) {
+        ui.docPreview.innerHTML = '<div class="text-sm text-muted">No documents uploaded yet.</div>';
+        return;
+      }
+      ui.docPreview.innerHTML = documents.map((doc) => `
+        <div class="upload-item">
+          <div class="meta">
+            <div class="font-semibold">${doc.document_type_display}</div>
+            <div class="text-xs text-muted">${formatDate(doc.uploaded_at)}</div>
+            ${doc.rejection_reason ? `<div class="text-xs text-danger">Reason: ${doc.rejection_reason}</div>` : ''}
+          </div>
+          <div class="check-row">
+            <span class="status-pill ${doc.status}">${doc.status_display}</span>
+            <a class="btn btn-secondary btn-sm" href="${doc.document_url}" target="_blank" rel="noopener">Preview</a>
+            <button class="btn btn-danger btn-sm" onclick="deleteDocument(${doc.id})">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function fetchDocuments() {
+      if (!isOwnerSession()) return;
+      const docs = await api.get('/auth/owner/identity-documents/');
+      renderDocuments(docs);
+    }
+
+    async function deleteDocument(id) {
+      try {
+        await api.delete(`/auth/owner/identity-documents/${id}/`);
+        Toast.success('Document removed.');
+        await fetchDocuments();
+        await loadOnboardingStatus();
+      } catch (error) {
+        Toast.error(error.message || 'Failed to remove document.');
+      }
+    }
+    window.deleteDocument = deleteDocument;
+
+    function uploadDocument(file) {
+      if (!isOwnerSession()) {
+        Toast.warning('Login as owner to upload identity documents.');
+        return;
+      }
+      ui.docError.classList.add('hidden');
+      const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+      if (!allowed.includes(file.type)) {
+        ui.docError.textContent = 'Unsupported file format. Use JPG, PNG, WEBP, or PDF.';
+        ui.docError.classList.remove('hidden');
+        return;
+      }
+      const docType = sanitizeDocType(document.getElementById('doc-type').value);
+      const formData = new FormData();
+      formData.append('document_type', docType);
+      formData.append('document_file', file);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${API_BASE}/auth/owner/identity-documents/`);
+      xhr.setRequestHeader('Authorization', `Bearer ${Auth.getAccess()}`);
+      ui.progressWrap.classList.remove('hidden');
+      ui.progressBar.style.width = '0%';
+      ui.progressLabel.textContent = 'Uploading...';
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const percent = Math.round((event.loaded / event.total) * 100);
+        ui.progressBar.style.width = `${percent}%`;
+        ui.progressLabel.textContent = `Uploading... ${percent}%`;
+      };
+      xhr.onload = async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          Toast.success('Document uploaded successfully.');
+          ui.progressLabel.textContent = 'Upload complete';
+          await fetchDocuments();
+          await loadOnboardingStatus();
+        } else {
+          ui.docError.textContent = 'Upload failed. Please reupload the document.';
+          ui.docError.classList.remove('hidden');
+          ui.progressLabel.textContent = 'Upload failed';
+        }
+      };
+      xhr.onerror = () => {
+        ui.docError.textContent = 'Upload error. Please try again.';
+        ui.docError.classList.remove('hidden');
+        ui.progressLabel.textContent = 'Upload failed';
+      };
+      xhr.send(formData);
+    }
+
+    async function fetchProfile() {
+      if (!isOwnerSession()) return;
+      const profile = await api.get('/auth/owner/profile/');
+      document.getElementById('full-name').value = profile.full_name || '';
+      document.getElementById('business-name').value = profile.business_name || '';
+      document.getElementById('profile-email').value = profile.email || '';
+      document.getElementById('profile-phone').value = profile.phone_number || '';
+      document.getElementById('alternate-phone').value = profile.alternate_phone || '';
+      document.getElementById('address').value = profile.address || '';
+      document.getElementById('city').value = profile.city || '';
+      document.getElementById('state').value = profile.state || '';
+      document.getElementById('pincode').value = profile.pincode || '';
+      document.getElementById('years-exp').value = profile.years_of_experience || 0;
+      document.getElementById('num-properties').value = profile.number_of_properties || 0;
+      document.getElementById('property-type').value = profile.property_type || '';
+      document.getElementById('tenant-type').value = profile.preferred_tenant_type || '';
+      document.getElementById('whatsapp-number').value = profile.whatsapp_number || '';
+      document.getElementById('emergency-contact').value = profile.emergency_contact || '';
+      document.getElementById('contact-method').value = profile.preferred_contact_method || 'phone';
+      document.getElementById('show-phone').checked = !!profile.show_phone_publicly;
+      document.getElementById('show-whatsapp').checked = !!profile.show_whatsapp_publicly;
+    }
+
+    async function saveProfile(event) {
+      event.preventDefault();
+      if (!isOwnerSession()) {
+        Toast.warning('Login as owner to save profile.');
+        return;
+      }
+      ui.profileError.classList.add('hidden');
+      ui.profileSaveBtn.disabled = true;
+      ui.profileSaveBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Saving...';
+
+      const formData = new FormData();
+      const photo = document.getElementById('profile-photo').files[0];
+      if (photo) formData.append('profile_photo', photo);
+      formData.append('business_name', document.getElementById('business-name').value.trim());
+      formData.append('alternate_phone', document.getElementById('alternate-phone').value.trim());
+      formData.append('address', document.getElementById('address').value.trim());
+      formData.append('city', document.getElementById('city').value.trim());
+      formData.append('state', document.getElementById('state').value.trim());
+      formData.append('pincode', document.getElementById('pincode').value.trim());
+      formData.append('years_of_experience', document.getElementById('years-exp').value || 0);
+      formData.append('number_of_properties', document.getElementById('num-properties').value || 0);
+      formData.append('property_type', document.getElementById('property-type').value);
+      formData.append('preferred_tenant_type', document.getElementById('tenant-type').value);
+      formData.append('whatsapp_number', document.getElementById('whatsapp-number').value.trim());
+      formData.append('emergency_contact', document.getElementById('emergency-contact').value.trim());
+      formData.append('preferred_contact_method', document.getElementById('contact-method').value);
+      formData.append('show_phone_publicly', document.getElementById('show-phone').checked);
+      formData.append('show_whatsapp_publicly', document.getElementById('show-whatsapp').checked);
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/owner/profile/`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${Auth.getAccess()}` },
+          body: formData,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.detail || 'Failed to save profile.');
+        Toast.success('Owner profile updated successfully.');
+        await loadOnboardingStatus();
+      } catch (error) {
+        ui.profileError.textContent = error.message || 'Unable to save profile.';
+        ui.profileError.classList.remove('hidden');
+      } finally {
+        ui.profileSaveBtn.disabled = false;
+        ui.profileSaveBtn.textContent = 'Save / Update Profile';
+      }
+    }
+
+    function configureUploadZone() {
+      const zone = document.getElementById('upload-zone');
+      const input = document.getElementById('doc-file-input');
+      zone.addEventListener('click', () => input.click());
+      zone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        zone.classList.add('dragover');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        zone.classList.remove('dragover');
+        const file = event.dataTransfer?.files?.[0];
+        if (file) uploadDocument(file);
+      });
+      input.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        if (file) uploadDocument(file);
+        event.target.value = '';
+      });
+    }
+
+    async function init() {
+      bindOtpInputs();
+      configureUploadZone();
+      ui.emailInput.value = guestEmail || Auth.getUser()?.email || '';
+      if (!isOwnerSession()) {
+        ui.identityCard.classList.add('hidden');
+        ui.profileCard.classList.add('hidden');
+        ui.loginShortcut.classList.remove('hidden');
+        ui.dashboardShortcut.classList.add('hidden');
+        return;
+      }
+      ui.loginShortcut.classList.add('hidden');
+      await loadOnboardingStatus();
+      await Promise.all([fetchDocuments(), fetchProfile()]);
+    }
+
+    ui.sendBtn.addEventListener('click', requestOtp);
+    ui.resendBtn.addEventListener('click', requestOtp);
+    ui.verifyBtn.addEventListener('click', verifyOtp);
+    document.getElementById('profile-form').addEventListener('submit', saveProfile);
+
+    init();
+  </script>
+</body>
+</html>

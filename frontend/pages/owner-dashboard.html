@@ -36,18 +36,23 @@
     .property-card-body { padding: 16px; }
     .property-card-title { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
     .property-card-location { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .manage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .manage-card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--glass-bg); }
+    .manage-card h4 { margin-bottom: 10px; }
+    .manage-inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .upload-zone.dragover { border-color: var(--sage-dark); background: rgba(143,173,114,0.1); }
+    @media (max-width: 980px) {
+      .manage-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body class="light-mode">
-
 <!-- Hamburger for mobile -->
 <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
   <span></span><span></span><span></span>
 </button>
 <div class="ds-overlay" id="ds-overlay" onclick="closeSidebar()"></div>
-
 <div class="ds-shell">
-
   <!-- ═══ SIDEBAR ═══ -->
   <aside class="ds-sidebar" id="ds-sidebar">
     <div class="sb-brand">
@@ -60,7 +65,6 @@
       <span class="sb-title">PG<strong>DOST</strong></span>
     </div>
     <div class="sb-role">PG Owner Panel</div>
-
     <div class="sb-section">Overview</div>
     <nav class="sb-nav">
       <button class="sb-item active" data-tab="overview" onclick="switchTab('overview')">
@@ -68,12 +72,15 @@
         Dashboard
       </button>
     </nav>
-
     <div class="sb-section">Management</div>
     <nav class="sb-nav">
       <button class="sb-item" data-tab="properties" onclick="switchTab('properties')">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 16V7l7-4 7 4v9H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><rect x="7" y="11" width="4" height="5" rx="0.8" stroke="currentColor" stroke-width="1.3"/></svg>
         Properties
+      </button>
+      <button class="sb-item" data-tab="manage-property" onclick="switchTab('manage-property')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9h14M9 2v14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/></svg>
+        Manage Property
       </button>
       <button class="sb-item" data-tab="inquiries" onclick="switchTab('inquiries')">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5l-4 3V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -98,7 +105,6 @@
         Visitors
       </button>
     </nav>
-
     <div class="sb-section">Links</div>
     <nav class="sb-nav">
       <a class="sb-item" href="index.html">
@@ -106,7 +112,6 @@
         Back to Home
       </a>
     </nav>
-
     <div class="sb-footer">
       <div class="sb-user">
         <div class="sb-avatar" id="avatar-text">O</div>
@@ -120,10 +125,8 @@
       </div>
     </div>
   </aside>
-
   <!-- ═══ MAIN ═══ -->
   <main class="ds-main">
-
     <!-- Topbar -->
     <header class="ds-topbar">
       <div class="topbar-left">
@@ -148,10 +151,8 @@
         <button id="btn-open-create-invoice-top" class="btn btn-primary btn-sm" style="display:none" onclick="populateInvoiceForm();openModal('modal-create-invoice')">+ Invoice</button>
       </div>
     </header>
-
     <!-- Page Body -->
     <div class="ds-body">
-
       <!-- ── Overview Tab ── -->
       <div id="tab-overview" class="tab-content active animate-fade-in">
         <!-- Stat cards -->
@@ -185,7 +186,6 @@
             <div class="stat-trend trend-down" id="trend-tickets">open</div>
           </div>
         </div>
-
         <!-- Two-column dashboard grid -->
         <div class="dash-grid animate-fade-up delay-200">
           <!-- LEFT -->
@@ -206,7 +206,6 @@
               <div id="pending-bookings-list" style="padding:4px 0;"><div style="display:flex;justify-content:center;padding:24px;"><div class="spinner"></div></div></div>
             </div>
           </div>
-
           <!-- RIGHT -->
           <div style="display:flex;flex-direction:column;gap:20px;">
             <!-- Occupancy Ring -->
@@ -226,7 +225,6 @@
                 </div>
               </div>
             </div>
-
             <!-- Needs Attention -->
             <div class="ds-card">
               <div class="ds-card-header"><div class="ds-card-title">Needs Attention</div></div>
@@ -248,7 +246,6 @@
                 </button>
               </div>
             </div>
-
             <!-- Quick Actions -->
             <div class="ds-card">
               <div class="ds-card-header"><div class="ds-card-title">Quick Actions</div></div>
@@ -274,7 +271,6 @@
           </div>
         </div>
       </div>
-
       <!-- ── Properties Tab ── -->
       <div id="tab-properties" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -283,7 +279,114 @@
         </div>
         <div id="properties-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
+      <div id="tab-manage-property" class="tab-content animate-fade-in">
+        <div class="section-header animate-fade-up delay-100">
+          <div><h2 class="section-title">Manage Property</h2><p class="section-subtitle">Owner-controlled dynamic property details</p></div>
+          <div class="manage-inline">
+            <select id="manage-property-select" class="form-select" style="min-width:220px;"></select>
+            <button class="btn btn-secondary btn-sm" onclick="loadManagePropertyTab(true)">Refresh</button>
+          </div>
+        </div>
+        <form id="manage-property-form" class="manage-grid">
+          <section class="manage-card">
+            <h4>Basic Information</h4>
+            <div class="form-group"><label class="form-label">Property Name</label><input id="m-name" class="form-input" required /></div>
+            <div class="form-group"><label class="form-label">Description</label><textarea id="m-description" class="form-textarea" rows="3"></textarea></div>
+            <div class="form-group"><label class="form-label">Lifestyle Highlights</label><textarea id="m-lifestyle" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group">
+              <label class="form-label">Suitable For</label>
+              <select id="m-suitable" class="form-select">
+                <option value="students_and_professionals">Students and Professionals</option>
+                <option value="students">Students</option>
+                <option value="professionals">Professionals</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Custom Overview Text</label><textarea id="m-overview-custom" class="form-textarea" rows="2"></textarea></div>
+          </section>
+          <section class="manage-card">
+            <h4>Amenities Manager</h4>
+            <div class="amenity-toggle" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+              <label><input type="checkbox" id="m-a-wifi" /> Wi-Fi</label>
+              <label><input type="checkbox" id="m-a-ac" /> AC</label>
+              <label><input type="checkbox" id="m-a-food" /> Food</label>
+              <label><input type="checkbox" id="m-a-parking" /> Parking</label>
+              <label><input type="checkbox" id="m-a-laundry" /> Laundry</label>
+              <label><input type="checkbox" id="m-a-gym" /> Gym</label>
+            </div>
+            <div class="form-group mt-sm"><label class="form-label">Custom Amenities (comma separated)</label><textarea id="m-custom-amenities" class="form-textarea" rows="2"></textarea></div>
+          </section>
+          <section class="manage-card">
+            <h4>House Rules Editor</h4>
+            <div class="form-group"><label class="form-label">Smoking Policy</label><input id="m-smoking-policy" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Visitor Rules</label><input id="m-visitor-rules" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Gate Closing Time</label><input id="m-gate-time" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Drinking Rules</label><input id="m-drinking-rules" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Quiet Hours</label><input id="m-quiet-hours" class="form-input" /></div>
+          </section>
+          <section class="manage-card">
+            <h4>Location</h4>
+            <div class="form-group"><label class="form-label">Address</label><textarea id="m-address" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
+              <div class="form-group"><label class="form-label">City</label><input id="m-city" class="form-input" /></div>
+              <div class="form-group"><label class="form-label">State</label><input id="m-state" class="form-input" /></div>
+              <div class="form-group"><label class="form-label">Pincode</label><input id="m-pincode" class="form-input" /></div>
+            </div>
+            <div class="form-group"><label class="form-label">Google Maps URL</label><input id="m-google-maps" class="form-input" placeholder="https://maps.google.com/..." /></div>
+            <div class="form-group"><label class="form-label">Nearby Landmarks (comma separated)</label><textarea id="m-landmarks" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Nearby Colleges (comma separated)</label><textarea id="m-colleges" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Nearby Metro/Bus Stops (comma separated)</label><textarea id="m-transit" class="form-textarea" rows="2"></textarea></div>
+          </section>
+          <section class="manage-card">
+            <h4>Nearby Places Manager</h4>
+            <div class="form-group"><label class="form-label">Grocery Stores</label><textarea id="m-nearby-grocery" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Hospitals</label><textarea id="m-nearby-hospitals" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Restaurants</label><textarea id="m-nearby-restaurants" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Gyms</label><textarea id="m-nearby-gyms" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Cafes</label><textarea id="m-nearby-cafes" class="form-textarea" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Colleges</label><textarea id="m-nearby-colleges-list" class="form-textarea" rows="2"></textarea></div>
+          </section>
+          <section class="manage-card">
+            <h4>Pricing &amp; Charges</h4>
+            <div class="form-group"><label class="form-label">Monthly Rent</label><input type="number" id="m-price-rent" class="form-input" min="0" step="50" /></div>
+            <div class="form-group"><label class="form-label">Security Deposit</label><input type="number" id="m-price-deposit" class="form-input" min="0" step="50" /></div>
+            <div class="form-group"><label class="form-label">Maintenance Charge</label><input type="number" id="m-price-maintenance" class="form-input" min="0" step="50" /></div>
+            <div class="form-group"><label class="form-label">Food Charge</label><input type="number" id="m-price-food" class="form-input" min="0" step="50" /></div>
+          </section>
+          <section class="manage-card">
+            <h4>Contact Details</h4>
+            <div class="form-group"><label class="form-label">Phone</label><input id="m-phone" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">WhatsApp Number</label><input id="m-whatsapp" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Alternate Contact</label><input id="m-alt-contact" class="form-input" /></div>
+            <div class="form-group"><label class="form-label">Email</label><input id="m-email" class="form-input" /></div>
+          </section>
+          <section class="manage-card" style="grid-column:1/-1;">
+            <h4>Availability Manager &amp; Room Management</h4>
+            <div id="manage-room-summary" class="text-sm text-muted mb-sm">Select a property to load rooms.</div>
+            <div id="manage-rooms-editor"></div>
+          </section>
+          <section class="manage-card" style="grid-column:1/-1;">
+            <h4>Media Upload</h4>
+            <div class="form-group"><label class="form-label">Video URLs (comma separated)</label><textarea id="m-videos" class="form-textarea" rows="2"></textarea></div>
+            <div id="manage-media-grid" class="photo-grid"></div>
+            <div class="upload-zone" id="manage-upload-zone">
+              <input type="file" id="manage-photo-file-input" accept="image/*" multiple />
+              <div style="font-size:2.2rem; margin-bottom:0.4rem;">📷</div>
+              <p class="font-semibold">Drag &amp; drop or click to upload</p>
+              <p class="text-sm">JPG, PNG, WEBP up to 5MB each</p>
+            </div>
+            <div id="manage-upload-progress" class="mt-md"></div>
+          </section>
+          <section class="manage-card" style="grid-column:1/-1;">
+            <h4>Reviews Analytics</h4>
+            <div id="manage-review-stats" class="text-sm text-muted">Select a property to load review analytics.</div>
+            <div id="manage-review-list" class="mt-sm"></div>
+          </section>
+          <section style="grid-column:1/-1;">
+            <button type="submit" class="btn btn-primary btn-lg">Save All Changes</button>
+          </section>
+        </form>
+      </div>
       <!-- ── Inquiries Tab ── -->
       <div id="tab-inquiries" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -291,7 +394,6 @@
         </div>
         <div id="inquiries-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
       <!-- ── Bookings Tab ── -->
       <div id="tab-bookings" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -299,7 +401,6 @@
         </div>
         <div id="bookings-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
       <!-- ── Payments Tab ── -->
       <div id="tab-payments" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -308,7 +409,6 @@
         </div>
         <div id="payments-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
       <!-- ── Complaints Tab ── -->
       <div id="tab-complaints" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -316,7 +416,6 @@
         </div>
         <div id="complaints-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
       <!-- ── Visitors Tab ── -->
       <div id="tab-visitors" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
@@ -325,13 +424,10 @@
         </div>
         <div id="visitors-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
       </div>
-
     </div><!-- /ds-body -->
   </div><!-- /ds-main -->
 </div><!-- /ds-shell -->
-
 <div id="toast-container"></div>
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Add Property                                             -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -403,7 +499,6 @@
     </form>
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Approve / Reject Booking                                 -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -436,7 +531,6 @@
     </div>
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Create Invoice                                           -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -488,7 +582,6 @@
     </form>
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Manage Rooms                                             -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -537,7 +630,6 @@
     </div>
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Log Visitor                                              -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -591,7 +683,6 @@
     </form>
   </div>
 </div>
-
 <!-- Photo Manager Modal -->
 <div id="modal-photo-manager" class="modal-overlay">
   <div class="modal" style="max-width:680px;">
@@ -600,10 +691,8 @@
       <button class="modal-close" onclick="closeModal('modal-photo-manager')">✕</button>
     </div>
     <input type="hidden" id="photo-property-id" />
-
     <!-- Existing photos -->
     <div id="photo-grid-display" class="photo-grid"></div>
-
     <!-- Upload new photo -->
     <div class="divider mb-md"></div>
     <h4 class="font-semibold mb-md">Add Photos <span class="text-muted text-sm font-medium">(max 10 per property)</span></h4>
@@ -616,7 +705,6 @@
     <div id="upload-progress" class="mt-md"></div>
   </div>
 </div>
-
 <!-- Reply Complaint Modal -->
 <div id="modal-reply-complaint" class="modal-overlay">
   <div class="modal">
@@ -642,7 +730,6 @@
     </form>
   </div>
 </div>
-
 <!-- Receipt Modal (Owner View) -->
 <div id="modal-receipt" class="modal-overlay">
   <div class="modal" style="max-width:540px;">
@@ -650,7 +737,6 @@
       <h3 class="modal-title">Payment Receipt</h3>
       <button class="modal-close" onclick="closeModal('modal-receipt')">&#x2715;</button>
     </div>
-
     <div id="receipt-printable" style="padding: 8px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #16a34a; padding-bottom:16px; margin-bottom:20px;">
         <div>
@@ -662,7 +748,6 @@
           <div style="font-size:0.8rem; color:#6b7280;">Invoice <span id="rcpt-id" style="font-weight:600;"></span></div>
         </div>
       </div>
-
       <div style="background:#dcfce7; border:1px solid #86efac; border-radius:8px; padding:10px 16px; display:flex; align-items:center; gap:10px; margin-bottom:20px;">
         <span style="font-size:1.4rem;">&#x2705;</span>
         <div>
@@ -670,7 +755,6 @@
           <div style="font-size:0.8rem; color:#166534;">Paid on: <span id="rcpt-paid-on"></span></div>
         </div>
       </div>
-
       <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:0.88rem;">
         <tr style="background:#f9fafb;">
           <td style="padding:10px 12px; font-weight:600; color:#374151; width:45%; border-bottom:1px solid #e5e7eb;">Resident</td>
@@ -697,24 +781,20 @@
           <td style="padding:10px 12px; color:#6b7280; border-bottom:1px solid #e5e7eb;" id="rcpt-notes"></td>
         </tr>
       </table>
-
       <div style="background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <div style="font-size:0.9rem; color:#374151; font-weight:600;">Total Amount Paid</div>
         <div style="font-size:1.6rem; font-weight:900; color:#16a34a;" id="rcpt-amount"></div>
       </div>
-
       <div style="text-align:center; font-size:0.75rem; color:#9ca3af; border-top:1px solid #e5e7eb; padding-top:12px;">
         Thank you for your payment &mdash; PGDOST Platform
       </div>
     </div>
-
     <div class="flex gap-sm mt-lg no-print">
       <button onclick="window.print()" class="btn btn-primary flex-1">&#x1F5A8; Print / Download PDF</button>
       <button onclick="closeModal('modal-receipt')" class="btn btn-secondary flex-1">Close</button>
     </div>
   </div>
 </div>
-
 <script src="../scripts/api.js"></script>
 <script>
   // Strict guard — only 'owner' role allowed, nothing else
@@ -722,31 +802,59 @@
     Auth.clear();
     window.location.href = 'login.html';
   }
-
   function ownerLogout() {
     Auth.clear();
     window.location.href = 'login.html';
   }
-
   const user = Auth.getUser();
   document.getElementById('sidebar-username').textContent = user?.username || 'Owner';
   document.getElementById('avatar-text').textContent = (user?.username || 'O')[0].toUpperCase();
-
+  async function enforceOwnerOnboarding() {
+    try {
+      const status = await api.get('/auth/owner/onboarding-status/');
+      if (!status.can_list_properties) {
+        Toast.warning(status.prompt_message || 'Verify your account to continue listing properties.');
+        window.location.href = 'owner-onboarding.html';
+        return false;
+      }
+      return true;
+    } catch {
+      Toast.error('Unable to validate owner onboarding status.');
+      window.location.href = 'owner-onboarding.html';
+      return false;
+    }
+  }
   let ownerProperties = [];
   let ownerBookings = [];
-
+  const manageState = { selectedPropertyId: null, property: null, images: [] };
   function switchTab(tab) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.sb-item[data-tab]').forEach(i => i.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     document.querySelector(`.sb-item[data-tab="${tab}"]`)?.classList.add('active');
-    const titles = { overview:'Dashboard', properties:'Properties', inquiries:'Inquiries', bookings:'Bookings', payments:'Payments', complaints:'Complaints', visitors:'Visitors' };
+    const titles = {
+      overview:'Dashboard',
+      properties:'Properties',
+      'manage-property':'Manage Property',
+      inquiries:'Inquiries',
+      bookings:'Bookings',
+      payments:'Payments',
+      complaints:'Complaints',
+      visitors:'Visitors'
+    };
     document.getElementById('page-title').textContent = titles[tab] || tab;
     closeSidebar();
-    const loaders = { properties: loadProperties, inquiries: loadInquiries, bookings: loadBookings, payments: loadPayments, complaints: loadComplaints, visitors: loadVisitors };
+    const loaders = {
+      properties: loadProperties,
+      'manage-property': loadManagePropertyTab,
+      inquiries: loadInquiries,
+      bookings: loadBookings,
+      payments: loadPayments,
+      complaints: loadComplaints,
+      visitors: loadVisitors
+    };
     if (loaders[tab]) loaders[tab]();
   }
-
   function toggleSidebar() {
     document.getElementById('ds-sidebar').classList.toggle('open');
     document.getElementById('ds-overlay').classList.toggle('active');
@@ -755,7 +863,352 @@
     document.getElementById('ds-sidebar').classList.remove('open');
     document.getElementById('ds-overlay').classList.remove('active');
   }
-
+  function csvToList(value) {
+    return String(value || '').split(',').map(item => item.trim()).filter(Boolean);
+  }
+  function listToCsv(list) {
+    return Array.isArray(list) ? list.join(', ') : '';
+  }
+  function nullableNumber(value) {
+    if (value === '' || value === null || value === undefined) return null;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  }
+  function setFieldValue(id, value, fallback = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = value ?? fallback;
+  }
+  function normalizeNearbyPlaces(input) {
+    const data = input || {};
+    return {
+      grocery_stores: Array.isArray(data.grocery_stores) ? data.grocery_stores : [],
+      hospitals: Array.isArray(data.hospitals) ? data.hospitals : [],
+      restaurants: Array.isArray(data.restaurants) ? data.restaurants : [],
+      gyms: Array.isArray(data.gyms) ? data.gyms : [],
+      cafes: Array.isArray(data.cafes) ? data.cafes : [],
+      colleges: Array.isArray(data.colleges) ? data.colleges : [],
+    };
+  }
+  async function loadManagePropertyTab(forceRefresh = false) {
+    try {
+      if (forceRefresh || !ownerProperties.length) {
+        ownerProperties = await api.get('/properties/owner/');
+      }
+      const selector = document.getElementById('manage-property-select');
+      if (!selector) return;
+      if (!ownerProperties.length) {
+        selector.innerHTML = '<option value="">No properties yet</option>';
+        document.getElementById('manage-review-stats').textContent = 'Add a property to unlock management controls.';
+        document.getElementById('manage-review-list').innerHTML = '';
+        document.getElementById('manage-rooms-editor').innerHTML = '';
+        document.getElementById('manage-media-grid').innerHTML = '';
+        return;
+      }
+      selector.innerHTML = ownerProperties.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      const activeId = manageState.selectedPropertyId && ownerProperties.some(p => Number(p.id) === Number(manageState.selectedPropertyId))
+        ? manageState.selectedPropertyId
+        : ownerProperties[0].id;
+      selector.value = String(activeId);
+      manageState.selectedPropertyId = Number(activeId);
+      await loadManagedProperty(activeId);
+    } catch (err) {
+      Toast.error(err.message || 'Failed to load manage property data.');
+    }
+  }
+  async function loadManagedProperty(propertyId) {
+    const id = Number(propertyId);
+    if (!id) return;
+    manageState.selectedPropertyId = id;
+    document.getElementById('manage-review-stats').textContent = 'Loading selected property...';
+    try {
+      const prop = await api.get(`/properties/owner/${id}/`);
+      manageState.property = prop;
+      populateManagePropertyForm(prop);
+      await Promise.all([
+        loadManageRoomsEditor(prop),
+        loadManageMedia(prop.id),
+        loadManageReviewsAnalytics(prop.id),
+      ]);
+    } catch (err) {
+      Toast.error(err.message || 'Failed to load selected property.');
+    }
+  }
+  function populateManagePropertyForm(prop) {
+    const nearbyPlaces = normalizeNearbyPlaces(prop.nearby_places);
+    setFieldValue('m-name', prop.name);
+    setFieldValue('m-description', prop.description);
+    setFieldValue('m-lifestyle', prop.lifestyle_highlights);
+    setFieldValue('m-suitable', prop.suitable_for || 'students_and_professionals');
+    setFieldValue('m-overview-custom', prop.overview_custom_text);
+    setFieldValue('m-smoking-policy', prop.smoking_policy);
+    setFieldValue('m-visitor-rules', prop.visitor_rules);
+    setFieldValue('m-gate-time', prop.gate_closing_time);
+    setFieldValue('m-drinking-rules', prop.drinking_rules);
+    setFieldValue('m-quiet-hours', prop.quiet_hours);
+    setFieldValue('m-address', prop.address);
+    setFieldValue('m-city', prop.city);
+    setFieldValue('m-state', prop.state);
+    setFieldValue('m-pincode', prop.pincode);
+    setFieldValue('m-google-maps', prop.google_maps_url);
+    setFieldValue('m-landmarks', listToCsv(prop.nearby_landmarks));
+    setFieldValue('m-colleges', listToCsv(prop.nearby_colleges));
+    setFieldValue('m-transit', listToCsv(prop.nearby_transit));
+    setFieldValue('m-nearby-grocery', listToCsv(nearbyPlaces.grocery_stores));
+    setFieldValue('m-nearby-hospitals', listToCsv(nearbyPlaces.hospitals));
+    setFieldValue('m-nearby-restaurants', listToCsv(nearbyPlaces.restaurants));
+    setFieldValue('m-nearby-gyms', listToCsv(nearbyPlaces.gyms));
+    setFieldValue('m-nearby-cafes', listToCsv(nearbyPlaces.cafes));
+    setFieldValue('m-nearby-colleges-list', listToCsv(nearbyPlaces.colleges));
+    setFieldValue('m-price-rent', prop.pricing_monthly_rent, '');
+    setFieldValue('m-price-deposit', prop.pricing_security_deposit, '');
+    setFieldValue('m-price-maintenance', prop.pricing_maintenance_charge, '');
+    setFieldValue('m-price-food', prop.pricing_food_charge, '');
+    setFieldValue('m-phone', prop.phone);
+    setFieldValue('m-whatsapp', prop.whatsapp_number);
+    setFieldValue('m-alt-contact', prop.alternate_contact);
+    setFieldValue('m-email', prop.email);
+    setFieldValue('m-custom-amenities', listToCsv(prop.custom_amenities));
+    setFieldValue('m-videos', listToCsv(prop.videos));
+    document.getElementById('m-a-wifi').checked = !!prop.has_wifi;
+    document.getElementById('m-a-ac').checked = !!prop.has_ac;
+    document.getElementById('m-a-food').checked = !!prop.has_food;
+    document.getElementById('m-a-parking').checked = !!prop.has_parking;
+    document.getElementById('m-a-laundry').checked = !!prop.has_laundry;
+    document.getElementById('m-a-gym').checked = !!prop.has_gym;
+  }
+  async function loadManageRoomsEditor(prop) {
+    const rooms = prop.rooms || [];
+    const wrap = document.getElementById('manage-rooms-editor');
+    const totalBeds = rooms.reduce((sum, r) => sum + Number(r.total_beds || 0), 0);
+    const availableBeds = rooms.reduce((sum, r) => sum + Number(r.available_beds || 0), 0);
+    const occupiedBeds = Math.max(totalBeds - availableBeds, 0);
+    document.getElementById('manage-room-summary').textContent =
+      `${rooms.length} room(s) • ${availableBeds} available bed(s) • ${occupiedBeds} occupied bed(s)`;
+    if (!rooms.length) {
+      wrap.innerHTML = '<p class="text-sm text-muted">No rooms added yet. Use the Rooms button in Properties tab to add rooms.</p>';
+      return;
+    }
+    wrap.innerHTML = `<div class="table-wrapper"><table class="table">
+      <thead><tr><th>Room</th><th>Type</th><th>Total Beds</th><th>Available Beds</th><th>Rent</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        ${rooms.map(r => `
+          <tr>
+            <td>${r.room_number}</td>
+            <td>
+              <select id="m-room-type-${r.id}" class="form-select" style="min-width:110px;">
+                <option value="single" ${r.room_type === 'single' ? 'selected' : ''}>Single</option>
+                <option value="double" ${r.room_type === 'double' ? 'selected' : ''}>Double</option>
+                <option value="triple" ${r.room_type === 'triple' ? 'selected' : ''}>Triple</option>
+                <option value="dormitory" ${r.room_type === 'dormitory' ? 'selected' : ''}>Dormitory</option>
+              </select>
+            </td>
+            <td><input type="number" min="1" max="40" id="m-room-total-${r.id}" class="form-input" value="${r.total_beds}" /></td>
+            <td><input type="number" min="0" max="40" id="m-room-avail-${r.id}" class="form-input" value="${r.available_beds}" /></td>
+            <td><input type="number" min="0" step="50" id="m-room-rent-${r.id}" class="form-input" value="${r.rent_per_month}" /></td>
+            <td>${r.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Full</span>'}</td>
+            <td><button type="button" class="btn btn-secondary btn-sm" onclick="saveManagedRoom(${r.id})">Save</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table></div>`;
+  }
+  async function saveManagedRoom(roomId) {
+    const payload = {
+      room_type: document.getElementById(`m-room-type-${roomId}`).value,
+      total_beds: Number(document.getElementById(`m-room-total-${roomId}`).value),
+      available_beds: Number(document.getElementById(`m-room-avail-${roomId}`).value),
+      rent_per_month: Number(document.getElementById(`m-room-rent-${roomId}`).value),
+    };
+    if (payload.total_beds < 1) {
+      Toast.warning('Total beds should be at least 1.');
+      return;
+    }
+    if (payload.available_beds < 0 || payload.available_beds > payload.total_beds) {
+      Toast.warning('Available beds must be between 0 and total beds.');
+      return;
+    }
+    try {
+      await api.patch(`/properties/owner/rooms/${roomId}/`, payload);
+      Toast.success('Room availability updated.');
+      await loadManagedProperty(manageState.selectedPropertyId);
+      await loadProperties();
+      await loadOverview();
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
+    } catch (err) {
+      Toast.error(err.message || 'Failed to update room.');
+    }
+  }
+  async function loadManageMedia(propertyId) {
+    const wrap = document.getElementById('manage-media-grid');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="spinner"></div>';
+    try {
+      const images = await api.get(`/properties/owner/${propertyId}/images/`);
+      manageState.images = images || [];
+      if (!manageState.images.length) {
+        wrap.innerHTML = '<p class="text-sm text-muted">No images uploaded yet.</p>';
+        return;
+      }
+      wrap.innerHTML = manageState.images.map(img => `
+        <div class="photo-thumb">
+          <img src="${img.image_url}" alt="${img.caption || 'Property image'}" />
+          ${img.is_primary ? '<span class="primary-badge">Thumbnail</span>' : ''}
+          <div class="photo-actions">
+            ${!img.is_primary ? `<button type="button" class="btn btn-sm btn-primary" style="font-size:0.75rem; padding: 4px 10px;" onclick="setManagedPrimaryImage(${img.id})">Set Thumbnail</button>` : ''}
+            <button type="button" class="btn btn-sm btn-danger" style="font-size:0.75rem; padding: 4px 10px;" onclick="deleteManagedImage(${img.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      wrap.innerHTML = '<p class="text-sm text-muted">Failed to load media.</p>';
+    }
+  }
+  async function setManagedPrimaryImage(imageId) {
+    try {
+      await api.patch(`/properties/owner/${manageState.selectedPropertyId}/images/${imageId}/`, { is_primary: true });
+      Toast.success('Thumbnail updated.');
+      await loadManageMedia(manageState.selectedPropertyId);
+      await loadProperties();
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
+    } catch (err) {
+      Toast.error(err.message || 'Could not update thumbnail.');
+    }
+  }
+  async function deleteManagedImage(imageId) {
+    if (!confirm('Delete this image?')) return;
+    try {
+      await api.delete(`/properties/owner/${manageState.selectedPropertyId}/images/${imageId}/`);
+      Toast.success('Image deleted.');
+      await loadManageMedia(manageState.selectedPropertyId);
+      await loadProperties();
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
+    } catch (err) {
+      Toast.error(err.message || 'Could not delete image.');
+    }
+  }
+  async function uploadManageFiles(files) {
+    if (!manageState.selectedPropertyId || !files?.length) return;
+    const progress = document.getElementById('manage-upload-progress');
+    progress.innerHTML = '';
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        Toast.warning(`${file.name} is too large (max 5MB).`);
+        continue;
+      }
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-sm mb-sm';
+      row.innerHTML = `<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div><span class="text-sm text-muted">${file.name}</span>`;
+      progress.appendChild(row);
+      try {
+        const token = Auth.getAccess();
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await fetch(`http://127.0.0.1:8000/api/properties/owner/${manageState.selectedPropertyId}/images/`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          row.innerHTML = `<span style="color:var(--clr-danger)">✕</span><span class="text-sm">${file.name} - ${data.detail || 'Upload failed'}</span>`;
+        } else {
+          row.innerHTML = `<span style="color:var(--clr-success)">✓</span><span class="text-sm">${file.name}</span>`;
+        }
+      } catch {
+        row.innerHTML = `<span style="color:var(--clr-danger)">✕</span><span class="text-sm">${file.name} - Error</span>`;
+      }
+    }
+    await loadManageMedia(manageState.selectedPropertyId);
+    await loadProperties();
+    localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
+  }
+  async function loadManageReviewsAnalytics(propertyId) {
+    const stats = document.getElementById('manage-review-stats');
+    const list = document.getElementById('manage-review-list');
+    stats.textContent = 'Loading review analytics...';
+    list.innerHTML = '';
+    try {
+      const data = await api.get(`/properties/owner/${propertyId}/reviews/analytics/`);
+      const counts = data.rating_counts || {};
+      stats.innerHTML = `
+        <div class="manage-inline">
+          <span class="badge badge-brand">Avg Rating: ${data.average_rating || 0}</span>
+          <span class="badge badge-green">Total Reviews: ${data.total_reviews || 0}</span>
+          <span class="badge">5★: ${counts['5'] || 0}</span>
+          <span class="badge">4★: ${counts['4'] || 0}</span>
+          <span class="badge">3★: ${counts['3'] || 0}</span>
+          <span class="badge">2★: ${counts['2'] || 0}</span>
+          <span class="badge">1★: ${counts['1'] || 0}</span>
+        </div>`;
+      if (!data.reviews?.length) {
+        list.innerHTML = '<p class="text-sm text-muted">No resident reviews yet.</p>';
+        return;
+      }
+      list.innerHTML = `<div class="table-wrapper"><table class="table">
+        <thead><tr><th>Resident</th><th>Rating</th><th>Review</th><th>Stay Duration</th><th>Date</th><th>Verified</th></tr></thead>
+        <tbody>${data.reviews.map(r => `
+          <tr>
+            <td>${r.username || 'Resident'}</td>
+            <td>${'★'.repeat(Number(r.rating || 0))}</td>
+            <td>${r.review_text || '-'}</td>
+            <td>${r.stay_duration || 'Not provided'}</td>
+            <td>${formatDate(r.created_at)}</td>
+            <td>${r.is_verified_resident ? '<span class="badge badge-green">Verified Resident</span>' : '<span class="badge badge-yellow">Unverified</span>'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    } catch {
+      stats.textContent = 'Failed to load review analytics.';
+      list.innerHTML = '';
+    }
+  }
+  function collectManagePayload() {
+    return {
+      name: document.getElementById('m-name').value.trim(),
+      description: document.getElementById('m-description').value.trim(),
+      lifestyle_highlights: document.getElementById('m-lifestyle').value.trim(),
+      suitable_for: document.getElementById('m-suitable').value,
+      overview_custom_text: document.getElementById('m-overview-custom').value.trim(),
+      has_wifi: document.getElementById('m-a-wifi').checked,
+      has_ac: document.getElementById('m-a-ac').checked,
+      has_food: document.getElementById('m-a-food').checked,
+      has_parking: document.getElementById('m-a-parking').checked,
+      has_laundry: document.getElementById('m-a-laundry').checked,
+      has_gym: document.getElementById('m-a-gym').checked,
+      custom_amenities: csvToList(document.getElementById('m-custom-amenities').value),
+      smoking_policy: document.getElementById('m-smoking-policy').value.trim(),
+      visitor_rules: document.getElementById('m-visitor-rules').value.trim(),
+      gate_closing_time: document.getElementById('m-gate-time').value.trim(),
+      drinking_rules: document.getElementById('m-drinking-rules').value.trim(),
+      quiet_hours: document.getElementById('m-quiet-hours').value.trim(),
+      address: document.getElementById('m-address').value.trim(),
+      city: document.getElementById('m-city').value.trim(),
+      state: document.getElementById('m-state').value.trim(),
+      pincode: document.getElementById('m-pincode').value.trim(),
+      google_maps_url: document.getElementById('m-google-maps').value.trim(),
+      nearby_landmarks: csvToList(document.getElementById('m-landmarks').value),
+      nearby_colleges: csvToList(document.getElementById('m-colleges').value),
+      nearby_transit: csvToList(document.getElementById('m-transit').value),
+      nearby_places: {
+        grocery_stores: csvToList(document.getElementById('m-nearby-grocery').value),
+        hospitals: csvToList(document.getElementById('m-nearby-hospitals').value),
+        restaurants: csvToList(document.getElementById('m-nearby-restaurants').value),
+        gyms: csvToList(document.getElementById('m-nearby-gyms').value),
+        cafes: csvToList(document.getElementById('m-nearby-cafes').value),
+        colleges: csvToList(document.getElementById('m-nearby-colleges-list').value),
+      },
+      pricing_monthly_rent: nullableNumber(document.getElementById('m-price-rent').value),
+      pricing_security_deposit: nullableNumber(document.getElementById('m-price-deposit').value),
+      pricing_maintenance_charge: nullableNumber(document.getElementById('m-price-maintenance').value),
+      pricing_food_charge: nullableNumber(document.getElementById('m-price-food').value),
+      phone: document.getElementById('m-phone').value.trim(),
+      whatsapp_number: document.getElementById('m-whatsapp').value.trim(),
+      alternate_contact: document.getElementById('m-alt-contact').value.trim(),
+      email: document.getElementById('m-email').value.trim(),
+      videos: csvToList(document.getElementById('m-videos').value),
+    };
+  }
   // ── Overview ──────────────────────────────────────────────
   async function loadOverview() {
     try {
@@ -770,7 +1223,6 @@
       document.getElementById('stat-pending').textContent = bookings.filter(b => b.status === 'pending').length;
       document.getElementById('stat-active').textContent  = bookings.filter(b => b.status === 'approved').length;
       document.getElementById('stat-open').textContent    = tickets.filter(t => t.status !== 'resolved').length;
-
       // Pending booking list — NO early return; just update the element
       const pending = bookings.filter(b => b.status === 'pending');
       const el = document.getElementById('pending-bookings-list');
@@ -784,7 +1236,6 @@
             <td><button onclick="openApproveModal(${b.id})" class="btn btn-primary btn-sm">Review</button></td></tr>`).join('')}
           </tbody></table></div>`;
       }
-
       // Update sidebar badges
       const pendingCount = bookings.filter(b => b.status === 'pending').length;
       const openCount    = tickets.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
@@ -798,7 +1249,6 @@
       if (ab) ab.textContent = pendingCount;
       if (ac) ac.textContent = openCount;
       if (ap) ap.textContent = '0';
-
       // Occupancy bars per property
       const barsEl = document.getElementById('occ-bars');
       if (!barsEl) return;
@@ -838,7 +1288,6 @@
       }
     } catch (e) { console.error('loadOverview error:', e); Toast.error('Failed to load overview.'); }
   }
-
   // ── Properties ────────────────────────────────────────────
   async function loadProperties() {
     const el = document.getElementById('properties-list');
@@ -857,15 +1306,27 @@
             <p class="property-card-location">📍 ${p.city}, ${p.state}</p>
             <p class="text-sm text-muted">${(p.rooms||[]).length} rooms · ${(p.rooms||[]).filter(r=>r.is_available).length} available · ${(p.images||[]).length} photo${(p.images||[]).length !== 1 ? 's' : ''}</p>
             <div class="flex gap-sm mt-sm flex-wrap">
+              <button onclick="openManageProperty(${p.id})" class="btn btn-primary btn-sm flex-1">Manage</button>
               <button onclick="openManageRooms(${p.id}, '${p.name.replace(/'/g, "\\'")}'  )" class="btn btn-secondary btn-sm flex-1">🚪 Rooms</button>
               <button onclick="openPhotoManager(${p.id}, '${p.name.replace(/'/g, "\\'")}'  )" class="btn btn-secondary btn-sm flex-1">📷 Photos</button>
             </div>
           </div>
         </div>`).join('')}</div>`;
-
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load properties.</p>'; }
   }
-
+  function openManageProperty(propertyId) {
+    manageState.selectedPropertyId = Number(propertyId);
+    switchTab('manage-property');
+    const selector = document.getElementById('manage-property-select');
+    if (selector) selector.value = String(propertyId);
+    loadManagedProperty(propertyId);
+  }
+  function refreshManageIfActive(propertyId) {
+    const activeTab = document.querySelector('.tab-content.active')?.id;
+    if (activeTab === 'tab-manage-property' && Number(manageState.selectedPropertyId) === Number(propertyId)) {
+      loadManagedProperty(propertyId);
+    }
+  }
   document.getElementById('add-property-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type=submit]');
@@ -892,10 +1353,11 @@
       e.target.reset();
       loadProperties();
       loadOverview();
+      loadManagePropertyTab(true);
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
     } catch (err) { Toast.error(err.message); }
     finally { btn.disabled = false; btn.textContent = 'Submit for Approval'; }
   });
-
   // ── Inquiries ──────────────────────────────────────────────
   async function loadInquiries() {
       const el = document.getElementById('inquiries-list');
@@ -921,7 +1383,6 @@
           el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load inquiries.</p>';
       }
   }
-
   // ── Bookings ──────────────────────────────────────────────
   async function loadBookings() {
     const el = document.getElementById('bookings-list');
@@ -940,14 +1401,12 @@
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load bookings.</p>'; }
   }
-
   async function openApproveModal(bookingId) {
     const booking = ownerBookings.find(b => b.id === bookingId);
     document.getElementById('approve-booking-id').value = bookingId;
     document.getElementById('approve-booking-title').textContent = `Review: ${booking?.resident_username || ''} → ${booking?.property_name || ''}`;
     document.getElementById('approve-note').value = '';
     document.getElementById('approve-movein').value = '';
-
     // Populate available rooms for the booking's property (use owner endpoint)
     const roomSel = document.getElementById('approve-room');
     roomSel.innerHTML = '<option value="">No specific room — auto assign</option>';
@@ -961,7 +1420,6 @@
     }
     openModal('modal-approve-booking');
   }
-
   async function handleBooking(newStatus) {
     const id = document.getElementById('approve-booking-id').value;
     const btn = document.querySelector('#modal-approve-booking .btn-success, #modal-approve-booking .btn-danger');
@@ -981,7 +1439,6 @@
       loadBookings();
     } catch (err) { Toast.error(err.message); }
   }
-
   async function handleVacate(id) {
     if (!confirm('Mark this booking as vacated?')) return;
     try {
@@ -991,10 +1448,8 @@
       loadOverview();
     } catch (err) { Toast.error(err.message); }
   }
-
   // ── Payments ──────────────────────────────────────────────
   const ownerInvoicesMap = {};
-
   async function loadPayments() {
     const el = document.getElementById('payments-list');
     try {
@@ -1017,7 +1472,6 @@
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load invoices.</p>'; }
   }
-
   function showReceipt(idOrObj) {
     const inv = (typeof idOrObj === 'object') ? idOrObj : ownerInvoicesMap[idOrObj];
     if (!inv) { Toast.error('Receipt data not found.'); return; }
@@ -1032,7 +1486,6 @@
     document.getElementById('rcpt-notes').textContent     = inv.notes || '—';
     openModal('modal-receipt');
   }
-
   // Populate invoice form with active residents
   async function populateInvoiceForm() {
     try {
@@ -1044,13 +1497,11 @@
       });
     } catch {}
   }
-
   document.getElementById('modal-create-invoice').addEventListener('click', (e) => {
     if (e.target.closest('.modal-overlay') === e.target) return;
   });
   // Open invoice modal
   document.querySelector('[onclick="openModal(\'modal-create-invoice\')"]')?.addEventListener('click', populateInvoiceForm);
-
   document.getElementById('create-invoice-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type=submit]');
@@ -1073,7 +1524,6 @@
     } catch (err) { Toast.error(err.message); }
     finally { btn.disabled = false; btn.textContent = 'Create Invoice'; }
   });
-
   // ── Complaints ────────────────────────────────────────────
   async function loadComplaints() {
     const el = document.getElementById('complaints-list');
@@ -1089,14 +1539,12 @@
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load complaints.</p>'; }
   }
-
   function openReplyModal(id, currentStatus, currentReply) {
       document.getElementById('reply-ticket-id').value = id;
       document.getElementById('reply-ticket-status').value = currentStatus;
       document.getElementById('reply-ticket-message').value = currentReply || '';
       openModal('modal-reply-complaint');
   }
-
   document.getElementById('reply-complaint-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('reply-ticket-id').value;
@@ -1117,7 +1565,6 @@
           btn.disabled = false; btn.textContent = 'Save Changes';
       }
   });
-
   // ── Visitors ──────────────────────────────────────────────
   async function loadVisitors() {
     const el = document.getElementById('visitors-list');
@@ -1134,7 +1581,6 @@
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load visitor log.</p>'; }
   }
-
   async function populateVisitorForm() {
     try {
       const [props, bookings] = await Promise.all([api.get('/properties/owner/'), api.get('/bookings/owner/')]);
@@ -1148,7 +1594,6 @@
       );
     } catch {}
   }
-
   document.getElementById('log-visitor-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type=submit]');
@@ -1169,7 +1614,6 @@
     } catch (err) { Toast.error(err.message); }
     finally { btn.disabled = false; btn.textContent = 'Log Entry'; }
   });
-
   async function checkOutVisitor(id) {
     try {
       await api.patch(`/visitors/owner/${id}/`, { check_out: new Date().toISOString() });
@@ -1177,7 +1621,6 @@
       loadVisitors();
     } catch (err) { Toast.error(err.message); }
   }
-
   // Attach populate on modal open - using direct click handlers on buttons
   document.getElementById('btn-open-log-visitor').addEventListener('click', () => {
     populateVisitorForm();
@@ -1187,7 +1630,6 @@
     populateInvoiceForm();
     openModal('modal-create-invoice');
   });
-
   // ── Manage Rooms ──────────────────────────────────────────
   async function openManageRooms(propertyId, propertyName) {
     document.getElementById('rooms-property-id').value = propertyId;
@@ -1196,7 +1638,6 @@
     await refreshRoomsList(propertyId);
     openModal('modal-manage-rooms');
   }
-
   async function refreshRoomsList(propertyId) {
     const el = document.getElementById('rooms-list-display');
     el.innerHTML = '<div class="flex justify-center py-md"><div class="spinner"></div></div>';
@@ -1218,7 +1659,6 @@
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-md">Failed to load rooms.</p>'; }
   }
-
   document.getElementById('add-room-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const propertyId = document.getElementById('rooms-property-id').value;
@@ -1237,13 +1677,14 @@
       e.target.reset();
       await refreshRoomsList(propertyId);
       loadProperties();
+      loadOverview();
+      refreshManageIfActive(propertyId);
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
     } catch (err) { Toast.error(err.message); }
     finally { btn.disabled = false; btn.textContent = 'Add Room'; }
   });
-
   // ── Photo Manager ────────────────────────────────────────────
   let currentPhotoPropertyId = null;
-
   async function openPhotoManager(propertyId, propertyName) {
     currentPhotoPropertyId = propertyId;
     document.getElementById('photo-property-id').value = propertyId;
@@ -1252,7 +1693,6 @@
     await refreshPhotoGrid(propertyId);
     openModal('modal-photo-manager');
   }
-
   async function refreshPhotoGrid(propertyId) {
     const grid = document.getElementById('photo-grid-display');
     grid.innerHTML = '<div class="flex justify-center py-md"><div class="spinner"></div></div>';
@@ -1275,16 +1715,16 @@
       grid.innerHTML = '<p class="text-muted text-center py-md">Failed to load photos.</p>';
     }
   }
-
   async function setPhotoPrimary(propertyId, imageId) {
     try {
       await api.patch(`/properties/owner/${propertyId}/images/${imageId}/`, { is_primary: true });
       Toast.success('Cover photo updated!');
       await refreshPhotoGrid(propertyId);
       loadProperties();
+      refreshManageIfActive(propertyId);
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
     } catch (err) { Toast.error(err.message); }
   }
-
   async function deletePhoto(propertyId, imageId) {
     if (!confirm('Delete this photo?')) return;
     try {
@@ -1292,16 +1732,16 @@
       Toast.success('Photo deleted.');
       await refreshPhotoGrid(propertyId);
       loadProperties();
+      refreshManageIfActive(propertyId);
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
     } catch (err) { Toast.error(err.message); }
   }
-
   // Handle file selection and upload
   document.getElementById('photo-file-input').addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length || !currentPhotoPropertyId) return;
     const progress = document.getElementById('upload-progress');
     progress.innerHTML = '';
-
     for (const file of files) {
       if (file.size > 5 * 1024 * 1024) {
         Toast.warning(`${file.name} is too large (max 5MB).`);
@@ -1311,11 +1751,9 @@
       row.className = 'flex items-center gap-sm mb-sm';
       row.innerHTML = `<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div><span class="text-sm text-muted">${file.name}</span>`;
       progress.appendChild(row);
-
       try {
         const formData = new FormData();
         formData.append('image', file);
-
         // Use raw fetch here because api.js uses JSON; images need multipart
         const token = Auth.getAccess();
         const res = await fetch(`http://127.0.0.1:8000/api/properties/owner/${currentPhotoPropertyId}/images/`, {
@@ -1333,14 +1771,66 @@
         row.innerHTML = `<span style="color:var(--clr-danger)">✗</span><span class="text-sm">${file.name} — Error</span>`;
       }
     }
-
     // Refresh grid and property list
     await refreshPhotoGrid(currentPhotoPropertyId);
     loadProperties();
+    refreshManageIfActive(currentPhotoPropertyId);
+    localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
     e.target.value = ''; // Reset file input
   });
-
   // ── Notifications ───────────────────────────────────────
+  document.getElementById('manage-property-select')?.addEventListener('change', (e) => {
+    loadManagedProperty(e.target.value);
+  });
+  document.getElementById('manage-property-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!manageState.selectedPropertyId) {
+      Toast.warning('Select a property first.');
+      return;
+    }
+    const submitButton = e.target.querySelector('button[type=submit]');
+    const payload = collectManagePayload();
+    if (!payload.name || !payload.address || !payload.city || !payload.state || !payload.pincode) {
+      Toast.warning('Name, address, city, state, and pincode are required.');
+      return;
+    }
+    submitButton.disabled = true;
+    submitButton.textContent = 'Saving...';
+    try {
+      await api.patch(`/properties/owner/${manageState.selectedPropertyId}/`, payload);
+      Toast.success('Property details updated successfully.');
+      await loadManagePropertyTab(true);
+      await loadProperties();
+      await loadOverview();
+      localStorage.setItem('pgdost-property-last-updated', String(Date.now()));
+    } catch (err) {
+      Toast.error(err.message || 'Failed to save property details.');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Save All Changes';
+    }
+  });
+  const manageUploadZone = document.getElementById('manage-upload-zone');
+  const manageUploadInput = document.getElementById('manage-photo-file-input');
+  if (manageUploadZone && manageUploadInput) {
+    manageUploadZone.addEventListener('click', () => manageUploadInput.click());
+    manageUploadZone.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      manageUploadZone.classList.add('dragover');
+    });
+    manageUploadZone.addEventListener('dragleave', () => {
+      manageUploadZone.classList.remove('dragover');
+    });
+    manageUploadZone.addEventListener('drop', (event) => {
+      event.preventDefault();
+      manageUploadZone.classList.remove('dragover');
+      uploadManageFiles(Array.from(event.dataTransfer?.files || []));
+    });
+    manageUploadInput.addEventListener('change', (event) => {
+      uploadManageFiles(Array.from(event.target.files || []));
+      event.target.value = '';
+    });
+  }
   async function loadNotifications() {
       try {
           const notifs = await api.get('/auth/notifications/');
@@ -1368,26 +1858,26 @@
           console.error(e);
       }
   }
-
   function toggleNotifications() {
       const el = document.getElementById('notif-dropdown');
       el.style.display = el.style.display === 'block' ? 'none' : 'block';
       if (el.style.display === 'block') loadNotifications();
   }
-
   async function markNotifRead(id) {
       try {
           await api.patch(`/auth/notifications/${id}/`, { is_read: true });
           loadNotifications();
       } catch (e) {}
   }
-
   // Init
-  loadOverview();
-  loadNotifications();
-  // Topbar date
-  document.getElementById('topbar-date').textContent =
-    new Date().toLocaleDateString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  (async function initOwnerDashboard() {
+    const allowed = await enforceOwnerOnboarding();
+    if (!allowed) return;
+    loadOverview();
+    loadNotifications();
+    document.getElementById('topbar-date').textContent =
+      new Date().toLocaleDateString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  })();
 </script>
 </body>
 </html>

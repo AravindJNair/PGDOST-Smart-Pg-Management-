@@ -16,7 +16,6 @@
   </script>
   <style>
     :root { --font-head: 'Poppins', 'Plus Jakarta Sans', system-ui, sans-serif; }
-
     /* ── Hamburger / Mobile Nav ── */
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; border-radius: 8px; transition: background .2s; }
     .nav-hamburger:hover { background: rgba(123,138,98,.1); }
@@ -36,10 +35,8 @@
     .mobile-nav-panel a { display: block; padding: .75rem 1rem; border-radius: 12px; font-weight: 600; font-size: .95rem; transition: all .2s; }
     .mobile-nav-panel a:hover { background: rgba(123,138,98,.1); color: var(--clr-brand-600); }
     .mobile-nav-divider { height: 1px; background: var(--clr-border); margin: .5rem 0; }
-
     /* ── Scroll shadow on nav ── */
     .landing-nav.scrolled { box-shadow: 0 8px 32px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.06); }
-
     /* ── Hero ── */
     /* ── Hero animations (self-contained, no JS needed) ── */
     .hero-badge   { animation: fadeSlideUp .5s ease both; animation-delay: 0s; }
@@ -70,7 +67,65 @@
     .hero-tagline { font-size: clamp(.95rem, 2.5vw, 1.15rem); color: var(--clr-text-muted); max-width: 500px; line-height: 1.8; margin-bottom: 2rem; }
     .hero-decoration { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 0; }
     .hero > * { position: relative; z-index: 1; }
-
+    .hero {
+      display: grid !important;
+      text-align: left !important;
+      width: min(100%, 1400px) !important;
+      max-width: 1400px !important;
+      margin-inline: auto !important;
+      padding-inline: clamp(1rem, 3vw, 2.5rem) !important;
+      grid-template-columns: minmax(0, 1fr) minmax(420px, 560px) !important;
+      align-items: center !important;
+      column-gap: clamp(2rem, 5vw, 5.5rem) !important;
+      row-gap: 0 !important;
+    }
+    .hero-content {
+      grid-column: 1 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      justify-self: start;
+      align-self: center;
+      width: 100%;
+      max-width: 720px;
+      min-width: 0;
+      gap: clamp(1rem, 1.8vw, 1.6rem);
+    }
+    .hero-content > .hero-badge,
+    .hero-content > .hero-logo,
+    .hero-content > .hero-tagline,
+    .hero-content > .search-container {
+      margin: 0 !important;
+      align-self: flex-start;
+    }
+    .hero-content > .hero-logo {
+      max-width: 15ch !important;
+      text-wrap: balance;
+      line-height: 1.08 !important;
+    }
+    .hero-content > .hero-tagline {
+      max-width: 58ch !important;
+    }
+    .hero-content > .search-container {
+      width: min(100%, 620px) !important;
+      max-width: 620px !important;
+    }
+    .hero-visual {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      width: 100%;
+      max-width: 560px;
+      min-height: clamp(420px, 42vw, 520px) !important;
+      margin: 0 !important;
+      align-self: center !important;
+      justify-self: end !important;
+    }
+    .hero-slider {
+      width: 100% !important;
+      max-width: 560px !important;
+      margin: 0 !important;
+    }
     /* ── Glass search container ── */
     .search-container {
       width: 100%; max-width: 700px;
@@ -112,7 +167,6 @@
       background: rgba(123,138,98,.15); border-color: rgba(123,138,98,.4); color: var(--clr-brand-600); font-weight: 600;
     }
     .amenity-toggle input { position: absolute; opacity: 0; pointer-events: none; }
-
     /* ── Stats Section ── */
     .stats-strip {
       background: rgba(255,255,255,.6); backdrop-filter: blur(16px);
@@ -122,7 +176,6 @@
     .stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; }
     .stat-item-num { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--clr-brand-600); line-height: 1; }
     .stat-item-label { font-size: .8rem; color: var(--clr-text-muted); font-weight: 500; margin-top: .25rem; }
-
     /* ── Properties Grid ── */
     .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-xl); }
     .property-card { animation: cardReveal .5s var(--ease) both; }
@@ -133,7 +186,6 @@
       border-radius: var(--radius-xl); height: 320px;
     }
     @keyframes shimmerSkeleton { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
-
     /* ── Features ── */
     .features { padding: var(--space-3xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
     .section-label { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--clr-brand-500); background: rgba(123,138,98,.1); border: 1px solid rgba(123,138,98,.2); border-radius: var(--radius-full); padding: .3rem .9rem; margin-bottom: .75rem; }
@@ -157,7 +209,6 @@
     .feature-card:hover .feature-icon { transform: scale(1.12) rotate(-4deg); background: rgba(123,138,98,.18); }
     .feature-title { font-size: 1.05rem; font-weight: 700; margin-bottom: var(--space-sm); }
     .feature-desc { color: var(--clr-text-muted); font-size: .875rem; line-height: 1.75; }
-
     /* ── Roles ── */
     .roles { padding: var(--space-3xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
     .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-xl); max-width: 760px; margin: 0 auto; }
@@ -176,7 +227,6 @@
     .role-card-features { display: flex; flex-direction: column; gap: .4rem; }
     .role-feature-item { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: var(--clr-text-muted); }
     .role-feature-item::before { content: '✓'; color: var(--clr-brand-500); font-weight: 700; font-size: .85rem; }
-
     /* ── Navbar ── */
     .landing-nav {
       position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
@@ -194,7 +244,6 @@
     .nav-text-link:hover { color: var(--clr-brand-600); background: rgba(123,138,98,.07); }
     .nav-text-link:hover::after { transform: scaleX(1); }
     .hidden-mobile { display: flex; gap: .15rem; }
-
     /* ── Footer ── */
     .landing-footer { border-top: 1px solid var(--clr-border); padding: var(--space-2xl) var(--space-xl) var(--space-xl); max-width: 1100px; margin: 0 auto; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--space-xl); margin-bottom: var(--space-xl); }
@@ -204,8 +253,39 @@
     .footer-link { display: block; color: var(--clr-text-muted); font-size: .84rem; margin-bottom: var(--space-sm); transition: all .2s var(--ease); padding: .1rem 0; }
     .footer-link:hover { color: var(--clr-brand-500); transform: translateX(3px); }
     .footer-bottom { text-align: center; color: var(--clr-text-muted); font-size: .78rem; padding-top: var(--space-lg); border-top: 1px solid var(--clr-border); }
-
     /* ── Responsive ── */
+    @media (max-width: 1020px) {
+      .hero {
+        grid-template-columns: 1fr !important;
+        row-gap: 1.75rem !important;
+        min-height: auto !important;
+        padding-top: 6.7rem !important;
+        padding-bottom: 3rem !important;
+      }
+      .hero-content {
+        max-width: 760px;
+        gap: 1rem;
+      }
+      .hero-content > .hero-logo {
+        max-width: 14.5ch !important;
+      }
+      .hero-content > .hero-tagline {
+        max-width: min(100%, 640px) !important;
+      }
+      .hero-content > .search-container {
+        max-width: min(100%, 640px) !important;
+        width: min(100%, 640px) !important;
+      }
+      .hero-visual {
+        grid-column: 1 !important;
+        justify-self: start !important;
+        max-width: min(100%, 640px);
+        min-height: 360px !important;
+      }
+      .hero-slider {
+        max-width: 100% !important;
+      }
+    }
     @media (max-width: 768px) {
       .landing-nav { border-radius: 16px; top: 8px; padding: .5rem 1rem; width: calc(100% - 1rem); }
       .hidden-mobile { display: none; }
@@ -222,6 +302,99 @@
       .stats-inner { grid-template-columns: repeat(2, 1fr); }
       .roles-grid, .features-grid { grid-template-columns: 1fr; }
     }
+    /* ── Property Detail Premium Wide Layout ── */
+    #modal-detail .modal {
+      max-width: min(1600px, calc(100vw - 2rem)) !important;
+      width: min(1600px, calc(100vw - 2rem)) !important;
+      padding: clamp(1rem, 2vw, 1.5rem) !important;
+      max-height: calc(100vh - 1.5rem);
+    }
+    .property-detail-shell { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(360px, 420px); gap: clamp(1rem, 2.2vw, 2rem); align-items: start; }
+    .property-main-stack { min-width: 0; display: grid; gap: 1rem; }
+    .property-side-stack { position: sticky; top: .75rem; display: grid; gap: .9rem; }
+    .property-gallery-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: .75rem; }
+    .property-gallery-main { position: relative; min-height: 370px; border-radius: 24px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); }
+    .property-gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s var(--ease); }
+    .property-gallery-main:hover img { transform: scale(1.03); }
+    .property-gallery-side { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+    .property-gallery-thumb { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-border); background: var(--clr-bg-3); min-height: 110px; }
+    .property-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s var(--ease); }
+    .property-gallery-thumb:hover img { transform: scale(1.04); }
+    .property-gallery-pill { position: absolute; left: .8rem; bottom: .8rem; z-index: 2; }
+    .property-gallery-actions { position: absolute; right: .8rem; bottom: .8rem; z-index: 2; display: flex; gap: .45rem; flex-wrap: wrap; justify-content: flex-end; }
+    .property-top-head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; flex-wrap: wrap; }
+    .property-title-block h3 { margin: .2rem 0 .25rem; font-size: clamp(1.4rem, 2.1vw, 2rem); line-height: 1.18; }
+    .property-title-meta { color: var(--clr-text-muted); font-size: .9rem; }
+    .property-action-row { display: flex; gap: .45rem; flex-wrap: wrap; }
+    .property-quick-strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .6rem; }
+    .property-quick-item { border: 1px solid var(--glass-border); background: var(--glass-bg-strong); border-radius: 14px; padding: .7rem .75rem; display: grid; gap: .2rem; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+    .property-quick-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .property-quick-label { color: var(--clr-text-faint); font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; }
+    .property-quick-value { font-weight: 700; font-size: .86rem; }
+    .property-tab-head { display: flex; gap: .45rem; overflow-x: auto; padding-bottom: .15rem; }
+    .property-tab-btn { border-radius: var(--radius-full); border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--clr-text-muted); padding: .48rem .85rem; font-size: .8rem; font-weight: 700; white-space: nowrap; transition: all .22s var(--ease); }
+    .property-tab-btn.active { color: var(--clr-brand-700); border-color: rgba(105, 198, 63, .34); background: rgba(105, 198, 63, .13); }
+    .property-tab-panel { display: none; border: 1px solid var(--glass-border); background: var(--glass-bg-strong); border-radius: 18px; padding: 1rem; animation: fadeSlideUp .35s var(--ease) both; }
+    .property-tab-panel.active { display: block; }
+    .overview-description.collapsed { max-height: 4.8em; overflow: hidden; position: relative; }
+    .overview-description.collapsed::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2.2em; background: linear-gradient(180deg, transparent, var(--glass-bg-strong)); }
+    .amenities-grid-wide { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .55rem; }
+    .amenity-wide-card { border: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: 12px; padding: .58rem .68rem; display: flex; align-items: center; gap: .45rem; font-size: .84rem; transition: transform .2s var(--ease); }
+    .amenity-wide-card:hover { transform: translateY(-1px); }
+    .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .55rem; }
+    .rule-card { border: 1px solid var(--glass-border); border-radius: 12px; background: var(--glass-bg); padding: .6rem .7rem; }
+    .review-summary { display: grid; grid-template-columns: minmax(180px, 220px) minmax(0, 1fr); gap: .9rem; align-items: start; }
+    .star-breakdown { display: grid; gap: .38rem; }
+    .star-row { display: grid; grid-template-columns: 54px 1fr 38px; align-items: center; gap: .45rem; font-size: .78rem; }
+    .star-meter { height: 7px; border-radius: 999px; background: rgba(0,0,0,.08); overflow: hidden; }
+    .star-meter > i { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); border-radius: 999px; }
+    .review-card { border: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: 12px; padding: .65rem .72rem; margin-top: .48rem; }
+    .nearby-scroll { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 280px); gap: .8rem; overflow-x: auto; padding-bottom: .25rem; }
+    .nearby-card { border: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .22s var(--ease); }
+    .nearby-card:hover { transform: translateY(-2px); }
+    .nearby-card img { width: 100%; height: 140px; object-fit: cover; }
+    .nearby-card-body { padding: .7rem; }
+    .booking-detail-card { border: 1px solid var(--glass-border); background: var(--glass-bg-strong); border-radius: 20px; padding: 1rem; box-shadow: var(--shadow-sm); }
+    .booking-detail-price { font-size: 1.55rem; font-weight: 800; line-height: 1; }
+    .booking-field { margin-top: .65rem; }
+    .booking-field label { display: block; font-size: .76rem; letter-spacing: .05em; color: var(--clr-text-faint); text-transform: uppercase; margin-bottom: .32rem; }
+    .booking-inline-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .85rem; }
+    .detail-trust { display: grid; gap: .35rem; margin-top: .8rem; font-size: .82rem; color: var(--clr-text-muted); }
+    .booking-accordion { border: 1px solid var(--glass-border); border-radius: 12px; margin-top: .75rem; overflow: hidden; }
+    .booking-accordion > summary { list-style: none; cursor: pointer; padding: .6rem .7rem; font-size: .84rem; font-weight: 700; background: rgba(255,255,255,.35); }
+    .booking-accordion > summary::-webkit-details-marker { display: none; }
+    .booking-accordion-body { padding: .6rem .7rem .75rem; display: grid; gap: .45rem; font-size: .82rem; }
+    .break-row { display: flex; justify-content: space-between; gap: .75rem; }
+    .detail-cta-mobile { display: none; position: sticky; bottom: .4rem; z-index: 10; border: 1px solid var(--glass-border); border-radius: 14px; background: var(--glass-bg-strong); padding: .45rem; margin-top: .75rem; box-shadow: var(--shadow-sm); }
+    .gallery-modal .modal { max-width: min(1240px, calc(100vw - 2rem)) !important; width: min(1240px, calc(100vw - 2rem)) !important; padding: .75rem !important; background: rgba(7, 20, 11, .9) !important; border-color: rgba(255,255,255,.18) !important; }
+    .gallery-stage { position: relative; border-radius: 18px; overflow: hidden; min-height: 64vh; background: rgba(0,0,0,.4); display: grid; place-items: center; }
+    .gallery-stage img { width: 100%; height: 64vh; object-fit: contain; }
+    .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; font-size: 1.7rem; }
+    .gallery-nav.prev { left: .65rem; } .gallery-nav.next { right: .65rem; }
+    .gallery-strip { margin-top: .65rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: .45rem; }
+    .gallery-strip button { border-radius: 10px; border: 1px solid rgba(255,255,255,.2); overflow: hidden; opacity: .75; }
+    .gallery-strip button.active { opacity: 1; border-color: rgba(255,255,255,.65); }
+    .gallery-strip img { width: 100%; height: 72px; object-fit: cover; display: block; }
+    @media (max-width: 1200px) {
+      .property-detail-shell { grid-template-columns: 1fr; }
+      .property-side-stack { position: static; }
+      .property-quick-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 768px) {
+      #modal-detail .modal { width: calc(100vw - .85rem) !important; max-width: calc(100vw - .85rem) !important; padding: .75rem !important; }
+      .property-gallery-grid { grid-template-columns: 1fr; }
+      .property-gallery-side { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: none; }
+      .property-quick-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .booking-inline-actions { grid-template-columns: 1fr; }
+      .review-summary { grid-template-columns: 1fr; }
+      .detail-cta-mobile { display: block; }
+      .gallery-stage img { height: 50vh; }
+    }
+    @media (max-width: 560px) {
+      .property-gallery-main { min-height: 240px; }
+      .property-gallery-thumb { min-height: 70px; }
+      .nearby-scroll { grid-auto-columns: minmax(220px, 240px); }
+    }
   </style>
 </head>
 <body class="bg-gradient-mesh light-mode">
@@ -232,7 +405,6 @@
       document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
     })();
   </script>
-
   <div class="theme-atmosphere" aria-hidden="true">
     <span class="ambient-glow ambient-glow-1"></span>
     <span class="ambient-glow ambient-glow-2"></span>
@@ -245,7 +417,6 @@
     <span class="ambient-particle particle-2"></span>
     <span class="ambient-particle particle-3"></span>
   </div>
-
   <!-- Mobile Nav Overlay + Panel -->
   <div class="mobile-nav-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
   <div class="mobile-nav-panel" id="mobile-panel">
@@ -257,7 +428,6 @@
     <a href="owner-login.html">Owner Login</a>
     <a href="register.html" class="btn btn-primary" style="text-align:center;justify-content:center;margin-top:.5rem;">Register Free →</a>
   </div>
-
   <!-- Fixed Floating Navbar -->
   <nav class="landing-nav" id="main-nav">
     <a href="index.html" class="nav-logo"><span class="nav-logo-mark">⌂</span> PGDOST</a>
@@ -277,7 +447,6 @@
       </button>
     </div>
   </nav>
-
   <!-- Hero -->
   <section class="hero">
     <div class="hero-decoration">
@@ -285,44 +454,45 @@
       <div class="deco-orb deco-orb-2"></div>
       <div class="deco-orb deco-orb-3"></div>
     </div>
-    <div class="hero-badge">✦ Premium PG Accommodations</div>
-    <h1 class="hero-logo">Find Your Perfect <span>Sanctuary</span> in <span>Bangalore</span> <i class="hero-leaf-mark"></i></h1>
-    <p class="hero-tagline">
-      Experience a new standard of living with PGDOST. We curate premium spaces that blend professional reliability with the tranquillity of a nature-inspired home.
-    </p>
-
-    <!-- Glass Search Container -->
-    <div class="search-container animate-fade-up" style="animation-delay:.45s">
-      <div class="search-bar-enhanced">
-        <span style="font-size:1.1rem;color:var(--clr-text-faint)">🔍</span>
-        <input id="search-input" type="text" placeholder="Search by area or PG name..." autocomplete="off" />
-      </div>
-      <div class="filters-row">
-        <select id="filter-type" class="filter-pill">
-          <option value="">All Types</option>
-          <option value="pg">PG</option>
-          <option value="hostel">Hostel</option>
-          <option value="apartment">Apartment</option>
-        </select>
-        <select id="filter-city" class="filter-pill">
-          <option value="">All Areas</option>
-        </select>
-        <input id="filter-min-price" type="number" placeholder="Min ₹" class="filter-pill" style="width:88px" />
-        <input id="filter-max-price" type="number" placeholder="Max ₹" class="filter-pill" style="width:88px" />
-        <select id="filter-sort" class="filter-pill">
-          <option value="">Sort</option>
-          <option value="price_low_high">↑ Price</option>
-          <option value="price_high_low">↓ Price</option>
-        </select>
-      </div>
-      <div class="amenity-row">
-        <label class="amenity-toggle"><input type="checkbox" id="filter-wifi"> 📶 WiFi</label>
-        <label class="amenity-toggle"><input type="checkbox" id="filter-ac"> ❄️ AC</label>
-        <label class="amenity-toggle"><input type="checkbox" id="filter-food"> 🍽 Meals</label>
-        <label class="amenity-toggle"><input type="checkbox" id="filter-parking"> 🚗 Parking</label>
-      </div>
-      <div class="text-center">
-        <button id="btn-search" class="btn btn-primary btn-lg" style="min-width:200px">Search</button>
+    <div class="hero-content">
+      <div class="hero-badge">✦ Premium PG Accommodations</div>
+      <h1 class="hero-logo">Find Your Perfect <span>Sanctuary</span> in <span>Bangalore</span> <i class="hero-leaf-mark"></i></h1>
+      <p class="hero-tagline">
+        Experience a new standard of living with PGDOST. We curate premium spaces that blend professional reliability with the tranquillity of a nature-inspired home.
+      </p>
+      <!-- Glass Search Container -->
+      <div class="search-container animate-fade-up" style="animation-delay:.45s">
+        <div class="search-bar-enhanced">
+          <span style="font-size:1.1rem;color:var(--clr-text-faint)">🔍</span>
+          <input id="search-input" type="text" placeholder="Search by area or PG name..." autocomplete="off" />
+        </div>
+        <div class="filters-row">
+          <select id="filter-type" class="filter-pill">
+            <option value="">All Types</option>
+            <option value="pg">PG</option>
+            <option value="hostel">Hostel</option>
+            <option value="apartment">Apartment</option>
+          </select>
+          <select id="filter-city" class="filter-pill">
+            <option value="">All Areas</option>
+          </select>
+          <input id="filter-min-price" type="number" placeholder="Min ₹" class="filter-pill" style="width:88px" />
+          <input id="filter-max-price" type="number" placeholder="Max ₹" class="filter-pill" style="width:88px" />
+          <select id="filter-sort" class="filter-pill">
+            <option value="">Sort</option>
+            <option value="price_low_high">↑ Price</option>
+            <option value="price_high_low">↓ Price</option>
+          </select>
+        </div>
+        <div class="amenity-row">
+          <label class="amenity-toggle"><input type="checkbox" id="filter-wifi"> 📶 WiFi</label>
+          <label class="amenity-toggle"><input type="checkbox" id="filter-ac"> ❄️ AC</label>
+          <label class="amenity-toggle"><input type="checkbox" id="filter-food"> 🍽 Meals</label>
+          <label class="amenity-toggle"><input type="checkbox" id="filter-parking"> 🚗 Parking</label>
+        </div>
+        <div class="text-center">
+          <button id="btn-search" class="btn btn-primary btn-lg" style="min-width:200px">Search</button>
+        </div>
       </div>
     </div>
     <div class="hero-visual">
@@ -375,7 +545,6 @@
       </div>
     </div>
   </section>
-
   <!-- Stats Strip -->
   <div class="stats-strip">
     <div class="stats-inner">
@@ -385,8 +554,6 @@
       <div class="stat-item"><span class="stat-icon">◇</span><div><div class="stat-item-num">98%</div><div class="stat-item-label">Satisfaction Rate<br>From Our Residents</div></div></div>
     </div>
   </div>
-
-
   <!-- Properties Grid -->
   <section id="explore-section" class="container py-xl" style="padding-top:var(--space-2xl)">
     <div id="properties-header" class="section-header reveal">
@@ -410,7 +577,6 @@
       <p>Try adjusting your search filters.</p>
     </div>
   </section>
-
   <!-- Features -->
   <section id="features-section" class="features">
     <div class="text-center" style="margin-bottom:.75rem">
@@ -427,6 +593,7 @@
       <div class="feature-card reveal reveal-delay-2">
         <div class="feature-icon">💰</div>
         <div class="feature-title">Rent & Payments</div>
+              <div class="text-xs text-muted">${formatDate(r.created_at)} | Stay: ${escapeHtml(r.stay_duration || 'Not specified')} ${r.is_verified_resident ? '<span class="badge badge-green">Verified Resident</span>' : '<span class="badge badge-yellow">Unverified</span>'}</div>
         <div class="feature-desc">Owners generate monthly invoices; residents pay and track them — all with full transaction history.</div>
       </div>
       <div class="feature-card reveal reveal-delay-3">
@@ -451,7 +618,6 @@
       </div>
     </div>
   </section>
-
   <!-- Roles / CTA -->
   <section id="roles-section" class="roles">
     <div class="text-center" style="margin-bottom:.75rem">
@@ -486,13 +652,12 @@
           <div class="role-feature-item">Handle complaints &amp; visitors</div>
         </div>
         <div class="flex gap-sm flex-wrap">
-          <a href="register.html" class="btn btn-primary">Register Free →</a>
+          <a href="owner-signup.html" class="btn btn-primary">Register Free →</a>
           <a href="owner-login.html" class="btn btn-secondary" style="border-color:var(--clr-info);color:var(--clr-info)">Owner Login</a>
         </div>
       </div>
     </div>
   </section>
-
   <!-- Footer -->
   <footer class="landing-footer">
     <div class="footer-grid">
@@ -521,10 +686,9 @@
       <p>© 2026 PGDOST — PG Management Platform. All rights reserved.</p>
     </div>
   </footer>
-
   <!-- Property Detail Modal -->
   <div id="modal-detail" class="modal-overlay">
-    <div class="modal" style="max-width:640px;">
+    <div class="modal detail-modal">
       <div class="modal-header">
         <h2 class="modal-title" id="modal-prop-name">Property Details</h2>
         <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
@@ -532,7 +696,6 @@
       <div id="modal-detail-body"></div>
     </div>
   </div>
-
   <!-- Apply Modal -->
   <div id="modal-apply" class="modal-overlay">
     <div class="modal">
@@ -556,7 +719,6 @@
       </form>
     </div>
   </div>
-
   <!-- Inquiry Modal -->
   <div id="modal-inquiry" class="modal-overlay">
     <div class="modal">
@@ -588,7 +750,6 @@
       </form>
     </div>
   </div>
-
   <!-- Write Review Modal -->
   <div id="modal-review" class="modal-overlay">
     <div class="modal">
@@ -609,19 +770,69 @@
                 <option value="1">⭐ (1/5)</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">Review Comment</label>
-            <textarea id="review-text" class="form-textarea" placeholder="How was your stay?" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary btn-lg w-full">Submit Review</button>
+	          <div class="form-group">
+	            <label class="form-label">Review Comment</label>
+	            <textarea id="review-text" class="form-textarea" placeholder="How was your stay?" required></textarea>
+	          </div>
+	          <div class="form-group">
+	            <label class="form-label">Stay Duration</label>
+	            <input id="review-stay-duration" class="form-input" placeholder="e.g. 8 months" />
+	          </div>
+	          <button type="submit" class="btn btn-primary btn-lg w-full">Submit Review</button>
         </div>
       </form>
     </div>
   </div>
-
+  <!-- Schedule Visit Modal -->
+  <div id="modal-visit" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Schedule a Visit</h2>
+        <button class="modal-close" onclick="closeModal('modal-visit')">✕</button>
+      </div>
+      <form id="visit-form">
+        <input type="hidden" id="visit-property-id" />
+        <div class="flex flex-col gap-md">
+          <div class="form-group">
+            <label class="form-label">Visit Date</label>
+            <input id="visit-date" type="date" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preferred Time</label>
+            <select id="visit-time" class="form-select" required>
+              <option value="">Select time slot</option>
+              <option value="09:00 AM">09:00 AM</option>
+              <option value="11:00 AM">11:00 AM</option>
+              <option value="02:00 PM">02:00 PM</option>
+              <option value="05:00 PM">05:00 PM</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Note (optional)</label>
+            <textarea id="visit-note" class="form-textarea" placeholder="Any specific preference for your visit?"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full">Request Visit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Gallery Lightbox Modal -->
+  <div id="modal-gallery" class="modal-overlay gallery-modal">
+    <div class="modal">
+      <div class="modal-header" style="margin-bottom:.6rem;">
+        <h2 class="modal-title" id="gallery-title">Property Gallery</h2>
+        <button class="modal-close" onclick="closeModal('modal-gallery')">✕</button>
+      </div>
+      <div class="gallery-stage">
+        <img id="gallery-stage-image" src="" alt="Property gallery image" />
+        <button type="button" class="gallery-nav prev" onclick="moveGallery(-1)" aria-label="Previous image">‹</button>
+        <button type="button" class="gallery-nav next" onclick="moveGallery(1)" aria-label="Next image">›</button>
+      </div>
+      <div id="gallery-strip" class="gallery-strip"></div>
+    </div>
+  </div>
   <!-- Toast container -->
   <div id="toast-container"></div>
-
   <script src="../scripts/api.js"></script>
   <script>
     let allProperties = [];
@@ -629,7 +840,6 @@
     const propertyPageSize = 6;
     let activeHeroIndex = 0;
     let heroTimer = null;
-
     // Update nav
     function updateNav() {
       const area = document.getElementById('nav-auth-area');
@@ -652,14 +862,12 @@
         `;
       }
     }
-
     // Load cities for filter
     function populateCities(properties) {
       const cities = [...new Set(properties.map(p => p.city).filter(Boolean))].sort();
       const sel = document.getElementById('filter-city');
       cities.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
     }
-
     // Amenity icons
     const amenityIcons = {
       has_wifi: '✓ WiFi',
@@ -669,124 +877,581 @@
       has_laundry: '✓ Laundry',
       has_gym: '✓ Gym',
     };
-
-    function renderAmenities(prop) {
-      return Object.entries(amenityIcons)
-        .filter(([key]) => prop[key])
-        .map(([, label]) => `<span class="amenity-chip">${label}</span>`)
-        .join('');
+    const detailState = {
+      property: null,
+      images: [],
+      reviews: [],
+      reviewsFilter: 'all',
+      galleryIndex: 0,
+      bookingSelection: {
+        roomType: 'single',
+        moveIn: '',
+        duration: 6,
+      },
+      wishlist: new Set(),
+      nearby: [],
+      priceBreakdown: null,
+    };
+    try {
+      const savedWishlist = JSON.parse(localStorage.getItem('pgdost-wishlist') || '[]');
+      detailState.wishlist = new Set(savedWishlist.map((id) => Number(id)));
+    } catch {
+      detailState.wishlist = new Set();
     }
-
+    function persistWishlist() {
+      localStorage.setItem('pgdost-wishlist', JSON.stringify([...detailState.wishlist]));
+    }
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function renderAmenities(prop) {
+      const baseAmenities = Object.entries(amenityIcons)
+        .filter(([key]) => prop[key])
+        .map(([, label]) => `<span class="amenity-chip">${label}</span>`);
+      const customAmenities = (prop.custom_amenities || [])
+        .slice(0, 3)
+        .map((item) => `<span class="amenity-chip">${escapeHtml(item)}</span>`);
+      return baseAmenities.concat(customAmenities).join('');
+    }
     function getPropertyBadge(prop, index = 0) {
       const labels = ['Popular', 'New', 'Luxury'];
       if (prop.avg_rating && Number(prop.avg_rating) >= 4.8) return 'Luxury';
       return labels[index % labels.length];
     }
-
+    function isWishlisted(propertyId) {
+      return detailState.wishlist.has(Number(propertyId));
+    }
     function toggleFavorite(event, id) {
       event.stopPropagation();
-      const btn = event.currentTarget;
-      const active = btn.getAttribute('aria-pressed') === 'true';
-      btn.setAttribute('aria-pressed', String(!active));
-      btn.classList.toggle('active', !active);
-      Toast.info(!active ? 'Added to favourites.' : 'Removed from favourites.');
+      const active = isWishlisted(id);
+      if (active) {
+        detailState.wishlist.delete(Number(id));
+      } else {
+        detailState.wishlist.add(Number(id));
+      }
+      persistWishlist();
+      const nextActive = !active;
+      const allButtons = document.querySelectorAll(`[data-wishlist-id="${id}"]`);
+      allButtons.forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(nextActive));
+        btn.classList.toggle('active', nextActive);
+        if (btn.classList.contains('favorite-btn')) {
+          btn.innerHTML = nextActive ? '&#9829;' : '&#9825;';
+        } else {
+          btn.textContent = nextActive ? 'Saved' : 'Save';
+        }
+      });
+      Toast.info(nextActive ? 'Added to wishlist.' : 'Removed from wishlist.');
     }
-
-    const realisticPropertyImages = {
-      'greenfield estate': [
-        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'sage residency': [
-        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'whitefield urban nest': [
-        'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1502672260266-1c1e5240980c?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'hsr comfort house': [
-        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1560448075-bb485b067938?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'manyata executive stay': [
-        'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'electronic city coliving': [
-        'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'jayanagar garden pg': [
-        'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1560440021-33f9b867899d?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'bellandur lakeview suites': [
-        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=90'
-      ],
-      'varathans': [
-        'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=90',
-        'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=90'
-      ]
-    };
-
-    const fallbackPropertyImages = [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=90',
-      'https://images.unsplash.com/photo-1502672260266-1c1e5240980c?auto=format&fit=crop&w=1200&q=90',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=90',
-      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=90'
-    ];
-
+    const fallbackPropertyImage = 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=1200&q=90';
     function getPropertyImages(prop) {
-      const key = (prop.name || '').toLowerCase().trim();
-      const curated = realisticPropertyImages[key];
-      if (curated) return curated;
-
-      const uploaded = (prop.images || []).map(img => img.image_url).filter(Boolean);
+      const uploaded = (prop.images || [])
+        .map((img) => img.image_url)
+        .filter(Boolean);
       if (uploaded.length) return uploaded;
-
-      const start = Math.abs((prop.id || 0) % fallbackPropertyImages.length);
-      return [
-        fallbackPropertyImages[start],
-        fallbackPropertyImages[(start + 1) % fallbackPropertyImages.length],
-        fallbackPropertyImages[(start + 2) % fallbackPropertyImages.length]
-      ];
+      if (prop.primary_image_url) return [prop.primary_image_url];
+      return [fallbackPropertyImage];
     }
-
     function setMainPropertyImage(propId, url, index) {
       const main = document.getElementById(`detail-main-image-${propId}`);
       if (main) main.src = url;
+      detailState.galleryIndex = index;
       document.querySelectorAll(`[data-gallery-for="${propId}"]`).forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
       });
     }
-
+    function openGallery(startIndex = 0) {
+      if (!detailState.images.length) return;
+      detailState.galleryIndex = startIndex;
+      const stage = document.getElementById('gallery-stage-image');
+      const title = document.getElementById('gallery-title');
+      const strip = document.getElementById('gallery-strip');
+      if (!stage || !strip) return;
+      title.textContent = `${detailState.property?.name || 'Property'} � ${detailState.galleryIndex + 1}/${detailState.images.length}`;
+      stage.src = detailState.images[detailState.galleryIndex];
+      strip.innerHTML = detailState.images.map((img, idx) => `
+        <button type="button" class="${idx === detailState.galleryIndex ? 'active' : ''}" onclick="openGallery(${idx})" aria-label="Open photo ${idx + 1}">
+          <img src="${img}" alt="Gallery thumbnail ${idx + 1}" />
+        </button>
+      `).join('');
+      openModal('modal-gallery');
+    }
+    function moveGallery(direction) {
+      if (!detailState.images.length) return;
+      const next = (detailState.galleryIndex + direction + detailState.images.length) % detailState.images.length;
+      openGallery(next);
+    }
     function renderPropertyGallery(prop) {
       const images = getPropertyImages(prop);
-      const safeName = (prop.name || 'Property').replace(/"/g, '&quot;');
+      detailState.images = images;
+      const safeName = escapeHtml(prop.name || 'Property');
+      const support = images.slice(1, 4);
       return `
-        <div class="property-detail-gallery">
-          <img id="detail-main-image-${prop.id}" class="property-detail-main-image" src="${images[0]}" alt="${safeName} photo" />
-          <div class="property-detail-thumbs">
-            ${images.map((url, index) => `
-              <button type="button" class="property-detail-thumb ${index === 0 ? 'active' : ''}" data-gallery-for="${prop.id}" onclick="setMainPropertyImage(${prop.id}, '${url}', ${index})" aria-label="View property photo ${index + 1}">
-                <img src="${url}" alt="${safeName} thumbnail ${index + 1}" />
+        <div class="property-gallery-grid">
+          <button type="button" class="property-gallery-main" onclick="openGallery(0)" aria-label="Open all photos">
+            <img id="detail-main-image-${prop.id}" src="${images[0]}" alt="${safeName} photo" />
+            <span class="property-gallery-pill badge badge-brand">${images.length} Photos</span>
+            <div class="property-gallery-actions">
+              <span class="btn btn-secondary btn-sm">View All Photos</span>
+              <span class="btn btn-secondary btn-sm">Video Preview</span>
+            </div>
+          </button>
+          <div class="property-gallery-side">
+            ${support.map((url, index) => `
+              <button type="button" class="property-gallery-thumb property-detail-thumb ${index === 0 ? 'active' : ''}" data-gallery-for="${prop.id}" onclick="setMainPropertyImage(${prop.id}, '${url}', ${index + 1})" aria-label="View property photo ${index + 2}">
+                <img src="${url}" alt="${safeName} thumbnail ${index + 2}" />
               </button>
             `).join('')}
           </div>
         </div>`;
     }
-
+    function getAmenityAvailability(prop) {
+      const defaultAmenities = [
+        { key: 'has_wifi', icon: 'WiFi', label: 'WiFi', active: !!prop.has_wifi },
+        { key: 'has_ac', icon: 'AC', label: 'AC', active: !!prop.has_ac },
+        { key: 'has_laundry', icon: 'Laundry', label: 'Laundry', active: !!prop.has_laundry },
+        { key: 'has_parking', icon: 'Park', label: 'Parking', active: !!prop.has_parking },
+        { key: 'has_food', icon: 'Food', label: 'Food', active: !!prop.has_food },
+        { key: 'has_gym', icon: 'Gym', label: 'Gym', active: !!prop.has_gym },
+      ];
+      const customAmenities = (prop.custom_amenities || []).map((name, index) => ({
+        key: `custom_${index}`,
+        icon: 'Custom',
+        label: name,
+        active: true,
+      }));
+      return defaultAmenities.concat(customAmenities);
+    }
+    function getRoomTypeMeta(type) {
+      const map = {
+        single: { label: 'Single', rank: 1 },
+        double: { label: 'Double', rank: 2 },
+        triple: { label: 'Triple', rank: 3 },
+        dormitory: { label: 'Dormitory', rank: 4 },
+      };
+      return map[type] || { label: type || 'Room', rank: 99 };
+    }
+    function getRoomTypeStats(prop) {
+      const rooms = (prop.rooms || []);
+      const grouped = rooms.reduce((acc, room) => {
+        const key = room.room_type || 'single';
+        if (!acc[key]) {
+          acc[key] = {
+            key,
+            label: getRoomTypeMeta(key).label,
+            minRent: null,
+            maxRent: null,
+            availableBeds: 0,
+            totalBeds: 0,
+          };
+        }
+        const rent = Number(room.rent_per_month || 0);
+        acc[key].minRent = acc[key].minRent == null ? rent : Math.min(acc[key].minRent, rent);
+        acc[key].maxRent = acc[key].maxRent == null ? rent : Math.max(acc[key].maxRent, rent);
+        acc[key].availableBeds += Number(room.available_beds || 0);
+        acc[key].totalBeds += Number(room.total_beds || 0);
+        return acc;
+      }, {});
+      return Object.values(grouped).sort((a, b) => getRoomTypeMeta(a.key).rank - getRoomTypeMeta(b.key).rank);
+    }
+    function computePriceBreakdown(prop, selectedType, duration) {
+      const stats = getRoomTypeStats(prop);
+      const chosen = stats.find((room) => room.key === selectedType) || stats[0];
+      const monthly = Number(prop.pricing_monthly_rent || chosen?.minRent || prop.min_rent || 0);
+      const deposit = Number(prop.pricing_security_deposit ?? Math.round(monthly * 1.5));
+      const maintenance = Number(prop.pricing_maintenance_charge ?? Math.round(monthly * 0.06));
+      const foodCharges = Number(prop.pricing_food_charge ?? (prop.has_food ? Math.round(monthly * 0.1) : 0));
+      const monthlyTotal = monthly + maintenance + foodCharges;
+      const total = monthlyTotal * Number(duration || 1) + deposit;
+      return {
+        roomType: chosen?.key || selectedType,
+        monthly,
+        deposit,
+        maintenance,
+        foodCharges,
+        monthlyTotal,
+        total,
+        availableBeds: chosen?.availableBeds || 0,
+      };
+    }
+    function renderPriceBreakdownHtml(data) {
+      return `
+        <div class="break-row"><span>Monthly rent</span><strong>${formatCurrency(data.monthly)}</strong></div>
+        <div class="break-row"><span>Security deposit</span><strong>${formatCurrency(data.deposit)}</strong></div>
+        <div class="break-row"><span>Maintenance</span><strong>${formatCurrency(data.maintenance)}</strong></div>
+        <div class="break-row"><span>Food charges</span><strong>${formatCurrency(data.foodCharges)}</strong></div>
+        <div class="divider" style="margin:.35rem 0;"></div>
+        <div class="break-row"><span>Total (${detailState.bookingSelection.duration} month${detailState.bookingSelection.duration > 1 ? 's' : ''})</span><strong>${formatCurrency(data.total)}</strong></div>`;
+    }
+    function renderNearbyCards(properties) {
+      if (!properties.length) {
+        return '<p class="text-muted text-sm">No similar nearby properties found right now.</p>';
+      }
+      return `<div class="nearby-scroll">${properties.map((prop) => `
+        <article class="nearby-card" onclick="showDetail(${prop.id})" aria-label="Open ${escapeHtml(prop.name)}">
+          <img src="${getPropertyImages(prop)[0]}" alt="${escapeHtml(prop.name)}" />
+          <div class="nearby-card-body">
+            <strong style="display:block;font-size:.9rem;">${escapeHtml(prop.name)}</strong>
+            <span class="text-sm text-muted">Location: ${escapeHtml(prop.city || '')}</span>
+            <div class="flex items-center justify-between mt-sm">
+              <span class="font-semibold">${prop.min_rent ? `${formatCurrency(prop.min_rent)}/mo` : 'On request'}</span>
+              <span class="badge badge-brand">${escapeHtml(prop.property_type_display || 'PG')}</span>
+            </div>
+          </div>
+        </article>`).join('')}</div>`;
+    }
+    function renderNearbyPlacesFromProperty(property) {
+      const nearby = property?.nearby_places || {};
+      const groups = [
+        { key: 'grocery_stores', label: 'Grocery Stores' },
+        { key: 'hospitals', label: 'Hospitals' },
+        { key: 'restaurants', label: 'Restaurants' },
+        { key: 'gyms', label: 'Gyms' },
+        { key: 'cafes', label: 'Cafes' },
+        { key: 'colleges', label: 'Colleges' },
+      ].map((group) => ({
+        ...group,
+        values: Array.isArray(nearby[group.key]) ? nearby[group.key] : [],
+      }));
+      if (!groups.some((group) => group.values.length)) {
+        return '<p class="text-muted text-sm">Nearby places are not listed yet.</p>';
+      }
+      return `<div class="grid gap-sm">${groups.map((group) => `
+        <article class="rule-card">
+          <strong>${group.label}</strong>
+          <p class="text-sm text-muted">${group.values.length ? escapeHtml(group.values.join(', ')) : 'Not added yet'}</p>
+        </article>
+      `).join('')}</div>`;
+    }
+    function renderReviewSection() {
+      const reviews = detailState.reviews || [];
+      const total = reviews.length;
+      const avg = total ? (reviews.reduce((sum, item) => sum + Number(item.rating || 0), 0) / total).toFixed(1) : '0.0';
+      const buckets = [5, 4, 3, 2, 1].map((star) => {
+        const count = reviews.filter((r) => Number(r.rating) === star).length;
+        const percent = total ? Math.round((count / total) * 100) : 0;
+        return { star, count, percent };
+      });
+      const filtered = detailState.reviewsFilter === 'all'
+        ? reviews
+        : reviews.filter((r) => Number(r.rating) === Number(detailState.reviewsFilter));
+      return `
+        <div class="review-summary">
+          <div class="booking-detail-card" style="padding:.85rem;">
+            <div style="font-size:2rem;font-weight:900;line-height:1;">${avg}</div>
+            <div class="text-sm" style="color:#eab308;">${'&#9733;'.repeat(Math.max(1, Math.round(Number(avg) || 0)))}</div>
+            <div class="text-sm text-muted">${total} review${total !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="star-breakdown">
+            ${buckets.map((row) => `
+              <div class="star-row">
+                <span>${row.star}★</span>
+                <span class="star-meter"><i style="width:${row.percent}%"></i></span>
+                <span>${row.count}</span>
+              </div>
+            `).join('')}
+            <div class="flex gap-sm flex-wrap mt-sm">
+              <button type="button" class="property-tab-btn ${detailState.reviewsFilter === 'all' ? 'active' : ''}" onclick="setReviewFilter('all')">All</button>
+              <button type="button" class="property-tab-btn ${detailState.reviewsFilter === '5' ? 'active' : ''}" onclick="setReviewFilter('5')">5-star</button>
+              <button type="button" class="property-tab-btn ${detailState.reviewsFilter === '4' ? 'active' : ''}" onclick="setReviewFilter('4')">4-star</button>
+              <button type="button" class="property-tab-btn ${detailState.reviewsFilter === '3' ? 'active' : ''}" onclick="setReviewFilter('3')">3-star</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:.6rem;">
+          ${filtered.length ? filtered.map((r) => `
+            <article class="review-card">
+              <div class="flex items-center justify-between gap-sm">
+                <strong>${escapeHtml(r.username || 'Resident')}</strong>
+                <span style="color:#eab308;">${'&#9733;'.repeat(Number(r.rating || 0))}</span>
+              </div>
+              <div class="text-xs text-muted">${formatDate(r.created_at)}  Stay: ${escapeHtml(r.stay_duration || 'Not specified')} ${r.is_verified_resident ? '<span class="badge badge-green">Verified Resident</span>' : '<span class="badge badge-yellow">Unverified</span>'}</div>
+              <p class="text-sm" style="margin-top:.35rem;color:var(--clr-text-muted);">${escapeHtml(r.review_text || 'No written feedback.')}</p>
+            </article>`).join('') : '<p class="text-muted text-sm">No reviews match this filter.</p>'}
+        </div>`;
+    }
+    function setReviewFilter(value) {
+      detailState.reviewsFilter = value;
+      const mount = document.getElementById('detail-reviews-content');
+      if (mount) mount.innerHTML = renderReviewSection();
+    }
+    function refreshBookingCard() {
+      if (!detailState.property) return;
+      const selected = computePriceBreakdown(detailState.property, detailState.bookingSelection.roomType, detailState.bookingSelection.duration);
+      detailState.priceBreakdown = selected;
+      const body = document.getElementById('booking-breakdown-body');
+      if (body) body.innerHTML = renderPriceBreakdownHtml(selected);
+      const bed = document.getElementById('booking-bed-status');
+      if (bed) {
+        bed.textContent = selected.availableBeds > 0 ? `${selected.availableBeds} beds left` : 'Currently full';
+        bed.className = `badge ${selected.availableBeds > 0 ? 'badge-green' : 'badge-red'}`;
+      }
+      const price = document.querySelector('.booking-detail-price');
+      if (price) price.textContent = formatCurrency(selected.monthly);
+    }
+    function selectRoomType(type) {
+      detailState.bookingSelection.roomType = type;
+      document.querySelectorAll('#room-type-selector .property-tab-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(type));
+      });
+      refreshBookingCard();
+    }
+    function onDetailMoveInChange(value) {
+      detailState.bookingSelection.moveIn = value;
+    }
+    function onDetailDurationChange(value) {
+      detailState.bookingSelection.duration = Number(value || 1);
+      refreshBookingCard();
+    }
+    function activateDetailTab(tab) {
+      document.querySelectorAll('[data-detail-tab]').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-detail-tab') === tab);
+      });
+      document.querySelectorAll('.property-tab-panel').forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `tab-${tab}`);
+      });
+    }
+    function toggleReadMore() {
+      const desc = document.getElementById('overview-description');
+      if (!desc) return;
+      desc.classList.toggle('collapsed');
+      const btn = desc.parentElement.querySelector('button');
+      if (btn) btn.textContent = desc.classList.contains('collapsed') ? 'Read More' : 'Show Less';
+    }
+    function sharePropertyLink(propertyId) {
+      const url = `${window.location.origin}${window.location.pathname}#property-${propertyId}`;
+      if (navigator.share) {
+        navigator.share({
+          title: detailState.property?.name || 'PGDOST Property',
+          text: 'Check out this property on PGDOST.',
+          url,
+        }).catch(() => {});
+        return;
+      }
+      navigator.clipboard.writeText(url)
+        .then(() => Toast.success('Property link copied to clipboard.'))
+        .catch(() => Toast.info(url));
+    }
+    function bookCurrentSelection() {
+      if (!detailState.property) return;
+      const selected = detailState.priceBreakdown || computePriceBreakdown(detailState.property, detailState.bookingSelection.roomType, detailState.bookingSelection.duration);
+      document.getElementById('apply-movein').value = detailState.bookingSelection.moveIn || '';
+      document.getElementById('apply-message').value = `Interested in ${getRoomTypeMeta(detailState.bookingSelection.roomType).label} room for ${detailState.bookingSelection.duration} month(s). Estimated total: ${formatCurrency(selected.total)}.`;
+      openApply(detailState.property.id);
+    }
+    function openVisitModal(propertyId) {
+      document.getElementById('visit-property-id').value = propertyId;
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('visit-date').min = today;
+      openModal('modal-visit');
+    }
+    async function renderNearbyProperties(full) {
+      const wrap = document.getElementById('nearby-properties-wrap');
+      if (!wrap) return;
+      wrap.innerHTML = '<p class="text-muted text-sm">Loading nearby properties...</p>';
+      try {
+        const res = await api.get(`/properties/?page_size=12&city=${encodeURIComponent(full.city || '')}`);
+        const list = (res.results || res).filter((item) => Number(item.id) !== Number(full.id)).slice(0, 8);
+        detailState.nearby = list;
+        wrap.innerHTML = renderNearbyCards(list);
+      } catch {
+        const fallback = allProperties.filter((item) => Number(item.id) !== Number(full.id) && item.city === full.city).slice(0, 8);
+        detailState.nearby = fallback;
+        wrap.innerHTML = renderNearbyCards(fallback);
+      }
+    }
+    async function loadDetailReviews(propertyId) {
+      detailState.reviewsFilter = 'all';
+      const mount = document.getElementById('detail-reviews-content');
+      if (mount) mount.innerHTML = '<p class="text-muted text-sm">Loading reviews...</p>';
+      try {
+        const reviews = await api.get(`/properties/${propertyId}/reviews/`);
+        detailState.reviews = reviews || [];
+      } catch {
+        detailState.reviews = [];
+      }
+      if (mount) mount.innerHTML = renderReviewSection();
+    }
+    function buildPropertyDetailHtml(full) {
+      const amenityStates = getAmenityAvailability(full);
+      const roomStats = getRoomTypeStats(full);
+      const defaultType = (roomStats.find((item) => item.availableBeds > 0)?.key) || roomStats[0]?.key || 'single';
+      detailState.bookingSelection.roomType = detailState.bookingSelection.roomType && roomStats.some((r) => r.key === detailState.bookingSelection.roomType)
+        ? detailState.bookingSelection.roomType
+        : defaultType;
+      const selected = computePriceBreakdown(full, detailState.bookingSelection.roomType, detailState.bookingSelection.duration);
+      detailState.priceBreakdown = selected;
+      const allAvailableBeds = (full.rooms || []).reduce((sum, room) => sum + Number(room.available_beds || 0), 0);
+      const availabilityText = allAvailableBeds > 0 ? `${allAvailableBeds} beds left` : 'Currently full';
+      const availabilityBadge = allAvailableBeds > 0 ? 'badge-green' : 'badge-red';
+      const imageBlock = renderPropertyGallery(full);
+      const wishlistActive = isWishlisted(full.id);
+      const addressLine = `${full.address || ''}, ${full.city || ''}, ${full.state || ''} ${full.pincode || ''}`.replace(/\s+,/g, ',').trim();
+      const mapQuery = encodeURIComponent(addressLine || full.name || 'Bangalore');
+      const mapSrc = full.google_maps_url
+        ? escapeHtml(full.google_maps_url)
+        : `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      const nearbyLandmarks = (full.nearby_landmarks || []).join(', ');
+      const nearbyColleges = (full.nearby_colleges || []).join(', ');
+      const nearbyTransit = (full.nearby_transit || []).join(', ');
+      const roomsTable = (full.rooms || []).map((r) =>
+        `<tr><td>${escapeHtml(r.room_number)}</td><td>${escapeHtml(r.room_type_display)}</td><td>${r.total_beds} beds</td><td class="text-brand-light font-semibold">${formatCurrency(r.rent_per_month)}/mo</td><td>${r.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Full</span>'}</td></tr>`
+      ).join('');
+      const canReview = Auth.isLoggedIn() && Auth.getRole() === 'resident';
+      return `
+        <div class="property-detail-shell">
+          <div class="property-main-stack">
+            ${imageBlock}
+            <section class="booking-detail-card">
+              <div class="property-top-head">
+                <div class="property-title-block">
+                  <div class="flex items-center gap-sm flex-wrap">
+                    <span class="badge badge-brand">${escapeHtml(full.property_type_display || 'PG')}</span>
+                    <span class="badge badge-green">Verified</span>
+                    <span class="badge ${availabilityBadge}">${availabilityText}</span>
+                  </div>
+                  <h3>${escapeHtml(full.name)}</h3>
+                  <p class="property-title-meta">Location: ${escapeHtml(addressLine)}</p>
+                </div>
+                <div class="property-action-row">
+                  <button type="button" class="btn btn-secondary btn-sm ${wishlistActive ? 'active' : ''}" data-wishlist-id="${full.id}" onclick="toggleFavorite(event, ${full.id})" aria-pressed="${wishlistActive}">${wishlistActive ? 'Saved' : 'Save'}</button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="sharePropertyLink(${full.id})">Share</button>
+                </div>
+              </div>
+            </section>
+            <section class="property-quick-strip">
+              <article class="property-quick-item"><span class="property-quick-label">Available From</span><strong class="property-quick-value">${formatDate(new Date().toISOString())}</strong></article>
+              <article class="property-quick-item"><span class="property-quick-label">Room Types</span><strong class="property-quick-value">${roomStats.map((r) => r.label).join(', ') || 'NA'}</strong></article>
+              <article class="property-quick-item"><span class="property-quick-label">Security Deposit</span><strong class="property-quick-value">${formatCurrency(selected.deposit)}</strong></article>
+              <article class="property-quick-item"><span class="property-quick-label">Food Included</span><strong class="property-quick-value">${full.has_food ? 'Yes' : 'No'}</strong></article>
+              <article class="property-quick-item"><span class="property-quick-label">Nearby Colleges</span><strong class="property-quick-value">${escapeHtml(nearbyColleges || 'Not listed')}</strong></article>
+              <article class="property-quick-item"><span class="property-quick-label">Occupancy</span><strong class="property-quick-value">${allAvailableBeds > 0 ? `${allAvailableBeds} beds available` : 'Fully occupied'}</strong></article>
+            </section>
+            <section class="booking-detail-card">
+              <div class="property-tab-head">
+                <button type="button" class="property-tab-btn active" data-detail-tab="overview" onclick="activateDetailTab('overview')">Overview</button>
+                <button type="button" class="property-tab-btn" data-detail-tab="amenities" onclick="activateDetailTab('amenities')">Amenities</button>
+                <button type="button" class="property-tab-btn" data-detail-tab="location" onclick="activateDetailTab('location')">Location</button>
+                <button type="button" class="property-tab-btn" data-detail-tab="rules" onclick="activateDetailTab('rules')">House Rules</button>
+                <button type="button" class="property-tab-btn" data-detail-tab="reviews" onclick="activateDetailTab('reviews')">Reviews</button>
+                <button type="button" class="property-tab-btn" data-detail-tab="nearby" onclick="activateDetailTab('nearby')">Nearby Places</button>
+              </div>
+              <div id="tab-overview" class="property-tab-panel active">
+                <p id="overview-description" class="overview-description collapsed text-sm" style="color:var(--clr-text-muted);line-height:1.75;">
+                  ${escapeHtml(full.description || 'Property description not added yet.')}
+                  ${full.lifestyle_highlights ? ` Lifestyle highlights: ${escapeHtml(full.lifestyle_highlights)}.` : ''}
+                  ${full.suitable_for ? ` Suitable for: ${escapeHtml(String(full.suitable_for).replace(/_/g, ' '))}.` : ''}
+                  ${full.overview_custom_text ? ` ${escapeHtml(full.overview_custom_text)}` : ''}
+                </p>
+                <button type="button" class="btn btn-secondary btn-sm mt-sm" onclick="toggleReadMore()">Read More</button>
+              </div>
+              <div id="tab-amenities" class="property-tab-panel">
+                <div class="amenities-grid-wide">
+                  ${amenityStates.map((item) => `
+                    <div class="amenity-wide-card" style="${item.active ? '' : 'opacity:.55;'}">
+                      <span>${item.icon}</span><span>${item.label}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div id="tab-location" class="property-tab-panel">
+                <p class="text-sm text-muted" style="margin-bottom:.55rem;">${escapeHtml(addressLine)}</p>
+                <p class="text-sm text-muted" style="margin-bottom:.55rem;">Landmarks: ${escapeHtml(nearbyLandmarks || 'Not listed')}</p>
+                <p class="text-sm text-muted" style="margin-bottom:.55rem;">Metro/Bus: ${escapeHtml(nearbyTransit || 'Not listed')}</p>
+                <div style="border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);">
+                  <iframe title="Property location map" src="${mapSrc}" width="100%" height="320" style="border:0;display:block;" loading="lazy"></iframe>
+                </div>
+              </div>
+              <div id="tab-rules" class="property-tab-panel">
+                <div class="rules-grid">
+                  <article class="rule-card"><strong>Gate Closing Time</strong><p class="text-sm text-muted">${escapeHtml(full.gate_closing_time || 'Not specified')}</p></article>
+                  <article class="rule-card"><strong>Smoking Policy</strong><p class="text-sm text-muted">${escapeHtml(full.smoking_policy || 'Not specified')}</p></article>
+                  <article class="rule-card"><strong>Visitor Policy</strong><p class="text-sm text-muted">${escapeHtml(full.visitor_rules || 'Not specified')}</p></article>
+                  <article class="rule-card"><strong>Drinking Policy</strong><p class="text-sm text-muted">${escapeHtml(full.drinking_rules || 'Not specified')}</p></article>
+                  <article class="rule-card"><strong>Quiet Hours</strong><p class="text-sm text-muted">${escapeHtml(full.quiet_hours || 'Not specified')}</p></article>
+                </div>
+              </div>
+              <div id="tab-reviews" class="property-tab-panel">
+                <div class="flex items-center justify-between gap-sm flex-wrap mb-sm">
+                  <h4 class="font-semibold">Resident Reviews</h4>
+                  ${canReview ? `<button onclick="openReview(${full.id})" class="btn btn-secondary btn-sm">Write Review</button>` : ''}
+                </div>
+                <div id="detail-reviews-content"><p class="text-muted text-sm">Loading reviews...</p></div>
+              </div>
+              <div id="tab-nearby" class="property-tab-panel">
+                <h4 class="font-semibold mb-sm">Nearby Places</h4>
+                <div id="nearby-properties-wrap">${renderNearbyPlacesFromProperty(full)}</div>
+              </div>
+            </section>
+            <section class="booking-detail-card">
+              <h4 class="font-semibold mb-sm">Rooms & Pricing</h4>
+              ${roomsTable ? `<div class="table-wrapper"><table class="table"><thead><tr><th>Room</th><th>Type</th><th>Beds</th><th>Rent</th><th>Status</th></tr></thead><tbody>${roomsTable}</tbody></table></div>` : '<p class="text-muted text-sm">No rooms listed yet.</p>'}
+            </section>
+          </div>
+          <aside class="property-side-stack">
+            <div class="booking-detail-card">
+              <div class="flex items-end justify-between gap-sm">
+                <div>
+                  <div class="booking-detail-price">${formatCurrency(selected.monthly)}</div>
+                  <div class="text-sm text-muted">per month</div>
+                </div>
+                <span class="badge ${availabilityBadge}" id="booking-bed-status">${availabilityText}</span>
+              </div>
+              <div class="booking-field">
+                <label>Room Type Selector</label>
+                <div class="flex gap-sm flex-wrap" id="room-type-selector">
+                  ${['single', 'double', 'triple'].map((type) => {
+                    const stat = roomStats.find((room) => room.key === type);
+                    const active = detailState.bookingSelection.roomType === type;
+                    const disabled = !stat;
+                    return `<button type="button" class="property-tab-btn ${active ? 'active' : ''}" ${disabled ? 'disabled style="opacity:.4;cursor:not-allowed;"' : ''} onclick="selectRoomType('${type}')">${getRoomTypeMeta(type).label}</button>`;
+                  }).join('')}
+                </div>
+              </div>
+              <div class="booking-field">
+                <label>Move-in Date</label>
+                <input id="detail-movein-date" class="form-input" type="date" min="${new Date().toISOString().split('T')[0]}" value="${escapeHtml(detailState.bookingSelection.moveIn || '')}" onchange="onDetailMoveInChange(this.value)" />
+              </div>
+              <div class="booking-field">
+                <label>Stay Duration</label>
+                <select id="detail-duration" class="form-select" onchange="onDetailDurationChange(this.value)">
+                  ${[1, 3, 6, 9, 12].map((month) => `<option value="${month}" ${Number(detailState.bookingSelection.duration) === month ? 'selected' : ''}>${month} month${month > 1 ? 's' : ''}</option>`).join('')}
+                </select>
+              </div>
+              <details class="booking-accordion" open>
+                <summary>Price Breakdown</summary>
+                <div class="booking-accordion-body" id="booking-breakdown-body">
+                  ${renderPriceBreakdownHtml(selected)}
+                </div>
+              </details>
+              <div class="booking-inline-actions">
+                <button type="button" class="btn btn-primary" onclick="bookCurrentSelection()">Book Now</button>
+                <button type="button" class="btn btn-secondary" onclick="openVisitModal(${full.id})">Schedule Visit</button>
+              </div>
+              <div class="booking-inline-actions">
+                <a class="btn btn-secondary" href="tel:${escapeHtml(full.phone || full.alternate_contact || '')}" ${(full.phone || full.alternate_contact) ? '' : 'onclick="event.preventDefault();Toast.info(`Phone number not available.`);"'}>Call</a>
+                <a class="btn btn-secondary" href="https://wa.me/91${escapeHtml((full.whatsapp_number || full.phone || '').replace(/\D/g, ''))}?text=${encodeURIComponent(`Hi, I am interested in ${full.name}`)}" target="_blank" rel="noopener" ${(full.whatsapp_number || full.phone) ? '' : 'onclick="event.preventDefault();Toast.info(`WhatsApp number not available.`);"'}>WhatsApp</a>
+              </div>
+              <div class="detail-trust">
+                <span>Verified property</span>
+                <span>Free cancellation within 24h</span>
+                <span>Owner identity verified</span>
+              </div>
+            </div>
+            <div class="detail-cta-mobile">
+              <div class="flex items-center justify-between gap-sm">
+                <strong>${formatCurrency(selected.monthly)}/mo</strong>
+                <button type="button" class="btn btn-primary btn-sm" onclick="bookCurrentSelection()">Book Now</button>
+              </div>
+            </div>
+          </aside>
+        </div>`;
+    }
     function renderCard(prop, index = 0) {
       const minRent = prop.min_rent ? formatCurrency(prop.min_rent) : 'On request';
       const imgSrc = getPropertyImages(prop)[0];
@@ -800,7 +1465,7 @@
               <span class="premium-badge premium-badge-verified">✓ Verified</span>
               <span class="premium-badge premium-badge-accent">${premiumBadge}</span>
             </div>
-            <button type="button" class="favorite-btn" onclick="toggleFavorite(event, ${prop.id})" aria-label="Save ${prop.name}" aria-pressed="false">♡</button>
+            <button type="button" class="favorite-btn ${isWishlisted(prop.id) ? 'active' : ''}" data-wishlist-id="${prop.id}" onclick="toggleFavorite(event, ${prop.id})" aria-label="Save ${prop.name}" aria-pressed="${isWishlisted(prop.id)}">${isWishlisted(prop.id) ? '&#9829;' : '&#9825;'}</button>
           </div>
           <div class="property-card-body">
             <div class="property-card-heading">
@@ -826,7 +1491,6 @@
           </div>
         </div>`;
     }
-
     function renderGrid(properties) {
       const grid = document.getElementById('properties-grid');
       const empty = document.getElementById('empty-state');
@@ -843,14 +1507,12 @@
       const visibleProperties = properties.slice(0, visiblePropertyCount);
       grid.innerHTML = visibleProperties.map(renderCard).join('');
       count.textContent = `Showing ${visibleProperties.length} of ${properties.length} propert${properties.length !== 1 ? 'ies' : 'y'}`;
-
       if (seeMoreBtn) {
         const remaining = Math.max(0, properties.length - visiblePropertyCount);
         seeMoreBtn.classList.toggle('hidden', remaining === 0);
         seeMoreBtn.textContent = `See More (${Math.min(propertyPageSize, remaining)} more)`;
       }
     }
-
     async function loadProperties() {
       try {
         let query = '/properties/?page_size=100';
@@ -871,7 +1533,6 @@
         if (document.getElementById('filter-ac').checked) query += `&has_ac=true`;
         if (document.getElementById('filter-food').checked) query += `&has_food=true`;
         if (document.getElementById('filter-parking').checked) query += `&has_parking=true`;
-
         const res = await api.get(query);
         allProperties = res.results || res; // handle pagination
         visiblePropertyCount = propertyPageSize;
@@ -887,20 +1548,17 @@
         document.getElementById('properties-grid').innerHTML = '';
       }
     }
-
     function applyFilters() {
       loadProperties().then(() => {
         document.getElementById('explore-section').scrollIntoView({ behavior: 'smooth' });
       });
     }
-
     async function showHeroProperty(name) {
       const localMatch = allProperties.find(p => (p.name || '').toLowerCase() === name.toLowerCase());
       if (localMatch) {
         showDetail(localMatch.id);
         return;
       }
-
       try {
         const res = await api.get(`/properties/?page_size=100&search=${encodeURIComponent(name)}`);
         const matches = res.results || res;
@@ -914,25 +1572,21 @@
         Toast.error('Could not load this PG right now.');
       }
     }
-
     function updateHeroSlides() {
       const slides = [...document.querySelectorAll('.hero-slide')];
       const dots = [...document.querySelectorAll('.hero-slide-dots span')];
       if (!slides.length) return;
       const lastIndex = slides.length - 1;
-
       slides.forEach((slide, index) => {
         slide.classList.remove('active', 'prev', 'next');
         if (index === activeHeroIndex) slide.classList.add('active');
         if (index === (activeHeroIndex + 1) % slides.length) slide.classList.add('next');
         if (index === (activeHeroIndex + lastIndex) % slides.length) slide.classList.add('prev');
       });
-
       dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === activeHeroIndex);
       });
     }
-
     function moveHeroSlide(direction) {
       const slides = document.querySelectorAll('.hero-slide');
       if (!slides.length) return;
@@ -944,7 +1598,6 @@
         updateHeroSlides();
       }, 4500);
     }
-
     function initHeroShowcase() {
       updateHeroSlides();
       clearInterval(heroTimer);
@@ -953,85 +1606,37 @@
         updateHeroSlides();
       }, 4500);
     }
-
     async function showDetail(id) {
-      const prop = allProperties.find(p => p.id === id);
+      const prop = allProperties.find((item) => Number(item.id) === Number(id));
       document.getElementById('modal-prop-name').textContent = prop?.name || 'Property Details';
-      // Fetch full detail with rooms
+      const body = document.getElementById('modal-detail-body');
+      body.innerHTML = `
+        <div class="booking-detail-card">
+          <div style="display:flex;align-items:center;justify-content:center;padding:2rem;"><div class="spinner"></div></div>
+          <p class="text-center text-sm text-muted">Loading premium property details...</p>
+        </div>`;
+      openModal('modal-detail');
       try {
         const full = await api.get(`/properties/${id}/`);
+        detailState.property = full;
         document.getElementById('modal-prop-name').textContent = full.name;
-        const body = document.getElementById('modal-detail-body');
-        const amenities = renderAmenities(full);
-        const rooms = (full.rooms || []).map(r =>
-          `<tr><td>${r.room_number}</td><td>${r.room_type_display}</td><td>${r.total_beds} beds</td><td class="text-brand-light font-semibold">${formatCurrency(r.rent_per_month)}/mo</td><td>${r.is_available ? '<span class="badge badge-green">Available</span>' : '<span class="badge badge-red">Full</span>'}</td></tr>`
-        ).join('');
-
-        const canApply = Auth.isLoggedIn() && Auth.getRole() === 'resident';
-        const applyBtn = canApply
-          ? `<button onclick="openApply(${full.id})" class="btn btn-primary btn-lg w-full mt-lg">Apply / Enquire</button>`
-          : Auth.isLoggedIn()
-          ? ''
-          : `<a href="register.html" class="btn btn-primary btn-lg w-full mt-lg">Register to Apply</a>`;
-
-        const imagesHtml = renderPropertyGallery(full);
-
-        body.innerHTML = `
-          <div class="flex flex-col gap-md">
-            ${imagesHtml}
-            <div class="flex items-center gap-sm flex-wrap">${amenities || '<span class="text-muted text-sm">No amenities listed</span>'}</div>
-            <p class="text-muted text-sm">\ud83d\udccd ${full.address}, ${full.city}, ${full.state} — ${full.pincode}</p>
-            ${full.description ? `<p class="text-sm" style="color:var(--clr-text-muted)">${full.description}</p>` : ''}
-            <div class="divider"></div>
-            <h4 class="font-semibold mb-sm">Rooms & Pricing</h4>
-            ${rooms ? `<div class="table-wrapper"><table class="table"><thead><tr><th>Room</th><th>Type</th><th>Beds</th><th>Rent</th><th>Status</th></tr></thead><tbody>${rooms}</tbody></table></div>` : '<p class="text-muted text-sm">No rooms listed yet.</p>'}
-            
-            <div class="divider"></div>
-            <h4 class="font-semibold mb-sm flex justify-between items-center">
-                <span>Reviews</span>
-                ${canApply ? `<button onclick="openReview(${full.id})" class="btn btn-secondary btn-sm">Write Review</button>` : ''}
-            </h4>
-            <div id="reviews-container-${full.id}" class="mb-sm text-sm"><p class="text-muted">Loading reviews...</p></div>
-            
-            <div class="divider"></div>
-            <div class="flex gap-sm">
-                <button onclick="openInquiry(${full.id})" class="btn btn-secondary w-full">Make an Inquiry</button>
-                ${applyBtn.replace('mt-lg', '').replace('w-full', 'w-full')}
-            </div>
-          </div>`;
-        openModal('modal-detail');
-        
-        // Load reviews
-        try {
-            const reviews = await api.get(`/properties/${full.id}/reviews/`);
-            const revContainer = document.getElementById(`reviews-container-${full.id}`);
-            if (reviews.length === 0) {
-                revContainer.innerHTML = '<p class="text-muted">No reviews yet.</p>';
-            } else {
-                revContainer.innerHTML = reviews.map(r => `
-                    <div style="margin-bottom:8px; padding:8px; background:var(--clr-bg-3); border-radius:6px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                            <strong style="color:var(--clr-text);">${r.username}</strong>
-                            <span style="color:#eab308;">${'⭐'.repeat(r.rating)}</span>
-                        </div>
-                        <p style="color:var(--clr-text-muted); margin:0;">${r.review_text || ''}</p>
-                    </div>
-                `).join('');
-            }
-        } catch (e) {
-            document.getElementById(`reviews-container-${full.id}`).innerHTML = '<p class="text-muted">Failed to load reviews.</p>';
-        }
+        body.innerHTML = buildPropertyDetailHtml(full);
+        await loadDetailReviews(full.id);
       } catch (e) {
+        body.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">!</div>
+            <h3>Could not load property details.</h3>
+            <p>Please try again in a moment.</p>
+          </div>`;
         Toast.error('Could not load property details.');
       }
     }
-
     function openApply(propertyId) {
       document.getElementById('apply-property-id').value = propertyId;
       closeModal('modal-detail');
       openModal('modal-apply');
     }
-
     document.getElementById('apply-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button[type=submit]');
@@ -1051,14 +1656,12 @@
         btn.disabled = false; btn.textContent = 'Submit Application';
       }
     });
-
     document.getElementById('btn-search').addEventListener('click', applyFilters);
     document.getElementById('search-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
     document.getElementById('btn-see-more')?.addEventListener('click', () => {
       visiblePropertyCount += propertyPageSize;
       renderGrid(allProperties);
     });
-
     function openInquiry(propertyId) {
         document.getElementById('inquiry-property-id').value = propertyId;
         if (Auth.isLoggedIn()) {
@@ -1068,7 +1671,6 @@
         closeModal('modal-detail');
         openModal('modal-inquiry');
     }
-
     document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button[type=submit]');
@@ -1090,13 +1692,11 @@
             btn.disabled = false; btn.textContent = 'Send Inquiry';
         }
     });
-
     function openReview(propertyId) {
         document.getElementById('review-property-id').value = propertyId;
         closeModal('modal-detail');
         openModal('modal-review');
     }
-
     document.getElementById('review-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button[type=submit]');
@@ -1106,6 +1706,7 @@
             await api.post(`/properties/${propId}/reviews/`, {
                 rating: parseInt(document.getElementById('review-rating').value),
                 review_text: document.getElementById('review-text').value,
+                stay_duration: document.getElementById('review-stay-duration').value,
             });
             closeModal('modal-review');
             Toast.success('Review submitted successfully!');
@@ -1117,7 +1718,41 @@
             btn.disabled = false; btn.textContent = 'Submit Review';
         }
     });
-
+    document.getElementById('visit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.disabled = true; btn.textContent = 'Requesting...';
+      try {
+        const propertyId = Number(document.getElementById('visit-property-id').value);
+        const date = document.getElementById('visit-date').value;
+        const time = document.getElementById('visit-time').value;
+        const note = document.getElementById('visit-note').value.trim();
+        const user = Auth.getUser() || {};
+        const name = user.username || 'Website Visitor';
+        const email = user.email || `${(name || 'visitor').toLowerCase().replace(/[^a-z0-9]+/g, '.') || 'visitor'}@pgdost.local`;
+        const msg = `Visit request for ${date} at ${time}.${note ? ` Note: ${note}` : ''}`;
+        await api.post(`/properties/${propertyId}/inquire/`, {
+          sender_name: name,
+          sender_email: email,
+          sender_phone: user.phone_number || '',
+          message: msg,
+        });
+        closeModal('modal-visit');
+        Toast.success('Visit request sent successfully.');
+        e.target.reset();
+      } catch (err) {
+        Toast.error(err.message || 'Failed to schedule visit.');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Request Visit';
+      }
+    });
+    window.addEventListener('storage', (event) => {
+      if (event.key !== 'pgdost-property-last-updated') return;
+      loadProperties();
+      if (detailState.property?.id) {
+        showDetail(detailState.property.id);
+      }
+    });
     // ── Mobile Nav ──
     function toggleMobileNav() {
       const panel = document.getElementById('mobile-panel');
@@ -1132,19 +1767,16 @@
       document.getElementById('mobile-overlay').classList.remove('open');
       document.getElementById('hamburger').classList.remove('open');
     }
-
     // ── Scroll shadow on nav ──
     window.addEventListener('scroll', () => {
       document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
     }, { passive: true });
-
     // ── Amenity toggle visual state sync ──
     document.querySelectorAll('.amenity-toggle input').forEach(cb => {
       cb.addEventListener('change', () => {
         cb.closest('.amenity-toggle').classList.toggle('checked', cb.checked);
       });
     });
-
     function applyTheme(theme) {
       if (window.Theme) {
         window.Theme.set(theme);
@@ -1162,13 +1794,11 @@
         toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
       }
     }
-
     if (!window.Theme) {
       document.getElementById('theme-toggle')?.addEventListener('click', () => {
         applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
       });
     }
-
     // Init
     if (window.Theme) {
       window.Theme.init();
@@ -1178,7 +1808,6 @@
     updateNav();
     initHeroShowcase();
     loadProperties();
-
     // Scroll reveal observer
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
