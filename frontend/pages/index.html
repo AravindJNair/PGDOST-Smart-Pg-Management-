@@ -355,6 +355,214 @@
     .nearby-card img { width: 100%; height: 140px; object-fit: cover; }
     .nearby-card-body { padding: .7rem; }
     .booking-detail-card { border: 1px solid var(--glass-border); background: var(--glass-bg-strong); border-radius: 20px; padding: 1rem; box-shadow: var(--shadow-sm); }
+    .apply-modal { max-width: min(1120px, calc(100vw - 1.25rem)) !important; width: min(1120px, calc(100vw - 1.25rem)) !important; max-height: calc(100vh - 1.4rem); position: relative; overflow: hidden; }
+    .apply-modal::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      top: -180px;
+      right: -150px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(144, 238, 113, .28), rgba(144, 238, 113, 0));
+      pointer-events: none;
+    }
+    .apply-form-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(270px, 1fr); gap: .95rem; align-items: start; }
+    .apply-form-main {
+      min-width: 0;
+      max-height: calc(100vh - 13.5rem);
+      overflow: auto;
+      padding-right: .4rem;
+      display: grid;
+      gap: .8rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(128, 204, 90, .4) transparent;
+    }
+    .apply-form-main::-webkit-scrollbar { width: 8px; }
+    .apply-form-main::-webkit-scrollbar-thumb { background: rgba(128, 204, 90, .35); border-radius: 999px; }
+    .apply-form-section {
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      background: linear-gradient(130deg, rgba(255,255,255,.58), rgba(255,255,255,.32));
+      backdrop-filter: blur(14px);
+      padding: .95rem;
+      animation: fadeSlideUp .45s var(--ease) both;
+    }
+    .apply-form-section:nth-child(2) { animation-delay: .04s; }
+    .apply-form-section:nth-child(3) { animation-delay: .08s; }
+    .apply-form-section:nth-child(4) { animation-delay: .12s; }
+    .apply-form-section:nth-child(5) { animation-delay: .16s; }
+    .apply-section-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .75rem; padding-bottom: .6rem; border-bottom: 1px dashed rgba(129, 164, 105, .4); }
+    .apply-section-title { margin: 0; font-size: .95rem; letter-spacing: .01em; font-weight: 800; color: var(--clr-text); }
+    .apply-section-meta { font-size: .75rem; color: var(--clr-text-faint); text-transform: uppercase; letter-spacing: .07em; }
+    .apply-grid-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+    .apply-grid-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+    .input-icon-wrap { position: relative; }
+    .input-icon-wrap .form-input,
+    .input-icon-wrap .form-select { padding-left: 2.2rem; }
+    .booking-input-icon {
+      position: absolute;
+      left: .72rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--clr-brand-600);
+      font-size: .95rem;
+      pointer-events: none;
+      opacity: .95;
+    }
+    .apply-radio-group { display: flex; gap: .55rem; flex-wrap: wrap; }
+    .apply-radio-chip {
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      padding: .45rem .72rem;
+      background: rgba(255,255,255,.45);
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--clr-text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: .36rem;
+      cursor: pointer;
+      transition: all .2s var(--ease);
+    }
+    .apply-radio-chip:has(input:checked),
+    .apply-room-option:has(input:checked),
+    .apply-doc-item:has(input:checked) {
+      border-color: rgba(128, 204, 90, .62);
+      background: rgba(128, 204, 90, .14);
+      color: var(--clr-brand-700);
+      box-shadow: 0 0 0 3px rgba(128, 204, 90, .14);
+    }
+    .apply-radio-chip input,
+    .apply-room-option input,
+    .apply-doc-item input { accent-color: #76c948; }
+    .apply-room-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+    .apply-room-option {
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.4);
+      padding: .66rem .65rem;
+      display: grid;
+      gap: .2rem;
+      cursor: pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .apply-room-option:hover { transform: translateY(-1px); }
+    .apply-room-title { font-size: .86rem; font-weight: 700; }
+    .apply-room-sub { font-size: .74rem; color: var(--clr-text-muted); }
+    .apply-doc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+    .apply-doc-item {
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.42);
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .8rem;
+      font-weight: 600;
+      padding: .5rem .58rem;
+      cursor: pointer;
+      transition: border-color .2s var(--ease), background .2s var(--ease);
+    }
+    .apply-price-card {
+      border: 1px solid rgba(135, 217, 92, .42);
+      border-radius: 18px;
+      background: linear-gradient(165deg, rgba(20, 57, 33, .9), rgba(12, 31, 21, .95));
+      color: #f3ffe8;
+      box-shadow: 0 18px 45px rgba(12, 36, 22, .32), inset 0 0 0 1px rgba(157, 231, 117, .2);
+      padding: .95rem;
+      position: sticky;
+      top: .2rem;
+    }
+    .apply-price-label { font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(201, 255, 169, .78); }
+    .apply-price-value { font-size: 1.65rem; line-height: 1; font-weight: 900; margin: .3rem 0 .5rem; color: #d8ffbd; }
+    .apply-price-breakdown { border-top: 1px solid rgba(172, 235, 131, .32); padding-top: .55rem; display: grid; gap: .45rem; }
+    .apply-price-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; font-size: .82rem; color: rgba(228, 255, 205, .92); }
+    .apply-price-row strong { color: #fff; font-weight: 800; }
+    .apply-price-row.total { margin-top: .2rem; padding-top: .45rem; border-top: 1px dashed rgba(192, 246, 155, .4); font-size: .92rem; }
+    .apply-form-footer { margin-top: .7rem; border-top: 1px solid var(--glass-border); padding-top: .75rem; }
+    .apply-agree-wrap {
+      border: 1px dashed rgba(129, 164, 105, .45);
+      border-radius: 12px;
+      background: rgba(255,255,255,.34);
+      padding: .7rem;
+      display: flex;
+      gap: .58rem;
+      align-items: flex-start;
+      margin-bottom: .55rem;
+    }
+    .apply-agree-wrap label { font-size: .82rem; color: var(--clr-text-muted); line-height: 1.5; }
+    .apply-submit {
+      width: 100%;
+      position: relative;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: .5rem;
+      overflow: hidden;
+    }
+    .apply-submit-loading.hidden,
+    .apply-submit-label.hidden { display: none; }
+    .apply-submit-loading { display: inline-flex; align-items: center; gap: .4rem; }
+    .apply-field-error {
+      min-height: 1.02rem;
+      font-size: .74rem;
+      color: #b62d2d;
+      margin-top: .2rem;
+      display: block;
+    }
+    .apply-error-active .form-input,
+    .apply-error-active .form-select,
+    .apply-error-active .form-textarea,
+    .apply-error-active .apply-agree-wrap {
+      border-color: rgba(206, 84, 84, .7) !important;
+      box-shadow: 0 0 0 3px rgba(206, 84, 84, .12) !important;
+    }
+    .apply-error-active .apply-radio-group,
+    .apply-error-active .apply-room-grid,
+    .apply-error-active .apply-doc-grid {
+      border: 1px dashed rgba(206, 84, 84, .55);
+      border-radius: 12px;
+      padding: .45rem;
+      background: rgba(206, 84, 84, .04);
+    }
+    .apply-form-error { margin-bottom: .5rem; border: 1px solid rgba(206, 84, 84, .35); background: rgba(206, 84, 84, .09); color: #8b2121; border-radius: 10px; padding: .55rem .62rem; font-size: .81rem; }
+    .apply-form-error.hidden { display: none; }
+    .apply-success-panel {
+      position: absolute;
+      inset: .75rem;
+      border-radius: 18px;
+      background: rgba(6, 19, 12, .7);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 8;
+    }
+    .apply-success-panel.open { display: flex; animation: fadeSlideUp .28s var(--ease); }
+    .apply-success-card {
+      width: min(460px, calc(100% - 1.4rem));
+      border-radius: 16px;
+      border: 1px solid rgba(152, 231, 111, .45);
+      background: linear-gradient(170deg, rgba(8, 29, 17, .95), rgba(8, 19, 13, .95));
+      padding: 1rem;
+      color: #eaffdc;
+      text-align: center;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, .4);
+    }
+    .apply-success-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto .6rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at center, rgba(137, 233, 92, .45), rgba(137, 233, 92, .1));
+      color: #d9ffbe;
+      font-size: 1.35rem;
+      border: 1px solid rgba(160, 238, 122, .55);
+    }
+    .apply-success-card p { margin: 0; color: rgba(225, 255, 204, .88); font-size: .88rem; line-height: 1.6; }
     .booking-detail-price { font-size: 1.55rem; font-weight: 800; line-height: 1; }
     .booking-field { margin-top: .65rem; }
     .booking-field label { display: block; font-size: .76rem; letter-spacing: .05em; color: var(--clr-text-faint); text-transform: uppercase; margin-bottom: .32rem; }
@@ -382,6 +590,14 @@
     }
     @media (max-width: 768px) {
       #modal-detail .modal { width: calc(100vw - .85rem) !important; max-width: calc(100vw - .85rem) !important; padding: .75rem !important; }
+      .apply-modal { width: calc(100vw - .85rem) !important; max-width: calc(100vw - .85rem) !important; max-height: calc(100vh - .8rem); padding: .8rem !important; }
+      .apply-form-layout { grid-template-columns: 1fr; }
+      .apply-form-main { max-height: none; overflow: visible; padding-right: 0; }
+      .apply-grid-two,
+      .apply-grid-three,
+      .apply-room-grid,
+      .apply-doc-grid { grid-template-columns: 1fr; }
+      .apply-price-card { position: static; }
       .property-gallery-grid { grid-template-columns: 1fr; }
       .property-gallery-side { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: none; }
       .property-quick-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -698,25 +914,215 @@
   </div>
   <!-- Apply Modal -->
   <div id="modal-apply" class="modal-overlay">
-    <div class="modal">
+    <div class="modal apply-modal">
       <div class="modal-header">
-        <h2 class="modal-title">Apply for this PG</h2>
-        <button class="modal-close" onclick="closeModal('modal-apply')">✕</button>
+        <h2 class="modal-title">Request Booking</h2>
+        <button class="modal-close" onclick="closeModal('modal-apply')">&#10005;</button>
       </div>
-      <form id="apply-form">
+      <form id="apply-form" novalidate>
         <input type="hidden" id="apply-property-id" />
-        <div class="flex flex-col gap-md">
-          <div class="form-group">
-            <label class="form-label">Preferred Move-In Date</label>
-            <input id="apply-movein" type="date" class="form-input" />
+        <div class="apply-form-layout">
+          <div class="apply-form-main">
+            <section class="apply-form-section">
+              <div class="apply-section-head">
+                <h3 class="apply-section-title">Contact Details</h3>
+                <span class="apply-section-meta">Section 1</span>
+              </div>
+              <div class="apply-grid-two">
+                <div class="form-group" id="wrap-apply-fullname">
+                  <label class="form-label" for="apply-fullname">Full Name</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#128100;</span>
+                    <input id="apply-fullname" type="text" class="form-input" placeholder="Enter your full name" />
+                  </div>
+                  <p id="error-apply-fullname" class="apply-field-error"></p>
+                </div>
+                <div class="form-group" id="wrap-apply-phone">
+                  <label class="form-label" for="apply-phone">Phone Number</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#128222;</span>
+                    <input id="apply-phone" type="tel" class="form-input" placeholder="10-digit phone number" />
+                  </div>
+                  <p id="error-apply-phone" class="apply-field-error"></p>
+                </div>
+                <div class="form-group" id="wrap-apply-email">
+                  <label class="form-label" for="apply-email">Email Address</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#9993;</span>
+                    <input id="apply-email" type="email" class="form-input" placeholder="you@example.com" />
+                  </div>
+                  <p id="error-apply-email" class="apply-field-error"></p>
+                </div>
+                <div class="form-group" id="wrap-apply-emergency-phone">
+                  <label class="form-label" for="apply-emergency-phone">Emergency Phone Number</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#9888;</span>
+                    <input id="apply-emergency-phone" type="tel" class="form-input" placeholder="Emergency contact number" />
+                  </div>
+                  <p id="error-apply-emergency-phone" class="apply-field-error"></p>
+                </div>
+              </div>
+            </section>
+
+            <section class="apply-form-section">
+              <div class="apply-section-head">
+                <h3 class="apply-section-title">Identity & Profile</h3>
+                <span class="apply-section-meta">Section 2</span>
+              </div>
+              <div class="form-group" id="wrap-apply-gender">
+                <label class="form-label">Gender</label>
+                <div class="apply-radio-group">
+                  <label class="apply-radio-chip"><input type="radio" name="apply-gender" value="male" /> Male</label>
+                  <label class="apply-radio-chip"><input type="radio" name="apply-gender" value="female" /> Female</label>
+                  <label class="apply-radio-chip"><input type="radio" name="apply-gender" value="other" /> Other</label>
+                </div>
+                <p id="error-apply-gender" class="apply-field-error"></p>
+              </div>
+              <div class="apply-grid-two">
+                <div class="form-group" id="wrap-apply-occupation">
+                  <label class="form-label" for="apply-occupation">Occupation</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#128188;</span>
+                    <select id="apply-occupation" class="form-select">
+                      <option value="">Select occupation</option>
+                      <option value="student">Student</option>
+                      <option value="working-professional">Working Professional</option>
+                      <option value="self-employed">Self Employed</option>
+                      <option value="entrepreneur">Entrepreneur</option>
+                      <option value="intern">Intern</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <p id="error-apply-occupation" class="apply-field-error"></p>
+                </div>
+                <div class="form-group" id="wrap-apply-occupants">
+                  <label class="form-label" for="apply-occupants">Number of Occupants</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#128101;</span>
+                    <select id="apply-occupants" class="form-select">
+                      <option value="">Select occupants</option>
+                      <option value="1">1 Occupant</option>
+                      <option value="2">2 Occupants</option>
+                      <option value="3">3 Occupants</option>
+                      <option value="4">4 Occupants</option>
+                    </select>
+                  </div>
+                  <p id="error-apply-occupants" class="apply-field-error"></p>
+                </div>
+              </div>
+            </section>
+
+            <section class="apply-form-section">
+              <div class="apply-section-head">
+                <h3 class="apply-section-title">Stay Preferences</h3>
+                <span class="apply-section-meta">Section 3</span>
+              </div>
+              <div class="apply-grid-two">
+                <div class="form-group" id="wrap-apply-movein">
+                  <label class="form-label" for="apply-movein">Preferred Move-in Date</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#128197;</span>
+                    <input id="apply-movein" type="date" class="form-input" />
+                  </div>
+                  <p id="error-apply-movein" class="apply-field-error"></p>
+                </div>
+                <div class="form-group" id="wrap-apply-duration">
+                  <label class="form-label" for="apply-duration">Duration of Stay</label>
+                  <div class="input-icon-wrap">
+                    <span class="booking-input-icon" aria-hidden="true">&#9201;</span>
+                    <select id="apply-duration" class="form-select">
+                      <option value="">Select duration</option>
+                      <option value="1">1 Month</option>
+                      <option value="3">3 Months</option>
+                      <option value="6">6 Months</option>
+                      <option value="9">9 Months</option>
+                      <option value="12">12 Months</option>
+                    </select>
+                  </div>
+                  <p id="error-apply-duration" class="apply-field-error"></p>
+                </div>
+              </div>
+              <div class="form-group" id="wrap-apply-room-type">
+                <label class="form-label">Room Type</label>
+                <div class="apply-room-grid">
+                  <label class="apply-room-option">
+                    <input type="radio" name="apply-room-type" value="single" />
+                    <span class="apply-room-title">Single</span>
+                    <span class="apply-room-sub">Private space</span>
+                  </label>
+                  <label class="apply-room-option">
+                    <input type="radio" name="apply-room-type" value="double" />
+                    <span class="apply-room-title">Double</span>
+                    <span class="apply-room-sub">Shared by two</span>
+                  </label>
+                  <label class="apply-room-option">
+                    <input type="radio" name="apply-room-type" value="triple" />
+                    <span class="apply-room-title">Triple</span>
+                    <span class="apply-room-sub">Budget friendly</span>
+                  </label>
+                </div>
+                <p id="error-apply-room-type" class="apply-field-error"></p>
+              </div>
+            </section>
+
+            <section class="apply-form-section">
+              <div class="apply-section-head">
+                <h3 class="apply-section-title">Documents & Notes</h3>
+                <span class="apply-section-meta">Section 4</span>
+              </div>
+              <div class="form-group" id="wrap-apply-documents">
+                <label class="form-label">Required Documents</label>
+                <div class="apply-doc-grid">
+                  <label class="apply-doc-item"><input type="checkbox" value="Government ID" name="apply-doc" /> Government ID</label>
+                  <label class="apply-doc-item"><input type="checkbox" value="Address Proof" name="apply-doc" /> Address Proof</label>
+                  <label class="apply-doc-item"><input type="checkbox" value="Passport Photo" name="apply-doc" /> Passport Photo</label>
+                  <label class="apply-doc-item"><input type="checkbox" value="Occupation Proof" name="apply-doc" /> Occupation Proof</label>
+                </div>
+                <p id="error-apply-documents" class="apply-field-error"></p>
+              </div>
+              <div class="form-group" id="wrap-apply-message">
+                <label class="form-label" for="apply-message">Message to Owner</label>
+                <textarea id="apply-message" class="form-textarea" placeholder="Share your routine, expectations, and anything the owner should know..."></textarea>
+                <p id="error-apply-message" class="apply-field-error"></p>
+              </div>
+            </section>
           </div>
-          <div class="form-group">
-            <label class="form-label">Message to Owner (optional)</label>
-            <textarea id="apply-message" class="form-textarea" placeholder="Introduce yourself..."></textarea>
+          <aside class="apply-price-card">
+            <span class="apply-price-label">Pricing Summary</span>
+            <div class="apply-price-value" id="apply-price-monthly">INR 0/mo</div>
+            <div class="apply-price-breakdown">
+              <div class="apply-price-row"><span>Room Type</span><strong id="apply-price-room">-</strong></div>
+              <div class="apply-price-row"><span>Monthly Rent</span><strong id="apply-price-rent">INR 0</strong></div>
+              <div class="apply-price-row"><span>Security Deposit</span><strong id="apply-price-deposit">INR 0</strong></div>
+              <div class="apply-price-row"><span>Maintenance + Food</span><strong id="apply-price-addons">INR 0</strong></div>
+              <div class="apply-price-row total"><span>Estimated Total</span><strong id="apply-price-total">INR 0</strong></div>
+            </div>
+          </aside>
+        </div>
+        <div class="apply-form-footer">
+          <div id="error-apply-form" class="apply-form-error hidden"></div>
+          <div id="wrap-apply-agreement" class="apply-agree-wrap">
+            <input id="apply-agreement" type="checkbox" />
+            <label for="apply-agreement">I confirm the details provided are accurate and I agree to PG rules, verification checks, and booking terms.</label>
           </div>
-          <button type="submit" class="btn btn-primary btn-lg w-full">Submit Application</button>
+          <p id="error-apply-agreement" class="apply-field-error"></p>
+          <button id="apply-submit-btn" type="submit" class="btn btn-primary btn-lg apply-submit" disabled>
+            <span id="apply-submit-label" class="apply-submit-label">Request Booking</span>
+            <span id="apply-submit-loading" class="apply-submit-loading hidden">
+              <span class="spinner" style="width:16px;height:16px;border-width:2px;"></span>
+              Submitting Request...
+            </span>
+          </button>
         </div>
       </form>
+      <div id="apply-success-panel" class="apply-success-panel">
+        <div class="apply-success-card">
+          <div class="apply-success-icon">&#10003;</div>
+          <h3 style="margin:0 0 .35rem;">Request Submitted</h3>
+          <p id="apply-success-text">Your booking request has been sent to the owner. You will receive updates in your dashboard.</p>
+          <button type="button" class="btn btn-primary btn-sm" style="margin-top:.85rem;" onclick="closeApplySuccessPanel(); closeModal('modal-apply');">Done</button>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Inquiry Modal -->
@@ -1240,8 +1646,16 @@
     function bookCurrentSelection() {
       if (!detailState.property) return;
       const selected = detailState.priceBreakdown || computePriceBreakdown(detailState.property, detailState.bookingSelection.roomType, detailState.bookingSelection.duration);
-      document.getElementById('apply-movein').value = detailState.bookingSelection.moveIn || '';
-      document.getElementById('apply-message').value = `Interested in ${getRoomTypeMeta(detailState.bookingSelection.roomType).label} room for ${detailState.bookingSelection.duration} month(s). Estimated total: ${formatCurrency(selected.total)}.`;
+      const moveIn = document.getElementById('apply-movein');
+      const duration = document.getElementById('apply-duration');
+      const message = document.getElementById('apply-message');
+      const room = document.querySelector(`input[name="apply-room-type"][value="${detailState.bookingSelection.roomType}"]`);
+      if (moveIn) moveIn.value = detailState.bookingSelection.moveIn || '';
+      if (duration) duration.value = String(detailState.bookingSelection.duration || 6);
+      if (room) room.checked = true;
+      if (message) {
+        message.value = `Interested in ${getRoomTypeMeta(detailState.bookingSelection.roomType).label} room for ${detailState.bookingSelection.duration} month(s). Estimated total: ${formatCurrency(selected.total)}.`;
+      }
       openApply(detailState.property.id);
     }
     function openVisitModal(propertyId) {
@@ -1632,30 +2046,257 @@
         Toast.error('Could not load property details.');
       }
     }
+    function closeApplySuccessPanel() {
+      document.getElementById('apply-success-panel')?.classList.remove('open');
+    }
+    function showApplySuccessPanel(propertyName) {
+      const text = document.getElementById('apply-success-text');
+      if (text) {
+        text.textContent = `Your booking request for ${propertyName || 'this property'} has been sent successfully. Track status updates in your resident dashboard.`;
+      }
+      document.getElementById('apply-success-panel')?.classList.add('open');
+    }
+    function sanitizePhone(value) {
+      return String(value || '').replace(/\D/g, '');
+    }
+    function getCheckedValue(name) {
+      return document.querySelector(`input[name="${name}"]:checked`)?.value || '';
+    }
+    function getSelectedDocuments() {
+      return [...document.querySelectorAll('input[name="apply-doc"]:checked')].map((el) => el.value);
+    }
+    function setApplyFieldError(fieldId, message) {
+      const errorEl = document.getElementById(`error-${fieldId}`);
+      const wrapEl = document.getElementById(`wrap-${fieldId}`);
+      if (errorEl) errorEl.textContent = message || '';
+      if (wrapEl) wrapEl.classList.toggle('apply-error-active', !!message);
+    }
+    function clearApplyErrors() {
+      document.querySelectorAll('#modal-apply .apply-field-error').forEach((el) => { el.textContent = ''; });
+      document.querySelectorAll('#modal-apply .apply-error-active').forEach((el) => el.classList.remove('apply-error-active'));
+      const formErr = document.getElementById('error-apply-form');
+      if (formErr) {
+        formErr.textContent = '';
+        formErr.classList.add('hidden');
+      }
+    }
+    function setApplyLoading(isLoading) {
+      const submitBtn = document.getElementById('apply-submit-btn');
+      const submitLabel = document.getElementById('apply-submit-label');
+      const submitLoading = document.getElementById('apply-submit-loading');
+      const agreed = !!document.getElementById('apply-agreement')?.checked;
+      if (!submitBtn) return;
+      submitBtn.dataset.loading = isLoading ? '1' : '0';
+      submitBtn.disabled = isLoading || !agreed;
+      submitLabel?.classList.toggle('hidden', isLoading);
+      submitLoading?.classList.toggle('hidden', !isLoading);
+    }
+    function updateApplySubmitState() {
+      const submitBtn = document.getElementById('apply-submit-btn');
+      const agreed = !!document.getElementById('apply-agreement')?.checked;
+      if (!submitBtn) return;
+      const loading = submitBtn.dataset.loading === '1';
+      submitBtn.disabled = loading || !agreed;
+    }
+    function updateApplyPricingSummary() {
+      const roomType = getCheckedValue('apply-room-type') || detailState.bookingSelection.roomType || 'single';
+      const durationValue = Number(document.getElementById('apply-duration')?.value || detailState.bookingSelection.duration || 1);
+      const property = detailState.property;
+      const priceMonthly = document.getElementById('apply-price-monthly');
+      const priceRoom = document.getElementById('apply-price-room');
+      const priceRent = document.getElementById('apply-price-rent');
+      const priceDeposit = document.getElementById('apply-price-deposit');
+      const priceAddons = document.getElementById('apply-price-addons');
+      const priceTotal = document.getElementById('apply-price-total');
+      if (!priceMonthly || !priceRoom || !priceRent || !priceDeposit || !priceAddons || !priceTotal) return;
+      if (!property) {
+        priceRoom.textContent = getRoomTypeMeta(roomType).label;
+        return;
+      }
+      const breakdown = computePriceBreakdown(property, roomType, durationValue);
+      detailState.priceBreakdown = breakdown;
+      detailState.bookingSelection.roomType = roomType;
+      detailState.bookingSelection.duration = durationValue;
+      detailState.bookingSelection.moveIn = document.getElementById('apply-movein')?.value || detailState.bookingSelection.moveIn;
+      priceMonthly.textContent = `${formatCurrency(breakdown.monthly)}/mo`;
+      priceRoom.textContent = `${getRoomTypeMeta(roomType).label} x ${durationValue} month${durationValue > 1 ? 's' : ''}`;
+      priceRent.textContent = formatCurrency(breakdown.monthly);
+      priceDeposit.textContent = formatCurrency(breakdown.deposit);
+      priceAddons.textContent = formatCurrency(breakdown.maintenance + breakdown.foodCharges);
+      priceTotal.textContent = formatCurrency(breakdown.total);
+    }
+    function validateApplyForm() {
+      clearApplyErrors();
+      let valid = true;
+      const fullName = document.getElementById('apply-fullname')?.value.trim() || '';
+      const phone = sanitizePhone(document.getElementById('apply-phone')?.value);
+      const email = document.getElementById('apply-email')?.value.trim() || '';
+      const emergencyPhone = sanitizePhone(document.getElementById('apply-emergency-phone')?.value);
+      const gender = getCheckedValue('apply-gender');
+      const occupation = document.getElementById('apply-occupation')?.value || '';
+      const occupants = Number(document.getElementById('apply-occupants')?.value || 0);
+      const moveInDate = document.getElementById('apply-movein')?.value || '';
+      const duration = Number(document.getElementById('apply-duration')?.value || 0);
+      const roomType = getCheckedValue('apply-room-type');
+      const documents = getSelectedDocuments();
+      const message = document.getElementById('apply-message')?.value.trim() || '';
+      const agreed = !!document.getElementById('apply-agreement')?.checked;
+      const today = new Date().toISOString().split('T')[0];
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (fullName.length < 2) { setApplyFieldError('apply-fullname', 'Please enter your full name.'); valid = false; }
+      if (phone.length !== 10) { setApplyFieldError('apply-phone', 'Enter a valid 10-digit phone number.'); valid = false; }
+      if (!emailRegex.test(email)) { setApplyFieldError('apply-email', 'Please enter a valid email address.'); valid = false; }
+      if (!gender) { setApplyFieldError('apply-gender', 'Please select your gender.'); valid = false; }
+      if (!occupation) { setApplyFieldError('apply-occupation', 'Please choose your occupation.'); valid = false; }
+      if (occupants < 1) { setApplyFieldError('apply-occupants', 'Please choose number of occupants.'); valid = false; }
+      if (!moveInDate) { setApplyFieldError('apply-movein', 'Please select your move-in date.'); valid = false; }
+      if (moveInDate && moveInDate < today) { setApplyFieldError('apply-movein', 'Move-in date cannot be in the past.'); valid = false; }
+      if (!duration) { setApplyFieldError('apply-duration', 'Please select duration of stay.'); valid = false; }
+      if (!roomType) { setApplyFieldError('apply-room-type', 'Please choose a room type.'); valid = false; }
+      if (emergencyPhone.length !== 10) { setApplyFieldError('apply-emergency-phone', 'Enter a valid 10-digit emergency number.'); valid = false; }
+      if (!documents.length) { setApplyFieldError('apply-documents', 'Select at least one document you can provide.'); valid = false; }
+      if (message.length > 700) { setApplyFieldError('apply-message', 'Message is too long. Keep it under 700 characters.'); valid = false; }
+      if (!agreed) { setApplyFieldError('apply-agreement', 'You must agree to continue.'); valid = false; }
+
+      return {
+        valid,
+        values: {
+          fullName, phone, email, emergencyPhone, gender, occupation, occupants, moveInDate,
+          duration, roomType, documents, message,
+        },
+      };
+    }
+    async function fillApplyProfileDefaults() {
+      if (!Auth.isLoggedIn()) return;
+      const user = Auth.getUser() || {};
+      const fullNameEl = document.getElementById('apply-fullname');
+      const phoneEl = document.getElementById('apply-phone');
+      const emailEl = document.getElementById('apply-email');
+      if (fullNameEl && !fullNameEl.value.trim()) {
+        fullNameEl.value = [user.first_name, user.last_name].filter(Boolean).join(' ').trim() || user.username || '';
+      }
+      if (phoneEl && !phoneEl.value.trim() && user.phone_number) phoneEl.value = user.phone_number;
+      if (emailEl && !emailEl.value.trim() && user.email) emailEl.value = user.email;
+      try {
+        const profile = await api.get('/auth/profile/');
+        if (fullNameEl && !fullNameEl.value.trim()) {
+          fullNameEl.value = [profile.first_name, profile.last_name].filter(Boolean).join(' ').trim() || user.username || '';
+        }
+        if (phoneEl && !phoneEl.value.trim() && profile.phone_number) phoneEl.value = profile.phone_number;
+        if (emailEl && !emailEl.value.trim() && profile.email) emailEl.value = profile.email;
+      } catch {}
+    }
+    function initApplyFormInteractions() {
+      if (window.__applyFormReady) return;
+      const form = document.getElementById('apply-form');
+      if (!form) return;
+      window.__applyFormReady = true;
+      document.getElementById('apply-agreement')?.addEventListener('change', () => {
+        setApplyFieldError('apply-agreement', '');
+        updateApplySubmitState();
+      });
+      document.getElementById('apply-duration')?.addEventListener('change', () => {
+        setApplyFieldError('apply-duration', '');
+        updateApplyPricingSummary();
+      });
+      document.getElementById('apply-movein')?.addEventListener('change', (event) => {
+        detailState.bookingSelection.moveIn = event.target.value;
+        setApplyFieldError('apply-movein', '');
+      });
+      document.querySelectorAll('input[name="apply-room-type"]').forEach((el) => {
+        el.addEventListener('change', () => {
+          setApplyFieldError('apply-room-type', '');
+          updateApplyPricingSummary();
+        });
+      });
+      document.querySelectorAll('input[name="apply-gender"]').forEach((el) => {
+        el.addEventListener('change', () => setApplyFieldError('apply-gender', ''));
+      });
+      document.querySelectorAll('input[name="apply-doc"]').forEach((el) => {
+        el.addEventListener('change', () => setApplyFieldError('apply-documents', ''));
+      });
+      ['apply-fullname', 'apply-phone', 'apply-email', 'apply-emergency-phone', 'apply-occupation', 'apply-occupants', 'apply-message'].forEach((id) => {
+        document.getElementById(id)?.addEventListener('input', () => setApplyFieldError(id, ''));
+      });
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const result = validateApplyForm();
+        if (!result.valid) {
+          Toast.warning('Please fix the highlighted fields before submitting.');
+          return;
+        }
+        setApplyLoading(true);
+        const values = result.values;
+        try {
+          const propertyId = parseInt(document.getElementById('apply-property-id').value, 10);
+          const price = detailState.priceBreakdown || computePriceBreakdown(detailState.property, values.roomType, values.duration);
+          const lines = [
+            'Resident Booking Request',
+            `Name: ${values.fullName}`,
+            `Phone: ${values.phone}`,
+            `Email: ${values.email}`,
+            `Gender: ${values.gender}`,
+            `Occupation: ${values.occupation}`,
+            `Preferred Move-in Date: ${values.moveInDate}`,
+            `Duration: ${values.duration} month(s)`,
+            `Occupants: ${values.occupants}`,
+            `Room Type: ${getRoomTypeMeta(values.roomType).label}`,
+            `Emergency Phone: ${values.emergencyPhone}`,
+            `Documents Ready: ${values.documents.join(', ')}`,
+            'Agreement: Accepted',
+            `Estimated Total: ${formatCurrency(price.total)} (${formatCurrency(price.monthly)} per month)`,
+          ];
+          if (values.message) {
+            lines.push('', 'Message to Owner:', values.message);
+          }
+          await api.post('/bookings/apply/', {
+            property: propertyId,
+            move_in_date: values.moveInDate || null,
+            message: lines.join('\n'),
+          });
+          e.target.reset();
+          closeApplySuccessPanel();
+          showApplySuccessPanel(detailState.property?.name || 'this property');
+          updateApplyPricingSummary();
+          updateApplySubmitState();
+          Toast.success('Booking request submitted successfully.');
+        } catch (err) {
+          const formErr = document.getElementById('error-apply-form');
+          if (formErr) {
+            formErr.textContent = err.message || 'Failed to submit booking request.';
+            formErr.classList.remove('hidden');
+          }
+          Toast.error(err.message || 'Failed to submit booking request.');
+        } finally {
+          setApplyLoading(false);
+        }
+      });
+    }
     function openApply(propertyId) {
+      initApplyFormInteractions();
       document.getElementById('apply-property-id').value = propertyId;
+      const today = new Date().toISOString().split('T')[0];
+      const moveIn = document.getElementById('apply-movein');
+      const duration = document.getElementById('apply-duration');
+      const roomType = detailState.bookingSelection.roomType || 'single';
+      closeApplySuccessPanel();
+      clearApplyErrors();
+      if (moveIn) {
+        moveIn.min = today;
+        if (!moveIn.value) moveIn.value = detailState.bookingSelection.moveIn || today;
+      }
+      if (duration) {
+        duration.value = String(detailState.bookingSelection.duration || 6);
+      }
+      const roomRadio = document.querySelector(`input[name="apply-room-type"][value="${roomType}"]`) || document.querySelector('input[name="apply-room-type"][value="single"]');
+      if (roomRadio) roomRadio.checked = true;
+      updateApplyPricingSummary();
+      updateApplySubmitState();
+      fillApplyProfileDefaults().catch(() => {});
       closeModal('modal-detail');
       openModal('modal-apply');
     }
-    document.getElementById('apply-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = e.target.querySelector('button[type=submit]');
-      btn.disabled = true; btn.textContent = 'Submitting…';
-      try {
-        await api.post('/bookings/apply/', {
-          property: parseInt(document.getElementById('apply-property-id').value),
-          move_in_date: document.getElementById('apply-movein').value || null,
-          message: document.getElementById('apply-message').value,
-        });
-        closeModal('modal-apply');
-        Toast.success('Application submitted! Check your dashboard for status updates.');
-        e.target.reset();
-      } catch (err) {
-        Toast.error(err.message || 'Failed to submit application.');
-      } finally {
-        btn.disabled = false; btn.textContent = 'Submit Application';
-      }
-    });
     document.getElementById('btn-search').addEventListener('click', applyFilters);
     document.getElementById('search-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
     document.getElementById('btn-see-more')?.addEventListener('click', () => {
@@ -1818,6 +2459,6 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-  </script>
+</script>
 </body>
 </html>
