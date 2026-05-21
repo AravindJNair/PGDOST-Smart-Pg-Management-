@@ -2,7 +2,14 @@
  * PGDOST API utilities
  */
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+function resolveApiBase() {
+  const configured = (window.PGDOST_API_BASE || '').trim();
+  if (configured) return configured.replace(/\/+$/, '');
+  if (window.location.protocol === 'file:') return 'http://127.0.0.1:8000/api';
+  return `${window.location.origin}/api`;
+}
+
+const API_BASE = resolveApiBase();
 const OWNER_ONBOARDING_STORAGE_KEY = 'pgdost-owner-onboarding';
 
 const Theme = {
@@ -387,7 +394,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 function formatDate(dateStr) {
-  if (!dateStr) return '—';
+  if (!dateStr) return '\u2014';
   return new Date(dateStr).toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
@@ -396,8 +403,8 @@ function formatDate(dateStr) {
 }
 
 function formatCurrency(amount) {
-  if (amount == null || amount === '') return '—';
-  return `₹${parseFloat(amount).toLocaleString('en-IN')}`;
+  if (amount == null || amount === '') return '\u2014';
+  return `\u20B9${parseFloat(amount).toLocaleString('en-IN')}`;
 }
 
 function statusBadge(status, labelOverride) {

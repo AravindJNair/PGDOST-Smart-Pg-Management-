@@ -189,4 +189,4 @@ class AllVisitorLogsListView(generics.ListAPIView):
     """Superadmin sees all visitor logs."""
     permission_classes = [IsSuperAdmin]
     serializer_class = VisitorLogSerializer
-    queryset = VisitorLog.objects.all()
+    queryset = VisitorLog.objects.all().select_related('property', 'resident', 'logged_by')

@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -53,7 +54,9 @@ class ResidentBookingListView(generics.ListAPIView):
     serializer_class = BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(resident=self.request.user).prefetch_related('documents')
+        return Booking.objects.filter(resident=self.request.user).select_related(
+            'property', 'room', 'resident'
+        ).prefetch_related('documents')
 
 
 class ResidentActiveBookingView(APIView):
@@ -78,7 +81,9 @@ class OwnerBookingListView(generics.ListAPIView):
     serializer_class = BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(property__owner=self.request.user).prefetch_related('documents')
+        return Booking.objects.filter(property__owner=self.request.user).select_related(
+            'property', 'room', 'resident'
+        ).prefetch_related('documents')
 
 
 class OwnerBookingUpdateView(generics.UpdateAPIView):
@@ -88,21 +93,28 @@ class OwnerBookingUpdateView(generics.UpdateAPIView):
     http_method_names = ['patch']
 
     def get_queryset(self):
-        return Booking.objects.filter(property__owner=self.request.user)
+        return Booking.objects.filter(property__owner=self.request.user).select_related('property', 'room', 'resident')
 
     def perform_update(self, serializer):
+        previous_status = serializer.instance.status
+        previous_room = serializer.instance.room
+        next_status = serializer.validated_data.get('status', previous_status)
+        next_room = serializer.validated_data.get('room', previous_room)
+
+        if next_status == 'approved' and previous_status != 'approved' and next_room and next_room.available_beds <= 0:
+            raise ValidationError({'room': 'Selected room has no available beds.'})
+
         booking = serializer.save()
-        # When approved: decrement available beds in the assigned room
-        if booking.status == 'approved' and booking.room:
+        # Guard status transitions so repeated PATCH calls do not drift bed counts.
+        if booking.status == 'approved' and previous_status != 'approved' and booking.room:
             room = booking.room
-            if room.available_beds > 0:
-                room.available_beds -= 1
-                room.save()
-        # When vacated: restore a bed
-        elif booking.status == 'vacated' and booking.room:
-            room = booking.room
-            room.available_beds += 1
-            room.save()
+            room.available_beds -= 1
+            room.save(update_fields=['available_beds'])
+        elif booking.status == 'vacated' and previous_status == 'approved':
+            room = previous_room or booking.room
+            if room:
+                room.available_beds += 1
+                room.save(update_fields=['available_beds'])
             
         # Create notification for resident
         from accounts.models import Notification
@@ -118,4 +130,4 @@ class AllBookingsListView(generics.ListAPIView):
     """Superadmin sees every booking in the system."""
     permission_classes = [IsSuperAdmin]
     serializer_class = BookingSerializer
-    queryset = Booking.objects.all()
+    queryset = Booking.objects.all().select_related('property', 'room', 'resident').prefetch_related('documents')
