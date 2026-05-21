@@ -74,6 +74,17 @@
   --glass-bg: rgba(232,223,192,0.65);
   --glass-border: rgba(232,223,192,0.55);
   --glass-bg-strong: rgba(242,237,212,0.88);
+
+  /* Semantic theme tokens (use across all modules) */
+  --text-primary: var(--clr-text);
+  --text-secondary: var(--clr-text-muted);
+  --text-muted: var(--clr-text-faint);
+  --card-background: var(--glass-bg-strong);
+  --input-background: rgba(255, 255, 255, 0.82);
+  --border-color: var(--clr-border);
+  --hover-background: rgba(143, 184, 120, 0.12);
+  --dropdown-background: #faf8f0;
+  --surface-elevated: var(--clr-surface);
 }
 
 /* ── Animations ────────────────────────────────────────────── */
@@ -734,7 +745,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-head); font-weight: 700; line-h
 .property-card-body { padding: var(--space-lg); flex: 1; display: flex; flex-direction: column; }
 .property-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: var(--space-xs); color: var(--clr-text); }
 .property-card-location { font-size: 0.85rem; color: var(--clr-text-muted); margin-bottom: var(--space-md); display: flex; align-items: center; gap: 4px; }
-.property-card-rent { font-size: 1.8rem; font-weight: 800; color: #5A8B4C; display: flex; align-items: baseline; gap: 4px; }
+.property-card-rent { font-size: 1.8rem; font-weight: 800; color: var(--clr-brand-500); display: flex; align-items: baseline; gap: 4px; }
 .property-card-rent span { font-size: 0.9rem; font-weight: 500; color: var(--clr-text-muted); }
 .property-card-amenities { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: auto; padding-top: var(--space-md); border-top: 1px solid var(--clr-border); }
 
@@ -1749,6 +1760,16 @@ body.dark-mode {
   --theme-neon: #8fea5b;
   --shadow-brand: 0 0 28px rgba(124, 214, 80, 0.38);
   --shadow-glow: 0 0 58px rgba(124, 214, 80, 0.30);
+
+  --text-primary: #f8fff5;
+  --text-secondary: rgba(248, 255, 245, 0.78);
+  --text-muted: rgba(248, 255, 245, 0.56);
+  --card-background: rgba(12, 25, 18, 0.82);
+  --input-background: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(137, 227, 93, 0.22);
+  --hover-background: rgba(143, 234, 91, 0.14);
+  --dropdown-background: #0a1812;
+  --surface-elevated: rgba(14, 28, 21, 0.92);
 }
 
 html,

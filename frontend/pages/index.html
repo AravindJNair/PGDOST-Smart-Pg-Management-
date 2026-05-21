@@ -6,6 +6,9 @@
   <title>PGDOST — PG Management Platform</title>
   <meta name="description" content="PGDOST is a smart PG management platform. Browse verified PG and hostel accommodations. Search by city, price, and amenities." />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme-dark.css" />
+<link rel="stylesheet" href="../css/cinematic.css" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script>
@@ -355,7 +358,16 @@
     .nearby-card img { width: 100%; height: 140px; object-fit: cover; }
     .nearby-card-body { padding: .7rem; }
     .booking-detail-card { border: 1px solid var(--glass-border); background: var(--glass-bg-strong); border-radius: 20px; padding: 1rem; box-shadow: var(--shadow-sm); }
-    .apply-modal { max-width: min(1120px, calc(100vw - 1.25rem)) !important; width: min(1120px, calc(100vw - 1.25rem)) !important; max-height: calc(100vh - 1.4rem); position: relative; overflow: hidden; }
+    .apply-modal {
+      max-width: min(1120px, calc(100vw - 1.25rem)) !important;
+      width: min(1120px, calc(100vw - 1.25rem)) !important;
+      max-height: calc(100vh - 1.4rem);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #apply-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
     .apply-modal::before {
       content: "";
       position: absolute;
@@ -367,10 +379,19 @@
       background: radial-gradient(circle at center, rgba(144, 238, 113, .28), rgba(144, 238, 113, 0));
       pointer-events: none;
     }
-    .apply-form-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(270px, 1fr); gap: .95rem; align-items: start; }
+    .apply-form-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(270px, 1fr);
+      gap: .95rem;
+      align-items: start;
+      min-height: 0;
+      max-height: calc(100vh - 17.8rem);
+      overflow: hidden;
+    }
     .apply-form-main {
       min-width: 0;
-      max-height: calc(100vh - 13.5rem);
+      max-height: none;
+      height: 100%;
       overflow: auto;
       padding-right: .4rem;
       display: grid;
@@ -436,6 +457,49 @@
     .apply-radio-chip input,
     .apply-room-option input,
     .apply-doc-item input { accent-color: #76c948; }
+    .apply-upload-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+    .apply-upload-slot {
+      position: relative;
+      border: 1px dashed var(--glass-border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.42);
+      padding: .62rem .58rem;
+      display: grid;
+      gap: .28rem;
+      cursor: pointer;
+      transition: border-color .2s var(--ease), background .2s var(--ease), transform .2s var(--ease);
+      min-height: 74px;
+    }
+    .apply-upload-slot:hover { transform: translateY(-1px); border-color: rgba(128, 204, 90, .55); }
+    .apply-upload-slot.has-file,
+    .apply-upload-slot:has(input:not(:placeholder-shown)) {
+      border-color: rgba(128, 204, 90, .62);
+      background: rgba(128, 204, 90, .14);
+      box-shadow: 0 0 0 3px rgba(128, 204, 90, .12);
+    }
+    .apply-upload-slot.is-uploading { opacity: .72; pointer-events: none; }
+    .apply-upload-title { font-size: .8rem; font-weight: 700; color: var(--clr-text); }
+    .apply-upload-hint { font-size: .72rem; color: var(--clr-text-muted); line-height: 1.35; }
+    .apply-upload-slot input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .apply-upload-optional { font-size: .68rem; color: var(--clr-text-faint); font-weight: 600; }
+    .apply-upload-slot.doc-slot-hidden { display: none; }
+    .apply-doc-requirements-hint {
+      font-size: .78rem;
+      color: var(--clr-text-muted);
+      margin: 0 0 .55rem;
+      line-height: 1.45;
+    }
+    .apply-error-active .apply-upload-grid {
+      border: 1px dashed rgba(206, 84, 84, .55);
+      border-radius: 12px;
+      padding: .45rem;
+      background: rgba(206, 84, 84, .04);
+    }
     .apply-room-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
     .apply-room-option {
       border: 1px solid var(--glass-border);
@@ -480,7 +544,31 @@
     .apply-price-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; font-size: .82rem; color: rgba(228, 255, 205, .92); }
     .apply-price-row strong { color: #fff; font-weight: 800; }
     .apply-price-row.total { margin-top: .2rem; padding-top: .45rem; border-top: 1px dashed rgba(192, 246, 155, .4); font-size: .92rem; }
-    .apply-form-footer { margin-top: .7rem; border-top: 1px solid var(--glass-border); padding-top: .75rem; }
+    .apply-form-footer {
+      margin-top: .7rem;
+      border-top: 1px solid var(--glass-border);
+      padding-top: .75rem;
+      padding-bottom: .3rem;
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.92));
+      backdrop-filter: blur(6px);
+    }
+    body.dark-mode .apply-form-footer {
+      background: linear-gradient(180deg, rgba(22, 34, 25, .88), rgba(15, 26, 18, .94));
+    }
+    body.dark-mode .booking-verify-hint {
+      background: rgba(121, 84, 9, .22);
+      border-color: rgba(229, 155, 34, .62);
+      color: #f5f1d8;
+    }
+    body.dark-mode .booking-verify-hint .verify-link-btn {
+      color: #d6f5bc;
+      border-color: rgba(141, 203, 99, .52);
+      background: rgba(141, 203, 99, .18);
+    }
+    body.dark-mode .booking-verify-hint .verify-link-btn:hover { background: rgba(141, 203, 99, .28); }
     .apply-agree-wrap {
       border: 1px dashed rgba(129, 164, 105, .45);
       border-radius: 12px;
@@ -504,6 +592,43 @@
     .apply-submit-loading.hidden,
     .apply-submit-label.hidden { display: none; }
     .apply-submit-loading { display: inline-flex; align-items: center; gap: .4rem; }
+    .booking-trigger-disabled,
+    .apply-submit.booking-trigger-disabled {
+      opacity: .58;
+      cursor: not-allowed !important;
+      pointer-events: none;
+      filter: saturate(.78);
+    }
+    .booking-verify-hint {
+      margin-top: .55rem;
+      border: 1px dashed rgba(229, 155, 34, .5);
+      background: rgba(229, 155, 34, .1);
+      color: var(--clr-text);
+      border-radius: 11px;
+      padding: .55rem .62rem;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .booking-verify-hint.hidden { display: none; }
+    .booking-verify-hint .verify-link-btn {
+      border: 1px solid rgba(141, 203, 99, .42);
+      background: rgba(141, 203, 99, .14);
+      color: var(--clr-brand-700);
+      border-radius: 999px;
+      padding: .22rem .68rem;
+      font-size: .74rem;
+      font-weight: 700;
+      line-height: 1.2;
+      transition: all .2s var(--ease);
+    }
+    .booking-verify-hint .verify-link-btn:hover {
+      background: rgba(141, 203, 99, .24);
+      transform: translateY(-1px);
+    }
     .apply-field-error {
       min-height: 1.02rem;
       font-size: .74rem;
@@ -591,12 +716,13 @@
     @media (max-width: 768px) {
       #modal-detail .modal { width: calc(100vw - .85rem) !important; max-width: calc(100vw - .85rem) !important; padding: .75rem !important; }
       .apply-modal { width: calc(100vw - .85rem) !important; max-width: calc(100vw - .85rem) !important; max-height: calc(100vh - .8rem); padding: .8rem !important; }
-      .apply-form-layout { grid-template-columns: 1fr; }
+      .apply-form-layout { grid-template-columns: 1fr; max-height: none; overflow: visible; }
       .apply-form-main { max-height: none; overflow: visible; padding-right: 0; }
       .apply-grid-two,
       .apply-grid-three,
       .apply-room-grid,
-      .apply-doc-grid { grid-template-columns: 1fr; }
+      .apply-doc-grid,
+      .apply-upload-grid { grid-template-columns: 1fr; }
       .apply-price-card { position: static; }
       .property-gallery-grid { grid-template-columns: 1fr; }
       .property-gallery-side { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: none; }
@@ -1071,12 +1197,35 @@
                 <span class="apply-section-meta">Section 4</span>
               </div>
               <div class="form-group" id="wrap-apply-documents">
-                <label class="form-label">Required Documents</label>
-                <div class="apply-doc-grid">
-                  <label class="apply-doc-item"><input type="checkbox" value="Government ID" name="apply-doc" /> Government ID</label>
-                  <label class="apply-doc-item"><input type="checkbox" value="Address Proof" name="apply-doc" /> Address Proof</label>
-                  <label class="apply-doc-item"><input type="checkbox" value="Passport Photo" name="apply-doc" /> Passport Photo</label>
-                  <label class="apply-doc-item"><input type="checkbox" value="Occupation Proof" name="apply-doc" /> Occupation Proof</label>
+                <label class="form-label">Upload Soft Copies</label>
+                <p class="apply-doc-requirements-hint" id="apply-doc-requirements-hint">Aadhaar/PAN and passport photo are always required. Occupation documents appear after you select occupation.</p>
+                <p class="text-sm text-muted" style="margin:0 0 .55rem;">JPG, PNG, PDF, or WEBP up to 5 MB. Owner will verify after you submit.</p>
+                <div class="apply-upload-grid">
+                  <label class="apply-upload-slot" id="slot-doc-aadhaar" for="doc-aadhaar">
+                    <span class="apply-upload-title">Aadhaar / PAN Card *</span>
+                    <span class="apply-upload-hint" id="label-doc-aadhaar">Government ID proof</span>
+                    <input id="doc-aadhaar" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp,image/jpeg,image/png,image/webp,application/pdf" data-doc-type="aadhaar" data-doc-required="1" />
+                  </label>
+                  <label class="apply-upload-slot" id="slot-doc-passport_photo" for="doc-passport_photo">
+                    <span class="apply-upload-title">Passport Photo *</span>
+                    <span class="apply-upload-hint" id="label-doc-passport_photo">Recent passport-size photo</span>
+                    <input id="doc-passport_photo" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp,image/jpeg,image/png,image/webp,application/pdf" data-doc-type="passport_photo" data-doc-required="1" />
+                  </label>
+                  <label class="apply-upload-slot doc-slot-hidden" id="slot-doc-college_id" for="doc-college_id">
+                    <span class="apply-upload-title">College ID *</span>
+                    <span class="apply-upload-hint" id="label-doc-college_id">Tap to upload</span>
+                    <input id="doc-college_id" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp,image/jpeg,image/png,image/webp,application/pdf" data-doc-type="college_id" />
+                  </label>
+                  <label class="apply-upload-slot doc-slot-hidden" id="slot-doc-company_id" for="doc-company_id">
+                    <span class="apply-upload-title">Company ID *</span>
+                    <span class="apply-upload-hint" id="label-doc-company_id">Tap to upload</span>
+                    <input id="doc-company_id" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp,image/jpeg,image/png,image/webp,application/pdf" data-doc-type="company_id" />
+                  </label>
+                  <label class="apply-upload-slot" id="slot-doc-address_proof" for="doc-address_proof">
+                    <span class="apply-upload-title">Address Proof <span class="apply-upload-optional">(optional)</span></span>
+                    <span class="apply-upload-hint" id="label-doc-address_proof">Tap to upload</span>
+                    <input id="doc-address_proof" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp,image/jpeg,image/png,image/webp,application/pdf" data-doc-type="address_proof" />
+                  </label>
                 </div>
                 <p id="error-apply-documents" class="apply-field-error"></p>
               </div>
@@ -1103,7 +1252,7 @@
           <div id="error-apply-form" class="apply-form-error hidden"></div>
           <div id="wrap-apply-agreement" class="apply-agree-wrap">
             <input id="apply-agreement" type="checkbox" />
-            <label for="apply-agreement">I confirm the details provided are accurate and I agree to PG rules, verification checks, and booking terms.</label>
+            <label for="apply-agreement">I confirm the details provided are accurate and I agree to PG rules and booking terms.</label>
           </div>
           <p id="error-apply-agreement" class="apply-field-error"></p>
           <button id="apply-submit-btn" type="submit" class="btn btn-primary btn-lg apply-submit" disabled>
@@ -1119,7 +1268,7 @@
         <div class="apply-success-card">
           <div class="apply-success-icon">&#10003;</div>
           <h3 style="margin:0 0 .35rem;">Request Submitted</h3>
-          <p id="apply-success-text">Your booking request has been sent to the owner. You will receive updates in your dashboard.</p>
+          <p id="apply-success-text">Your booking request has been sent to the owner for document review. Track status in your resident dashboard.</p>
           <button type="button" class="btn btn-primary btn-sm" style="margin-top:.85rem;" onclick="closeApplySuccessPanel(); closeModal('modal-apply');">Done</button>
         </div>
       </div>
@@ -1240,6 +1389,8 @@
   <!-- Toast container -->
   <div id="toast-container"></div>
   <script src="../scripts/api.js"></script>
+<script src="../scripts/cinematic.js"></script>
+
   <script>
     let allProperties = [];
     let visiblePropertyCount = 6;
@@ -1297,6 +1448,9 @@
       wishlist: new Set(),
       nearby: [],
       priceBreakdown: null,
+      residentBooking: {
+        checked: false,
+      },
     };
     try {
       const savedWishlist = JSON.parse(localStorage.getItem('pgdost-wishlist') || '[]');
@@ -1306,6 +1460,98 @@
     }
     function persistWishlist() {
       localStorage.setItem('pgdost-wishlist', JSON.stringify([...detailState.wishlist]));
+    }
+    function isResidentSession() {
+      return Auth.isLoggedIn() && Auth.getRole() === 'resident';
+    }
+    function ensureResidentBookingSession(showToast = true) {
+      if (!Auth.isLoggedIn()) {
+        if (showToast) Toast.warning('Please sign in as a resident to request a booking.');
+        setTimeout(() => { window.location.href = 'login.html'; }, 600);
+        return false;
+      }
+      const role = Auth.getRole();
+      if (role === 'resident') return true;
+      const roleMessages = {
+        owner: 'You are signed in as a PG owner. Booking requests must be submitted from a resident account.',
+        superadmin: 'You are signed in as admin. Switch to a resident account to request a booking.',
+      };
+      const message = roleMessages[role] || 'Only residents can submit booking requests. Please sign in with a resident account.';
+      if (showToast) Toast.warning(message);
+      return false;
+    }
+    const APPLY_DOC_TYPES = ['aadhaar', 'passport_photo', 'college_id', 'company_id', 'address_proof'];
+    const APPLY_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    const APPLY_MAX_BYTES = 5 * 1024 * 1024;
+    const STUDENT_OCCUPATIONS = new Set(['student', 'intern']);
+    const WORKING_PROFESSIONAL_OCCUPATIONS = new Set(['working-professional']);
+
+    function clearApplyDocumentInput(docType) {
+      const input = document.getElementById(`doc-${docType}`);
+      if (input) input.value = '';
+      updateApplyDocumentSlot(docType);
+    }
+
+    function updateApplyDocumentRequirements() {
+      const occupation = document.getElementById('apply-occupation')?.value || '';
+      const isStudent = STUDENT_OCCUPATIONS.has(occupation);
+      const isWorkingProfessional = WORKING_PROFESSIONAL_OCCUPATIONS.has(occupation);
+      const collegeSlot = document.getElementById('slot-doc-college_id');
+      const companySlot = document.getElementById('slot-doc-company_id');
+      const hint = document.getElementById('apply-doc-requirements-hint');
+
+      collegeSlot?.classList.toggle('doc-slot-hidden', !isStudent);
+      companySlot?.classList.toggle('doc-slot-hidden', !isWorkingProfessional);
+
+      if (!isStudent) clearApplyDocumentInput('college_id');
+      if (!isWorkingProfessional) clearApplyDocumentInput('company_id');
+
+      if (hint) {
+        if (!occupation) {
+          hint.textContent = 'Aadhaar/PAN and passport photo are always required. Select occupation to see college or company ID.';
+        } else if (isStudent) {
+          hint.textContent = 'Required: Aadhaar/PAN, passport photo, and college ID.';
+        } else if (isWorkingProfessional) {
+          hint.textContent = 'Required: Aadhaar/PAN, passport photo, and company ID.';
+        } else {
+          hint.textContent = 'Required: Aadhaar/PAN and passport photo.';
+        }
+      }
+    }
+
+    function resetApplyDocumentInputs() {
+      APPLY_DOC_TYPES.forEach((docType) => {
+        const input = document.getElementById(`doc-${docType}`);
+        const slot = document.getElementById(`slot-doc-${docType}`);
+        const label = document.getElementById(`label-doc-${docType}`);
+        if (input) input.value = '';
+        if (slot) slot.classList.remove('has-file', 'is-uploading');
+        if (label && !label.dataset.defaultHint) label.dataset.defaultHint = label.textContent;
+        if (label) label.textContent = label.dataset.defaultHint || 'Tap to upload';
+      });
+      updateApplyDocumentRequirements();
+    }
+
+    function updateApplyDocumentSlot(docType) {
+      const input = document.getElementById(`doc-${docType}`);
+      const slot = document.getElementById(`slot-doc-${docType}`);
+      const label = document.getElementById(`label-doc-${docType}`);
+      if (!input || !slot || !label) return;
+      const file = input.files?.[0];
+      if (!file) {
+        slot.classList.remove('has-file');
+        label.textContent = label.dataset.defaultHint || 'Tap to upload';
+        return;
+      }
+      slot.classList.add('has-file');
+      label.textContent = file.name;
+    }
+
+    function validateApplyDocumentFile(file) {
+      if (!file) return 'Please upload this document.';
+      if (!APPLY_ALLOWED_TYPES.includes(file.type)) return 'Use JPG, PNG, WEBP, or PDF.';
+      if (file.size > APPLY_MAX_BYTES) return 'File must be 5 MB or less.';
+      return '';
     }
     function escapeHtml(value) {
       return String(value || '')
@@ -1354,14 +1600,33 @@
       });
       Toast.info(nextActive ? 'Added to wishlist.' : 'Removed from wishlist.');
     }
-    const fallbackPropertyImage = 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=1200&q=90';
+    const PROPERTY_STOCK_IMAGES = [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef937d166?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1512918728675-ed5a9ecdeb87?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1560185127-6ed189bf04f5?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=1200&q=85',
+    ];
+    function getPropertyStockImage(prop) {
+      const id = Number(prop?.id) || 0;
+      const nameSeed = String(prop?.name || '').split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+      const idx = (id + nameSeed) % PROPERTY_STOCK_IMAGES.length;
+      return PROPERTY_STOCK_IMAGES[idx];
+    }
     function getPropertyImages(prop) {
       const uploaded = (prop.images || [])
         .map((img) => img.image_url)
         .filter(Boolean);
       if (uploaded.length) return uploaded;
       if (prop.primary_image_url) return [prop.primary_image_url];
-      return [fallbackPropertyImage];
+      return [getPropertyStockImage(prop)];
     }
     function setMainPropertyImage(propId, url, index) {
       const main = document.getElementById(`detail-main-image-${propId}`);
@@ -1645,6 +1910,7 @@
     }
     function bookCurrentSelection() {
       if (!detailState.property) return;
+      if (!ensureResidentBookingSession()) return;
       const selected = detailState.priceBreakdown || computePriceBreakdown(detailState.property, detailState.bookingSelection.roomType, detailState.bookingSelection.duration);
       const moveIn = document.getElementById('apply-movein');
       const duration = document.getElementById('apply-duration');
@@ -1844,7 +2110,7 @@
                 </div>
               </details>
               <div class="booking-inline-actions">
-                <button type="button" class="btn btn-primary" onclick="bookCurrentSelection()">Book Now</button>
+                <button type="button" class="btn btn-primary" data-booking-trigger onclick="bookCurrentSelection()">Request Booking</button>
                 <button type="button" class="btn btn-secondary" onclick="openVisitModal(${full.id})">Schedule Visit</button>
               </div>
               <div class="booking-inline-actions">
@@ -1860,7 +2126,7 @@
             <div class="detail-cta-mobile">
               <div class="flex items-center justify-between gap-sm">
                 <strong>${formatCurrency(selected.monthly)}/mo</strong>
-                <button type="button" class="btn btn-primary btn-sm" onclick="bookCurrentSelection()">Book Now</button>
+                <button type="button" class="btn btn-primary btn-sm" data-booking-trigger onclick="bookCurrentSelection()">Request Booking</button>
               </div>
             </div>
           </aside>
@@ -1871,10 +2137,10 @@
       const imgSrc = getPropertyImages(prop)[0];
       const premiumBadge = getPropertyBadge(prop, index);
       const rating = prop.avg_rating ? Number(prop.avg_rating).toFixed(1) : '4.9';
-      
+
       return `
-        <div class="property-card" onclick="showDetail(${prop.id})">
-          <div class="property-card-image" style="background-image: url('${imgSrc}'); background-size: cover; background-position: center;">
+        <div class="property-card" data-property-id="${prop.id}" onclick="showDetail(${prop.id})">
+          <div class="property-card-image is-loading" data-image-url="${imgSrc}" style="background-size: cover; background-position: center;">
             <div class="property-card-badges">
               <span class="premium-badge premium-badge-verified">✓ Verified</span>
               <span class="premium-badge premium-badge-accent">${premiumBadge}</span>
@@ -1902,9 +2168,65 @@
             <div class="property-card-amenities flex flex-wrap gap-xs" style="border-top: 1px solid var(--clr-border); padding-top: 0.75rem; margin-top: auto;">
               ${renderAmenities(prop)}
             </div>
+            <div class="flex gap-sm mt-sm">
+              <button type="button" class="btn btn-primary btn-sm" data-booking-trigger onclick="requestBookingFromCard(event, ${prop.id})">Request Booking</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();showDetail(${prop.id});">View Details</button>
+            </div>
           </div>
         </div>`;
     }
+
+    function hydratePropertyCardImages(container) {
+      if (!container) return;
+      container.querySelectorAll('.property-card-image[data-image-url]').forEach((el) => {
+        const url = el.getAttribute('data-image-url');
+        if (!url) return;
+        el.classList.add('is-loading');
+        const img = new Image();
+        img.onload = () => {
+          el.classList.remove('is-loading');
+          el.style.backgroundImage = `url('${url}')`;
+        };
+        img.onerror = () => {
+          const propertyId = Number(el.closest('.property-card')?.dataset?.propertyId || 0);
+          const fallback = getPropertyStockImage({ id: propertyId, name: '' });
+          el.classList.remove('is-loading');
+          el.style.backgroundImage = `url('${fallback}')`;
+        };
+        img.src = url;
+      });
+    }
+
+    function renderPropertySkeleton(count = 6) {
+      const grid = document.getElementById('properties-grid');
+      if (!grid) return;
+      grid.innerHTML = Array.from({ length: count })
+        .map(() => '<div class="skeleton-card" aria-hidden="true"></div>')
+        .join('');
+    }
+
+    function buildPropertyQuery() {
+      const params = new URLSearchParams();
+      params.set('page_size', '100');
+      const searchVal = document.getElementById('search-input').value.trim();
+      const cityVal = document.getElementById('filter-city').value;
+      const typeVal = document.getElementById('filter-type').value;
+      const sortVal = document.getElementById('filter-sort').value;
+      const minPrice = document.getElementById('filter-min-price').value;
+      const maxPrice = document.getElementById('filter-max-price').value;
+      if (searchVal) params.set('search', searchVal);
+      if (cityVal) params.set('city', cityVal);
+      if (typeVal) params.set('property_type', typeVal);
+      if (sortVal) params.set('ordering', sortVal);
+      if (minPrice) params.set('min_price', minPrice);
+      if (maxPrice) params.set('max_price', maxPrice);
+      if (document.getElementById('filter-wifi').checked) params.set('has_wifi', 'true');
+      if (document.getElementById('filter-ac').checked) params.set('has_ac', 'true');
+      if (document.getElementById('filter-food').checked) params.set('has_food', 'true');
+      if (document.getElementById('filter-parking').checked) params.set('has_parking', 'true');
+      return `/properties/?${params.toString()}`;
+    }
+
     function renderGrid(properties) {
       const grid = document.getElementById('properties-grid');
       const empty = document.getElementById('empty-state');
@@ -1920,6 +2242,7 @@
       empty.classList.add('hidden');
       const visibleProperties = properties.slice(0, visiblePropertyCount);
       grid.innerHTML = visibleProperties.map(renderCard).join('');
+      hydratePropertyCardImages(grid);
       count.textContent = `Showing ${visibleProperties.length} of ${properties.length} propert${properties.length !== 1 ? 'ies' : 'y'}`;
       if (seeMoreBtn) {
         const remaining = Math.max(0, properties.length - visiblePropertyCount);
@@ -1928,27 +2251,10 @@
       }
     }
     async function loadProperties() {
+      renderPropertySkeleton(propertyPageSize);
       try {
-        let query = '/properties/?page_size=100';
-        const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
-        const cityVal  = document.getElementById('filter-city').value;
-        const typeVal  = document.getElementById('filter-type').value;
-        const sortVal  = document.getElementById('filter-sort').value;
-        const minPrice = document.getElementById('filter-min-price').value;
-        const maxPrice = document.getElementById('filter-max-price').value;
-        
-        if (searchVal) query += `&search=${searchVal}`;
-        if (cityVal) query += `&city=${cityVal}`;
-        if (typeVal) query += `&property_type=${typeVal}`;
-        if (sortVal) query += `&ordering=${sortVal}`;
-        if (minPrice) query += `&min_price=${minPrice}`;
-        if (maxPrice) query += `&max_price=${maxPrice}`;
-        if (document.getElementById('filter-wifi').checked) query += `&has_wifi=true`;
-        if (document.getElementById('filter-ac').checked) query += `&has_ac=true`;
-        if (document.getElementById('filter-food').checked) query += `&has_food=true`;
-        if (document.getElementById('filter-parking').checked) query += `&has_parking=true`;
-        const res = await api.get(query);
-        allProperties = res.results || res; // handle pagination
+        const res = await api.get(buildPropertyQuery());
+        allProperties = Array.isArray(res?.results) ? res.results : (Array.isArray(res) ? res : []);
         visiblePropertyCount = propertyPageSize;
         
         // Only populate cities on first load to preserve options
@@ -1966,6 +2272,13 @@
       loadProperties().then(() => {
         document.getElementById('explore-section').scrollIntoView({ behavior: 'smooth' });
       });
+    }
+    function debounce(fn, wait = 280) {
+      let timer = null;
+      return (...args) => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), wait);
+      };
     }
     async function showHeroProperty(name) {
       const localMatch = allProperties.find(p => (p.name || '').toLowerCase() === name.toLowerCase());
@@ -2020,7 +2333,7 @@
         updateHeroSlides();
       }, 4500);
     }
-    async function showDetail(id) {
+    async function showDetail(id, options = {}) {
       const prop = allProperties.find((item) => Number(item.id) === Number(id));
       document.getElementById('modal-prop-name').textContent = prop?.name || 'Property Details';
       const body = document.getElementById('modal-detail-body');
@@ -2036,6 +2349,9 @@
         document.getElementById('modal-prop-name').textContent = full.name;
         body.innerHTML = buildPropertyDetailHtml(full);
         await loadDetailReviews(full.id);
+        if (options.openBooking) {
+          bookCurrentSelection();
+        }
       } catch (e) {
         body.innerHTML = `
           <div class="empty-state">
@@ -2045,6 +2361,11 @@
           </div>`;
         Toast.error('Could not load property details.');
       }
+    }
+    async function requestBookingFromCard(event, propertyId) {
+      event?.stopPropagation?.();
+      if (!ensureResidentBookingSession()) return;
+      await showDetail(propertyId, { openBooking: true });
     }
     function closeApplySuccessPanel() {
       document.getElementById('apply-success-panel')?.classList.remove('open');
@@ -2062,8 +2383,13 @@
     function getCheckedValue(name) {
       return document.querySelector(`input[name="${name}"]:checked`)?.value || '';
     }
-    function getSelectedDocuments() {
-      return [...document.querySelectorAll('input[name="apply-doc"]:checked')].map((el) => el.value);
+    function getApplyDocumentFiles() {
+      const files = {};
+      APPLY_DOC_TYPES.forEach((docType) => {
+        const input = document.getElementById(`doc-${docType}`);
+        if (input?.files?.[0]) files[docType] = input.files[0];
+      });
+      return files;
     }
     function setApplyFieldError(fieldId, message) {
       const errorEl = document.getElementById(`error-${fieldId}`);
@@ -2138,7 +2464,7 @@
       const moveInDate = document.getElementById('apply-movein')?.value || '';
       const duration = Number(document.getElementById('apply-duration')?.value || 0);
       const roomType = getCheckedValue('apply-room-type');
-      const documents = getSelectedDocuments();
+      const documentFiles = getApplyDocumentFiles();
       const message = document.getElementById('apply-message')?.value.trim() || '';
       const agreed = !!document.getElementById('apply-agreement')?.checked;
       const today = new Date().toISOString().split('T')[0];
@@ -2155,7 +2481,29 @@
       if (!duration) { setApplyFieldError('apply-duration', 'Please select duration of stay.'); valid = false; }
       if (!roomType) { setApplyFieldError('apply-room-type', 'Please choose a room type.'); valid = false; }
       if (emergencyPhone.length !== 10) { setApplyFieldError('apply-emergency-phone', 'Enter a valid 10-digit emergency number.'); valid = false; }
-      if (!documents.length) { setApplyFieldError('apply-documents', 'Select at least one document you can provide.'); valid = false; }
+      const idProofError = validateApplyDocumentFile(documentFiles.aadhaar);
+      if (idProofError) {
+        setApplyFieldError('apply-documents', idProofError === 'Please upload this document.' ? 'Aadhaar or PAN card is required.' : `Aadhaar/PAN: ${idProofError}`);
+        valid = false;
+      }
+      const passportError = validateApplyDocumentFile(documentFiles.passport_photo);
+      if (passportError) {
+        setApplyFieldError('apply-documents', passportError === 'Please upload this document.' ? 'Passport photo is required.' : `Passport photo: ${passportError}`);
+        valid = false;
+      }
+      if (STUDENT_OCCUPATIONS.has(occupation) && !documentFiles.college_id) {
+        setApplyFieldError('apply-documents', 'College ID is required for students and interns.'); valid = false;
+      }
+      if (WORKING_PROFESSIONAL_OCCUPATIONS.has(occupation) && !documentFiles.company_id) {
+        setApplyFieldError('apply-documents', 'Company ID is required for working professionals.'); valid = false;
+      }
+      Object.entries(documentFiles).forEach(([docType, file]) => {
+        const fileError = validateApplyDocumentFile(file);
+        if (fileError && fileError !== 'Please upload this document.') {
+          setApplyFieldError('apply-documents', `${docType.replace('_', ' ')}: ${fileError}`);
+          valid = false;
+        }
+      });
       if (message.length > 700) { setApplyFieldError('apply-message', 'Message is too long. Keep it under 700 characters.'); valid = false; }
       if (!agreed) { setApplyFieldError('apply-agreement', 'You must agree to continue.'); valid = false; }
 
@@ -2163,7 +2511,7 @@
         valid,
         values: {
           fullName, phone, email, emergencyPhone, gender, occupation, occupants, moveInDate,
-          duration, roomType, documents, message,
+          duration, roomType, documentFiles, message,
         },
       };
     }
@@ -2180,12 +2528,22 @@
       if (emailEl && !emailEl.value.trim() && user.email) emailEl.value = user.email;
       try {
         const profile = await api.get('/auth/profile/');
+        detailState.residentBooking.checked = true;
+        Auth.setUser({
+          ...(Auth.getUser() || {}),
+          role: 'resident',
+          is_email_verified: !!profile?.is_email_verified,
+          email: profile?.email || Auth.getUser()?.email,
+          phone_number: profile?.phone_number || Auth.getUser()?.phone_number,
+        });
         if (fullNameEl && !fullNameEl.value.trim()) {
           fullNameEl.value = [profile.first_name, profile.last_name].filter(Boolean).join(' ').trim() || user.username || '';
         }
         if (phoneEl && !phoneEl.value.trim() && profile.phone_number) phoneEl.value = profile.phone_number;
         if (emailEl && !emailEl.value.trim() && profile.email) emailEl.value = profile.email;
-      } catch {}
+      } catch {
+        detailState.residentBooking.checked = true;
+      }
     }
     function initApplyFormInteractions() {
       if (window.__applyFormReady) return;
@@ -2213,14 +2571,39 @@
       document.querySelectorAll('input[name="apply-gender"]').forEach((el) => {
         el.addEventListener('change', () => setApplyFieldError('apply-gender', ''));
       });
-      document.querySelectorAll('input[name="apply-doc"]').forEach((el) => {
-        el.addEventListener('change', () => setApplyFieldError('apply-documents', ''));
+      APPLY_DOC_TYPES.forEach((docType) => {
+        document.getElementById(`doc-${docType}`)?.addEventListener('change', () => {
+          updateApplyDocumentSlot(docType);
+          setApplyFieldError('apply-documents', '');
+        });
+      });
+      document.getElementById('apply-occupation')?.addEventListener('change', () => {
+        updateApplyDocumentRequirements();
+        setApplyFieldError('apply-documents', '');
       });
       ['apply-fullname', 'apply-phone', 'apply-email', 'apply-emergency-phone', 'apply-occupation', 'apply-occupants', 'apply-message'].forEach((id) => {
         document.getElementById(id)?.addEventListener('input', () => setApplyFieldError(id, ''));
       });
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!ensureResidentBookingSession(false)) {
+          const formErr = document.getElementById('error-apply-form');
+          const role = Auth.getRole();
+          const message = !Auth.isLoggedIn()
+            ? 'Please sign in as a resident to submit this booking request.'
+            : role === 'owner'
+              ? 'You are signed in as an owner. Log out and sign in with a resident account to book a PG.'
+              : 'Only residents can submit booking requests. Please use a resident account.';
+          if (formErr) {
+            formErr.textContent = message;
+            formErr.classList.remove('hidden');
+          }
+          Toast.warning(message);
+          if (!Auth.isLoggedIn()) {
+            setTimeout(() => { window.location.href = 'login.html'; }, 800);
+          }
+          return;
+        }
         const result = validateApplyForm();
         if (!result.valid) {
           Toast.warning('Please fix the highlighted fields before submitting.');
@@ -2230,50 +2613,48 @@
         const values = result.values;
         try {
           const propertyId = parseInt(document.getElementById('apply-property-id').value, 10);
-          const price = detailState.priceBreakdown || computePriceBreakdown(detailState.property, values.roomType, values.duration);
-          const lines = [
-            'Resident Booking Request',
-            `Name: ${values.fullName}`,
-            `Phone: ${values.phone}`,
-            `Email: ${values.email}`,
-            `Gender: ${values.gender}`,
-            `Occupation: ${values.occupation}`,
-            `Preferred Move-in Date: ${values.moveInDate}`,
-            `Duration: ${values.duration} month(s)`,
-            `Occupants: ${values.occupants}`,
-            `Room Type: ${getRoomTypeMeta(values.roomType).label}`,
-            `Emergency Phone: ${values.emergencyPhone}`,
-            `Documents Ready: ${values.documents.join(', ')}`,
-            'Agreement: Accepted',
-            `Estimated Total: ${formatCurrency(price.total)} (${formatCurrency(price.monthly)} per month)`,
-          ];
-          if (values.message) {
-            lines.push('', 'Message to Owner:', values.message);
-          }
-          await api.post('/bookings/apply/', {
-            property: propertyId,
-            move_in_date: values.moveInDate || null,
-            message: lines.join('\n'),
+          const formData = new FormData();
+          formData.append('property', propertyId);
+          formData.append('move_in_date', values.moveInDate || '');
+          formData.append('resident_full_name', values.fullName);
+          formData.append('resident_phone', values.phone);
+          formData.append('resident_email', values.email);
+          formData.append('gender', values.gender);
+          formData.append('occupation', values.occupation);
+          formData.append('emergency_phone', values.emergencyPhone);
+          formData.append('occupants', values.occupants);
+          formData.append('duration_months', values.duration);
+          formData.append('requested_room_type', values.roomType);
+          if (values.message) formData.append('message', values.message);
+          Object.entries(values.documentFiles).forEach(([docType, file]) => {
+            formData.append(`doc_${docType}`, file);
           });
+          await api.post('/bookings/apply/', formData);
           e.target.reset();
+          resetApplyDocumentInputs();
           closeApplySuccessPanel();
           showApplySuccessPanel(detailState.property?.name || 'this property');
           updateApplyPricingSummary();
           updateApplySubmitState();
-          Toast.success('Booking request submitted successfully.');
+          Toast.success('Booking request submitted. Pending owner approval.');
         } catch (err) {
           const formErr = document.getElementById('error-apply-form');
+          let errMessage = err.message || 'Failed to submit booking request.';
+          if (err.status === 403 && /resident/i.test(errMessage)) {
+            errMessage = 'Only residents can submit bookings. Please sign in with a resident account (not owner/admin).';
+          }
           if (formErr) {
-            formErr.textContent = err.message || 'Failed to submit booking request.';
+            formErr.textContent = errMessage;
             formErr.classList.remove('hidden');
           }
-          Toast.error(err.message || 'Failed to submit booking request.');
+          Toast.error(errMessage);
         } finally {
           setApplyLoading(false);
         }
       });
     }
     function openApply(propertyId) {
+      if (!ensureResidentBookingSession()) return;
       initApplyFormInteractions();
       document.getElementById('apply-property-id').value = propertyId;
       const today = new Date().toISOString().split('T')[0];
@@ -2292,13 +2673,23 @@
       const roomRadio = document.querySelector(`input[name="apply-room-type"][value="${roomType}"]`) || document.querySelector('input[name="apply-room-type"][value="single"]');
       if (roomRadio) roomRadio.checked = true;
       updateApplyPricingSummary();
+      resetApplyDocumentInputs();
+      updateApplyDocumentRequirements();
       updateApplySubmitState();
-      fillApplyProfileDefaults().catch(() => {});
+      fillApplyProfileDefaults().then(() => updateApplyDocumentRequirements()).catch(() => updateApplyDocumentRequirements());
       closeModal('modal-detail');
       openModal('modal-apply');
     }
+    const debouncedApplyFilters = debounce(applyFilters, 250);
     document.getElementById('btn-search').addEventListener('click', applyFilters);
+    document.getElementById('search-input').addEventListener('input', debouncedApplyFilters);
     document.getElementById('search-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
+    ['filter-city', 'filter-type', 'filter-sort', 'filter-min-price', 'filter-max-price', 'filter-wifi', 'filter-ac', 'filter-food', 'filter-parking']
+      .forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', debouncedApplyFilters);
+      });
     document.getElementById('btn-see-more')?.addEventListener('click', () => {
       visiblePropertyCount += propertyPageSize;
       renderGrid(allProperties);
@@ -2409,8 +2800,13 @@
       document.getElementById('hamburger').classList.remove('open');
     }
     // ── Scroll shadow on nav ──
+    let navScrollRaf = null;
     window.addEventListener('scroll', () => {
-      document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+      if (navScrollRaf) return;
+      navScrollRaf = requestAnimationFrame(() => {
+        document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+        navScrollRaf = null;
+      });
     }, { passive: true });
     // ── Amenity toggle visual state sync ──
     document.querySelectorAll('.amenity-toggle input').forEach(cb => {
@@ -2440,15 +2836,39 @@
         applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
       });
     }
+    async function handleEntryActions() {
+      const params = new URLSearchParams(window.location.search);
+      const bookPropertyId = Number(params.get('bookProperty') || 0);
+      const viewPropertyId = Number(params.get('viewProperty') || 0);
+      if (bookPropertyId) {
+        if (!Auth.isLoggedIn() || Auth.getRole() !== 'resident') {
+          Toast.info('Login as a resident to request a booking.');
+          return;
+        }
+        await showDetail(bookPropertyId, { openBooking: true });
+        params.delete('bookProperty');
+      } else if (viewPropertyId) {
+        await showDetail(viewPropertyId);
+        params.delete('viewProperty');
+      } else {
+        return;
+      }
+      const nextQuery = params.toString();
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+      history.replaceState(null, '', nextUrl);
+    }
     // Init
     if (window.Theme) {
       window.Theme.init();
     } else {
       applyTheme(localStorage.getItem('pgdost-theme') || 'light');
     }
-    updateNav();
-    initHeroShowcase();
-    loadProperties();
+    (async () => {
+      updateNav();
+      initHeroShowcase();
+      await loadProperties();
+      await handleEntryActions();
+    })();
     // Scroll reveal observer
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {

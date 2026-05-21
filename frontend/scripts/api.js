@@ -3,6 +3,7 @@
  */
 
 const API_BASE = 'http://127.0.0.1:8000/api';
+const OWNER_ONBOARDING_STORAGE_KEY = 'pgdost-owner-onboarding';
 
 const Theme = {
   storageKey: 'pgdost-theme',
@@ -117,6 +118,9 @@ const Auth = {
   _storage(mode) {
     return mode === 'session' ? sessionStorage : localStorage;
   },
+  _isLocalSession() {
+    return !!(localStorage.getItem('access_token') || localStorage.getItem('refresh_token') || localStorage.getItem('user'));
+  },
   setTokens(access, refresh, persist = true) {
     const storage = this._storage(persist ? 'local' : 'session');
     const other = this._storage(persist ? 'session' : 'local');
@@ -131,10 +135,12 @@ const Auth = {
   getRefresh() {
     return localStorage.getItem('refresh_token') || sessionStorage.getItem('refresh_token');
   },
-  setUser(user, persist = true) {
-    const storage = this._storage(persist ? 'local' : 'session');
-    const other = this._storage(persist ? 'session' : 'local');
-    storage.setItem('user', JSON.stringify(user));
+  setUser(user, persist) {
+    const resolvedPersist = typeof persist === 'boolean' ? persist : this._isLocalSession();
+    const normalizedUser = user || null;
+    const storage = this._storage(resolvedPersist ? 'local' : 'session');
+    const other = this._storage(resolvedPersist ? 'session' : 'local');
+    storage.setItem('user', JSON.stringify(normalizedUser));
     other.removeItem('user');
   },
   getUser() {
@@ -145,13 +151,34 @@ const Auth = {
       return null;
     }
   },
+  setOwnerOnboardingState(onboarding, persist) {
+    const resolvedPersist = typeof persist === 'boolean' ? persist : this._isLocalSession();
+    const storage = this._storage(resolvedPersist ? 'local' : 'session');
+    const other = this._storage(resolvedPersist ? 'session' : 'local');
+    if (onboarding) {
+      storage.setItem(OWNER_ONBOARDING_STORAGE_KEY, JSON.stringify(onboarding));
+    } else {
+      storage.removeItem(OWNER_ONBOARDING_STORAGE_KEY);
+    }
+    other.removeItem(OWNER_ONBOARDING_STORAGE_KEY);
+  },
+  getOwnerOnboardingState() {
+    try {
+      const raw = localStorage.getItem(OWNER_ONBOARDING_STORAGE_KEY) || sessionStorage.getItem(OWNER_ONBOARDING_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
   clear() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+    localStorage.removeItem(OWNER_ONBOARDING_STORAGE_KEY);
     sessionStorage.removeItem('access_token');
     sessionStorage.removeItem('refresh_token');
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem(OWNER_ONBOARDING_STORAGE_KEY);
   },
   isLoggedIn() {
     return !!this.getAccess();
@@ -159,9 +186,18 @@ const Auth = {
   getRole() {
     return this.getUser()?.role || null;
   },
-  logout() {
+  getLoginPageForRole(role) {
+    const pageByRole = {
+      owner: 'owner-login.html',
+      superadmin: 'admin-portal/login.html',
+    };
+    return pageByRole[role] || 'login.html';
+  },
+  logout(redirectPage = null) {
+    const role = this.getRole();
+    const target = redirectPage || this.getLoginPageForRole(role);
     this.clear();
-    _goTo('login.html');
+    _goTo(target);
   },
 };
 
@@ -206,7 +242,9 @@ async function refreshToken() {
 
 async function apiFetch(endpoint, options = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  const headers = { ...(options.headers || {}) };
+  if (!isFormData) headers['Content-Type'] = 'application/json';
   const token = Auth.getAccess();
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -232,14 +270,25 @@ async function apiFetch(endpoint, options = {}) {
 
 const api = {
   get: (endpoint) => apiFetch(endpoint, { method: 'GET' }),
-  post: (endpoint, body) => apiFetch(endpoint, { method: 'POST', body: JSON.stringify(body) }),
-  patch: (endpoint, body) => apiFetch(endpoint, { method: 'PATCH', body: JSON.stringify(body) }),
-  put: (endpoint, body) => apiFetch(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
+  post: (endpoint, body) => apiFetch(endpoint, {
+    method: 'POST',
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  }),
+  patch: (endpoint, body) => apiFetch(endpoint, {
+    method: 'PATCH',
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  }),
+  put: (endpoint, body) => apiFetch(endpoint, {
+    method: 'PUT',
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  }),
   delete: (endpoint) => apiFetch(endpoint, { method: 'DELETE' }),
 };
 
 const Toast = {
   _container: null,
+  _lastSignature: '',
+  _lastShownAt: 0,
   _getContainer() {
     if (!this._container) {
       this._container = document.getElementById('toast-container') || document.createElement('div');
@@ -249,14 +298,25 @@ const Toast = {
     return this._container;
   },
   show(message, type = 'info', duration = 4000) {
-    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    const signature = `${type}:${String(message || '').trim()}`;
+    const now = Date.now();
+    if (signature === this._lastSignature && now - this._lastShownAt < 1400) {
+      return;
+    }
+    this._lastSignature = signature;
+    this._lastShownAt = now;
+    const icons = { success: 'OK', error: 'X', warning: '!', info: 'i' };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
-    this._getContainer().appendChild(toast);
+    toast.innerHTML = `<span>${icons[type] || 'i'}</span><span>${message}</span>`;
+    const container = this._getContainer();
+    container.innerHTML = '';
+    container.appendChild(toast);
     setTimeout(() => {
       toast.classList.add('removing');
-      setTimeout(() => toast.remove(), 220);
+      setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+      }, 220);
     }, duration);
   },
   success(message) { this.show(message, 'success'); },
@@ -267,12 +327,12 @@ const Toast = {
 
 function requireAuth(role = null) {
   if (!Auth.isLoggedIn()) {
-    _goTo('login.html');
+    Auth.logout();
     return false;
   }
   if (role && Auth.getRole() !== role) {
     Toast.error('Access denied. Insufficient permissions.');
-    _goTo('login.html');
+    Auth.logout(Auth.getLoginPageForRole(role));
     return false;
   }
   return true;
@@ -289,20 +349,41 @@ function redirectIfLoggedIn() {
   _goTo(pages[role] || 'index.html');
 }
 
+let openModalCount = 0;
+
+function syncBodyModalLock() {
+  if (!document.body) return;
+  const shouldLock = openModalCount > 0;
+  document.body.classList.toggle('overflow-hidden', shouldLock);
+}
+
 function openModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.add('open');
+  if (!el || el.classList.contains('open')) return;
+  el.classList.add('open');
+  openModalCount += 1;
+  syncBodyModalLock();
 }
 
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('open');
+  if (!el || !el.classList.contains('open')) return;
+  el.classList.remove('open');
+  openModalCount = Math.max(0, openModalCount - 1);
+  syncBodyModalLock();
 }
 
 document.addEventListener('click', (event) => {
   if (event.target.classList.contains('modal-overlay')) {
-    event.target.classList.remove('open');
+    closeModal(event.target.id);
   }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  const openOverlays = [...document.querySelectorAll('.modal-overlay.open')];
+  const topOverlay = openOverlays[openOverlays.length - 1];
+  if (topOverlay?.id) closeModal(topOverlay.id);
 });
 
 function formatDate(dateStr) {
@@ -319,21 +400,37 @@ function formatCurrency(amount) {
   return `₹${parseFloat(amount).toLocaleString('en-IN')}`;
 }
 
-function statusBadge(status) {
+function statusBadge(status, labelOverride) {
+  if (typeof paymentStatusBadge === 'function' && ['paid', 'unpaid', 'pending_verification', 'failed', 'rejected', 'approved'].includes(status)) {
+    return paymentStatusBadge(status, labelOverride);
+  }
   const map = {
-    pending: ['badge-yellow', 'Pending'],
+    pending: ['badge-yellow', 'Pending Review'],
     approved: ['badge-green', 'Approved'],
     rejected: ['badge-red', 'Rejected'],
     vacated: ['badge-blue', 'Vacated'],
     paid: ['badge-green', 'Paid'],
+    unpaid: ['badge-yellow', 'Unpaid'],
+    pending_verification: ['badge-blue', 'Under Review'],
+    failed: ['badge-red', 'Failed'],
     overdue: ['badge-red', 'Overdue'],
     open: ['badge-yellow', 'Open'],
     in_progress: ['badge-blue', 'In Progress'],
     resolved: ['badge-green', 'Resolved'],
     closed: ['badge-blue', 'Closed'],
   };
-  const [cls, label] = map[status] || ['badge-blue', status];
+  const [cls, defaultLabel] = map[status] || ['badge-blue', status];
+  const label = labelOverride || defaultLabel;
   return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function bookingStatusBadge(booking) {
+  if (!booking) return statusBadge('pending');
+  const role = Auth.getRole();
+  const label = role === 'resident'
+    ? (booking.resident_status_display || booking.status_display)
+    : (booking.status_display || booking.resident_status_display);
+  return statusBadge(booking.status, label);
 }
 
 window.api = api;
@@ -346,6 +443,7 @@ window.closeModal = closeModal;
 window.formatDate = formatDate;
 window.formatCurrency = formatCurrency;
 window.statusBadge = statusBadge;
+window.bookingStatusBadge = bookingStatusBadge;
 window.ApiError = ApiError;
 window.Theme = Theme;
 

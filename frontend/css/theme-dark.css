@@ -1,0 +1,647 @@
+/* ============================================================
+   PGDOST Dark Mode — Global contrast & visibility fixes
+   Load after style.css (+ dashboard.css on dashboard pages)
+   ============================================================ */
+
+/* ── Base text & links ─────────────────────────────────────── */
+body.dark-mode,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode p,
+body.dark-mode label,
+body.dark-mode legend,
+body.dark-mode li,
+body.dark-mode td,
+body.dark-mode th,
+body.dark-mode span,
+body.dark-mode strong {
+  color: inherit;
+}
+
+body.dark-mode a:not(.btn):not(.sb-item):not(.navbar-link) {
+  color: var(--theme-neon);
+}
+
+body.dark-mode a:not(.btn):hover {
+  color: #c6ffa6;
+}
+
+body.dark-mode .text-muted,
+body.dark-mode .section-subtitle,
+body.dark-mode .form-hint {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .form-label,
+body.dark-mode .ds-form-label {
+  color: var(--text-primary) !important;
+}
+
+/* ── Inputs, selects, textareas ────────────────────────────── */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode .form-input,
+body.dark-mode .form-select,
+body.dark-mode .form-textarea,
+body.dark-mode .ds-form-input,
+body.dark-mode .ds-form-select,
+body.dark-mode .ds-form-textarea,
+body.dark-mode .search-bar input,
+body.dark-mode .topbar-search input {
+  background: var(--input-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder,
+body.dark-mode .form-input::placeholder,
+body.dark-mode .form-textarea::placeholder,
+body.dark-mode .search-bar input::placeholder,
+body.dark-mode .topbar-search input::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1 !important;
+}
+
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus,
+body.dark-mode .form-input:focus,
+body.dark-mode .form-select:focus,
+body.dark-mode .form-textarea:focus {
+  border-color: rgba(143, 234, 91, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(143, 234, 91, 0.16) !important;
+  outline: none !important;
+}
+
+body.dark-mode select,
+body.dark-mode .form-select,
+body.dark-mode .ds-form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238fea5b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.85rem center !important;
+  background-size: 12px !important;
+  padding-right: 2.2rem !important;
+}
+
+body.dark-mode option,
+body.dark-mode select option,
+body.dark-mode .form-select option {
+  background-color: var(--dropdown-background) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode input:disabled,
+body.dark-mode select:disabled,
+body.dark-mode textarea:disabled,
+body.dark-mode .form-input:disabled {
+  opacity: 0.62 !important;
+  color: var(--text-secondary) !important;
+  cursor: not-allowed;
+}
+
+body.dark-mode .form-error,
+body.dark-mode .apply-field-error,
+body.dark-mode .ds-form-error {
+  color: #ff8f8f !important;
+}
+
+/* ── Cards, modals, panels ─────────────────────────────────── */
+body.dark-mode .card,
+body.dark-mode .modal,
+body.dark-mode .auth-card .card,
+body.dark-mode .feature-card,
+body.dark-mode .role-card,
+body.dark-mode .property-card,
+body.dark-mode .booking-detail-card,
+body.dark-mode .apply-form-section,
+body.dark-mode .apply-price-card,
+body.dark-mode .onboard-card,
+body.dark-mode .booking-status-card,
+body.dark-mode .pending-banner,
+body.dark-mode .empty-state {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .apply-radio-chip:has(input:checked),
+body.dark-mode .apply-room-option:has(input:checked),
+body.dark-mode .apply-upload-slot.has-file {
+  border-color: rgba(143, 234, 91, 0.55) !important;
+  background: rgba(143, 234, 91, 0.14) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .apply-form-section,
+body.dark-mode .apply-radio-chip,
+body.dark-mode .apply-room-option,
+body.dark-mode .apply-upload-slot,
+body.dark-mode .apply-agree-wrap,
+body.dark-mode .search-bar-enhanced,
+body.dark-mode .filter-pill,
+body.dark-mode .amenity-toggle,
+body.dark-mode .filters-bar,
+body.dark-mode .booking-accordion > summary {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .apply-form-footer {
+  background: linear-gradient(180deg, rgba(8, 18, 13, 0.92), rgba(6, 14, 10, 0.98)) !important;
+}
+
+body.dark-mode .apply-section-title,
+body.dark-mode .apply-upload-title,
+body.dark-mode .apply-room-title {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .apply-section-meta,
+body.dark-mode .apply-upload-hint,
+body.dark-mode .apply-room-sub,
+body.dark-mode .apply-doc-requirements-hint {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .apply-form-error {
+  background: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #ffb4b4 !important;
+}
+
+body.dark-mode .modal-overlay {
+  background: rgba(2, 8, 5, 0.82) !important;
+}
+
+/* ── Tables ────────────────────────────────────────────────── */
+body.dark-mode .table-wrapper,
+body.dark-mode .table,
+body.dark-mode .ds-table {
+  background: rgba(7, 18, 13, 0.9) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .table thead,
+body.dark-mode .table thead th,
+body.dark-mode .ds-table thead th {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .table tbody td,
+body.dark-mode .ds-table tbody td {
+  color: var(--text-primary) !important;
+  border-color: rgba(143, 234, 91, 0.1) !important;
+}
+
+body.dark-mode .table tbody tr:hover td,
+body.dark-mode .ds-table tbody tr:hover td {
+  background: var(--hover-background) !important;
+}
+
+/* ── Badges & status ───────────────────────────────────────── */
+body.dark-mode .badge-green  { background: rgba(34, 197, 94, 0.2);  color: #86efac; }
+body.dark-mode .badge-yellow { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+body.dark-mode .badge-red    { background: rgba(239, 68, 68, 0.2);  color: #fca5a5; }
+body.dark-mode .badge-blue   { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+body.dark-mode .badge-brand  { background: rgba(143, 234, 91, 0.18); color: var(--theme-neon); }
+
+body.dark-mode .premium-badge { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
+body.dark-mode .premium-badge-accent { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+
+/* ── Toasts ────────────────────────────────────────────────── */
+body.dark-mode .toast {
+  background: rgba(10, 24, 17, 0.96) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(143, 234, 91, 0.12) !important;
+}
+
+/* ── Navigation & mobile ───────────────────────────────────── */
+body.dark-mode .mobile-nav-panel,
+body.dark-mode .mobile-nav-panel a {
+  background: rgba(6, 16, 11, 0.98) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .mobile-nav-panel a:hover {
+  background: var(--hover-background) !important;
+  color: var(--theme-neon) !important;
+}
+
+body.dark-mode .navbar-link { color: var(--text-secondary) !important; }
+body.dark-mode .navbar-link:hover,
+body.dark-mode .navbar-link.active { color: var(--text-primary) !important; }
+
+/* ── Property cards & images ───────────────────────────────── */
+body.dark-mode .property-card-title,
+body.dark-mode .property-card-rent {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .property-card-rent {
+  color: var(--theme-neon) !important;
+}
+
+body.dark-mode .property-card-location {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .property-card-image {
+  background: linear-gradient(135deg, #0c1a12, #07120d) !important;
+}
+
+body.dark-mode .property-card-image.is-loading::before {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(143,234,91,0.12) 50%, rgba(255,255,255,0.04) 100%) !important;
+}
+
+body.dark-mode .amenity-chip {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .property-rating {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fcd34d !important;
+}
+
+/* ── Owner onboarding (page inline classes) ────────────────── */
+body.dark-mode .upload-zone {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .upload-item {
+  background: rgba(12, 26, 19, 0.9) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .progress-bar {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .status-pill.pending { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+body.dark-mode .status-pill.verified { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+body.dark-mode .status-pill.rejected { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+body.dark-mode .status-pill.not_submitted { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+body.dark-mode .badge-box {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #6ee7b7 !important;
+}
+
+body.dark-mode .alert-box {
+  background: rgba(59, 130, 246, 0.12) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ── Dashboard-specific (dashboard.css overrides) ──────────── */
+body.dark-mode {
+  --text: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --border: var(--border-color);
+  --white: var(--card-background);
+  --off-white: var(--surface-elevated);
+  --cream: var(--card-background);
+  --cream-light: var(--surface-elevated);
+  --navy: var(--text-primary);
+}
+
+body.dark-mode .ds-topbar,
+body.dark-mode .topbar-search,
+body.dark-mode .topbar-icon-btn {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .notif-panel,
+body.dark-mode .notif-panel h4 {
+  background: rgba(8, 18, 13, 0.96) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .pg-folder-header,
+body.dark-mode .pg-folder-body,
+body.dark-mode .ds-card-header,
+body.dark-mode .activity-item {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .activity-item:hover {
+  background: var(--hover-background) !important;
+}
+
+body.dark-mode .trend-up { background: rgba(67, 160, 106, 0.18); color: #86efac; }
+body.dark-mode .trend-down { background: rgba(224, 86, 86, 0.18); color: #fca5a5; }
+body.dark-mode .trend-neu { background: rgba(143, 234, 91, 0.12); color: var(--text-secondary); }
+
+/* Resident premium dashboard light overrides → dark */
+body.dark-mode.resident-premium {
+  background: var(--theme-ds-bg) fixed !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode.resident-premium .ds-sidebar {
+  background: var(--theme-ds-sidebar-bg) !important;
+  color: var(--text-primary) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+body.dark-mode.resident-premium .sb-title,
+body.dark-mode.resident-premium .sb-title strong,
+body.dark-mode.resident-premium .sb-item,
+body.dark-mode.resident-premium .sb-section,
+body.dark-mode.resident-premium .sb-user-name,
+body.dark-mode.resident-premium .sb-user-role {
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+body.dark-mode.resident-premium .sb-item:hover,
+body.dark-mode.resident-premium .sb-item.active {
+  background: var(--hover-background) !important;
+  color: #fff !important;
+}
+
+body.dark-mode.resident-premium .resident-welcome-title,
+body.dark-mode.resident-premium .resident-property-title,
+body.dark-mode.resident-premium .resident-info-strong,
+body.dark-mode.resident-premium .resident-panel-title,
+body.dark-mode.resident-premium .resident-property-rent,
+body.dark-mode.resident-premium .topbar-title {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode.resident-premium .resident-welcome-sub,
+body.dark-mode.resident-premium .resident-property-loc,
+body.dark-mode.resident-premium .resident-info-title,
+body.dark-mode.resident-premium .resident-ticket-meta {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode.resident-premium .resident-panel,
+body.dark-mode.resident-premium .resident-info-card,
+body.dark-mode.resident-premium .resident-property-card,
+body.dark-mode.resident-premium .resident-ticket-card,
+body.dark-mode.resident-premium .resident-search-card {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode.resident-premium .resident-round-pay {
+  background: rgba(143, 234, 91, 0.16) !important;
+  border-color: rgba(143, 234, 91, 0.32) !important;
+  color: #c6ffa6 !important;
+}
+
+/* Inline hardcoded colors in dashboards (receipt, stats, etc.) */
+body.dark-mode [style*="color:#3A5C2A"],
+body.dark-mode [style*="color:#6B7B5A"],
+body.dark-mode [style*="color:#5C7A4A"],
+body.dark-mode [style*="color:#6b7280"],
+body.dark-mode [style*="color:#374151"],
+body.dark-mode [style*="color:#111"] {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode [style*="background:#fff"],
+body.dark-mode [style*="background: #fff"],
+body.dark-mode [style*="background:#f9fafb"],
+body.dark-mode [style*="background:#f0fdf4"],
+body.dark-mode [style*="background:#dcfce7"] {
+  background: rgba(12, 26, 19, 0.88) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode [style*="border-bottom:1px solid #e5e7eb"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Auth split panels keep gradient — ensure right panel readable */
+body.dark-mode .auth-right,
+body.dark-mode .register-right {
+  color: #fff !important;
+}
+
+body.dark-mode .auth-left .card,
+body.dark-mode .register-left .card {
+  background: var(--card-background) !important;
+}
+
+/* Autofill fix (Chrome) */
+body.dark-mode input:-webkit-autofill,
+body.dark-mode input:-webkit-autofill:hover,
+body.dark-mode input:-webkit-autofill:focus,
+body.dark-mode select:-webkit-autofill,
+body.dark-mode textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px #0d1f16 inset !important;
+  box-shadow: 0 0 0 1000px #0d1f16 inset !important;
+  caret-color: var(--text-primary);
+}
+
+/* Property image loading shimmer */
+.property-card-image.is-loading {
+  position: relative;
+  overflow: hidden;
+}
+.property-card-image.is-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(232,223,192,0.2) 0%, rgba(143,184,120,0.35) 50%, rgba(232,223,192,0.2) 100%);
+  background-size: 200% 100%;
+  animation: propertyImageShimmer 1.2s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes propertyImageShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Marketplace / index page (inline page styles) ─────────── */
+body.dark-mode .search-container,
+body.dark-mode .search-bar-enhanced,
+body.dark-mode .search-bar-enhanced:focus-within,
+body.dark-mode .filter-pill,
+body.dark-mode .filter-pill:hover,
+body.dark-mode .filter-pill:focus,
+body.dark-mode .amenity-toggle,
+body.dark-mode .stats-strip {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .search-bar-enhanced input,
+body.dark-mode .search-bar-enhanced input::placeholder {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .amenity-toggle:has(input:checked),
+body.dark-mode .amenity-toggle.checked {
+  background: rgba(143, 234, 91, 0.16) !important;
+  border-color: rgba(143, 234, 91, 0.45) !important;
+  color: var(--theme-neon) !important;
+}
+
+body.dark-mode .apply-form-section {
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)) !important;
+}
+
+body.dark-mode .apply-radio-chip,
+body.dark-mode .apply-doc-item {
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .apply-radio-chip:has(input:checked),
+body.dark-mode .apply-doc-item:has(input:checked) {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .apply-section-head {
+  border-bottom-color: var(--border-color) !important;
+}
+
+body.dark-mode .booking-input-icon {
+  color: var(--theme-neon) !important;
+}
+
+body.dark-mode .skeleton-card {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(143, 234, 91, 0.12) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  ) !important;
+  background-size: 400% 100% !important;
+}
+
+body.dark-mode .property-card .badge[style*="rgba(0,0,0"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+body.dark-mode .detail-panel,
+body.dark-mode .property-detail-sidebar,
+body.dark-mode .filters-bar {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .ds-stat,
+body.dark-mode .ds-card,
+body.dark-mode .stat-card,
+body.dark-mode .kpi-card {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .topbar-search {
+  background: var(--input-background) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .topbar-search input {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .sb-item,
+body.dark-mode .sb-section,
+body.dark-mode .sb-user-name,
+body.dark-mode .sb-user-role {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .sb-item:hover,
+body.dark-mode .sb-item.active {
+  background: var(--hover-background) !important;
+  color: var(--theme-neon) !important;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-body,
+body.dark-mode .modal-footer {
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .bg-surface-2 {
+  background: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .topbar-icon-btn,
+body.dark-mode .qa-btn,
+body.dark-mode .btn-ds-secondary,
+body.dark-mode .ds-form-input,
+body.dark-mode .ds-form-select,
+body.dark-mode .ds-form-textarea,
+body.dark-mode .form-input,
+body.dark-mode .form-select,
+body.dark-mode .form-textarea {
+  background: var(--input-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .ds-form-input:focus,
+body.dark-mode .ds-form-select:focus,
+body.dark-mode .ds-form-textarea:focus,
+body.dark-mode .form-input:focus,
+body.dark-mode .form-select:focus,
+body.dark-mode .form-textarea:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .qa-btn:hover,
+body.dark-mode .btn-ds-secondary:hover,
+body.dark-mode .btn-secondary:hover {
+  background: var(--hover-background) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .modal {
+  background: var(--card-background) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.dark-mode .resident-property-img {
+  background-color: #0c1a12 !important;
+}
+
+body.dark-mode .resident-search-card input,
+body.dark-mode .resident-search-card select {
+  background: var(--input-background) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.dark-mode .wishlist-card,
+body.dark-mode .complaint-card,
+body.dark-mode .payment-card {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 
+from django.db.backends.signals import connection_created
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -91,7 +93,7 @@ WSGI_APPLICATION = 'pgdost_backend.wsgi.application'
 
 DEFAULT_DB_PATH = BASE_DIR / 'db.sqlite3'
 DB_PATH_OVERRIDE = os.environ.get('PGDOST_DB_PATH')
-FALLBACK_DB_PATH = Path(r'C:\tmp\pgdost\db.sqlite3')
+FALLBACK_DB_PATH = BASE_DIR / 'db.runtime.sqlite3'
 
 if DB_PATH_OVERRIDE:
     DB_PATH = Path(DB_PATH_OVERRIDE)
@@ -108,6 +110,21 @@ DATABASES = {
         'NAME': DB_PATH,
     }
 }
+
+
+def _configure_sqlite(sender, connection, **kwargs):
+    """
+    OneDrive-backed folders can throw disk I/O errors with default sqlite journaling.
+    Force memory journaling for local development reliability.
+    """
+    if connection.vendor != 'sqlite':
+        return
+    cursor = connection.cursor()
+    cursor.execute('PRAGMA journal_mode=MEMORY;')
+    cursor.execute('PRAGMA synchronous=NORMAL;')
+
+
+connection_created.connect(_configure_sqlite)
 
 
 # Password validation

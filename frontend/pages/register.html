@@ -4,8 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PGDOST — Create Account</title>
-  <meta name="description" content="Create your PGDOST account as a resident or PG owner." />
+  <meta name="description" content="Create your PGDOST resident account." />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme-dark.css" />
+<link rel="stylesheet" href="../css/cinematic.css" />
+
+
   <script>
     (function () {
       try {
@@ -41,19 +45,6 @@
     .auth-logo-text { font-family: var(--font-head); font-size: 2rem; font-weight: 800; }
     .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: var(--space-xs); letter-spacing: -0.02em; }
     .auth-subtitle { text-align: center; color: var(--clr-text-muted); font-size: 0.88rem; margin-bottom: var(--space-xl); }
-    .role-selector { display: flex; gap: var(--space-sm); }
-    .role-btn {
-      flex: 1; padding: 0.85rem; background: rgba(255,255,255,0.6);
-      border: 2px solid rgba(0,0,0,0.06); border-radius: var(--radius-md);
-      color: var(--clr-text-muted); font-weight: 600; font-size: 0.88rem;
-      text-align: center; transition: all var(--dur-base) var(--ease-spring);
-      cursor: pointer; font-family: var(--font-body);
-    }
-    .role-btn:hover { border-color: rgba(123,138,98,0.3); background: rgba(255,255,255,0.8); }
-    .role-btn.selected {
-      border-color: var(--clr-brand-400); color: var(--clr-brand-600);
-      background: rgba(123,138,98,0.08); box-shadow: 0 0 0 3px rgba(123,138,98,0.1);
-    }
     @media (max-width: 768px) {
       .auth-panel { display: none; }
       .auth-form-side { padding: var(--space-xl); }
@@ -72,7 +63,7 @@
         <div class="auth-panel-steps animate-fade-up" style="animation-delay:0.2s">
           <div class="auth-panel-step">
             <div class="step-num">1</div>
-            <div class="step-text"><strong>Choose your role</strong> — Resident or PG Owner</div>
+            <div class="step-text"><strong>Create resident profile</strong> — quick account setup</div>
           </div>
           <div class="auth-panel-step">
             <div class="step-num">2</div>
@@ -80,7 +71,7 @@
           </div>
           <div class="auth-panel-step">
             <div class="step-num">3</div>
-            <div class="step-text"><strong>Start exploring</strong> — find or manage PGs instantly</div>
+            <div class="step-text"><strong>Start exploring</strong> — find and request PGs instantly</div>
           </div>
         </div>
       </div>
@@ -96,19 +87,11 @@
         </div>
 
         <div class="card">
-          <h1 class="auth-title">Create Account</h1>
-          <p class="auth-subtitle">Join PGDOST to find or manage PGs</p>
+          <h1 class="auth-title">Create Resident Account</h1>
+          <p class="auth-subtitle">Join PGDOST to find and book PGs</p>
 
           <form id="register-form" class="flex flex-col gap-md">
-            <!-- Role Selector -->
-            <div class="form-group animate-fade-up" style="animation-delay: 0.1s">
-              <label class="form-label">I am a…</label>
-              <div class="role-selector">
-                <button type="button" class="role-btn selected" data-role="resident" id="role-resident">🏡 Resident</button>
-                <button type="button" class="role-btn" data-role="owner" id="role-owner">🏢 PG Owner</button>
-              </div>
-              <input type="hidden" id="role" value="resident" />
-            </div>
+            <input type="hidden" id="role" value="resident" />
 
             <div class="form-grid animate-fade-up" style="animation-delay: 0.2s">
               <div class="form-group">
@@ -163,38 +146,17 @@
 
   <div id="toast-container"></div>
   <script src="../scripts/api.js"></script>
+<script src="../scripts/cinematic.js"></script>
+
   <script>
     redirectIfLoggedIn();
-
-    // Role button toggle
-    document.querySelectorAll('.role-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById('role').value = btn.dataset.role;
-      });
-    });
 
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errorEl = document.getElementById('reg-error');
       errorEl.classList.add('hidden');
       const btn = document.getElementById('reg-btn');
-      const role = document.getElementById('role').value;
-
-      if (role === 'owner') {
-        const email = document.getElementById('email').value.trim();
-        const first = document.getElementById('first_name').value.trim();
-        const last = document.getElementById('last_name').value.trim();
-        const phone = document.getElementById('phone_number').value.trim();
-        const fullName = `${first} ${last}`.trim();
-        const params = new URLSearchParams();
-        if (fullName) params.set('name', fullName);
-        if (email) params.set('email', email);
-        if (phone) params.set('phone', phone);
-        window.location.href = `owner-signup.html${params.toString() ? '?' + params.toString() : ''}`;
-        return;
-      }
+      const role = 'resident';
 
       const password  = document.getElementById('password').value;
       const password2 = document.getElementById('password2').value;

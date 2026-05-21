@@ -6,6 +6,10 @@
   <title>PGDOST — Resident Login</title>
   <meta name="description" content="Sign in as a resident to manage your PG stay, payments, and complaints." />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme-dark.css" />
+<link rel="stylesheet" href="../css/cinematic.css" />
+
+
   <script>
     (function () {
       try {
@@ -117,13 +121,37 @@
 
   <div id="toast-container"></div>
   <script src="../scripts/api.js"></script>
+<script src="../scripts/cinematic.js"></script>
+
   <script>
-    // If already logged in as resident, go directly
-    if (Auth.isLoggedIn()) {
+    // If already logged in, route to the correct area
+    async function redirectAuthenticatedUser() {
+      if (!Auth.isLoggedIn()) return;
       const role = Auth.getRole();
-      if (role === 'resident') window.location.href = 'resident-dashboard.html';
-      else if (role === 'owner') window.location.href = 'owner-login.html';
+      if (role === 'resident') {
+        window.location.href = 'resident-dashboard.html';
+        return;
+      }
+      if (role === 'owner') {
+        const cached = Auth.getOwnerOnboardingState();
+        if (cached && typeof cached.can_list_properties === 'boolean') {
+          window.location.href = cached.can_list_properties ? 'owner-dashboard.html' : 'owner-onboarding.html';
+          return;
+        }
+        try {
+          const onboarding = await api.get('/auth/owner/onboarding-status/');
+          Auth.setOwnerOnboardingState(onboarding);
+          window.location.href = onboarding?.can_list_properties ? 'owner-dashboard.html' : 'owner-onboarding.html';
+        } catch {
+          window.location.href = 'owner-login.html';
+        }
+        return;
+      }
+      if (role === 'superadmin') {
+        window.location.href = 'admin-dashboard.html';
+      }
     }
+    redirectAuthenticatedUser();
 
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();

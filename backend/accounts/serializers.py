@@ -11,6 +11,7 @@ from .models import (
 
 
 class UserSerializer(serializers.ModelSerializer):
+    can_request_booking = serializers.BooleanField(read_only=True)
     class Meta:
         model = CustomUser
         fields = (
@@ -23,8 +24,13 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'is_email_verified',
+            'can_request_booking',
         )
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'role': {'read_only': True},
+            'is_email_verified': {'read_only': True},
+        }
 
     def validate(self, attrs):
         password = attrs.get('password')
@@ -205,4 +211,3 @@ class OwnerOnboardingStatusSerializer(serializers.Serializer):
     verification_badge = serializers.BooleanField()
     can_list_properties = serializers.BooleanField()
     prompt_message = serializers.CharField()
-

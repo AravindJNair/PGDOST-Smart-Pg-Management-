@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='resident')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    is_email_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=True)
 
     # Required to prevent clash with Django's built-in User model
     groups = models.ManyToManyField(
@@ -41,6 +41,10 @@ class CustomUser(AbstractUser):
         if self.role != 'owner':
             return False
         return self.is_email_verified and self.has_uploaded_identity_documents
+
+    @property
+    def can_request_booking(self):
+        return self.role == 'resident'
 
 
 class OwnerOtp(models.Model):

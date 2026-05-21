@@ -6,6 +6,11 @@
   <title>PGDOST — Owner Dashboard</title>
   <link rel="stylesheet" href="../css/style.css"/>
   <link rel="stylesheet" href="../css/dashboard.css?v=2"/>
+  <link rel="stylesheet" href="../css/theme-dark.css" />
+<link rel="stylesheet" href="../css/cinematic.css" />
+  <link rel="stylesheet" href="../css/payments.css" />
+
+
   <script>
     (function () {
       try {
@@ -404,10 +409,19 @@
       <!-- ── Payments Tab ── -->
       <div id="tab-payments" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
-          <div><h2 class="section-title">Invoices</h2><p class="section-subtitle">Rent invoices for your residents</p></div>
+          <div><h2 class="section-title">Payments</h2><p class="section-subtitle">UPI setup, invoices, and payment verification</p></div>
           <button id="btn-open-create-invoice" class="btn btn-primary btn-sm">+ Create Invoice</button>
         </div>
-        <div id="payments-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        <div class="pay-subtabs" role="tablist">
+          <button type="button" class="pay-subtab active" data-pay-panel="overview" onclick="switchPayPanel('overview')">Overview</button>
+          <button type="button" class="pay-subtab" data-pay-panel="settings" onclick="switchPayPanel('settings')">Payment Settings</button>
+          <button type="button" class="pay-subtab" data-pay-panel="invoices" onclick="switchPayPanel('invoices')">Invoices</button>
+          <button type="button" class="pay-subtab" data-pay-panel="verifications" onclick="switchPayPanel('verifications')">Verifications <span id="pay-pending-badge" class="badge badge-yellow hidden" style="margin-left:4px;">0</span></button>
+        </div>
+        <div id="pay-panel-overview"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        <div id="pay-panel-settings" class="hidden"></div>
+        <div id="pay-panel-invoices" class="hidden"><div id="payments-list"></div></div>
+        <div id="pay-panel-verifications" class="hidden"></div>
       </div>
       <!-- ── Complaints Tab ── -->
       <div id="tab-complaints" class="tab-content animate-fade-in">
@@ -419,10 +433,35 @@
       <!-- ── Visitors Tab ── -->
       <div id="tab-visitors" class="tab-content animate-fade-in">
         <div class="section-header animate-fade-up delay-100">
-          <div><h2 class="section-title">Visitor Log</h2><p class="section-subtitle">Log and track visitor entries</p></div>
-          <button id="btn-open-log-visitor" class="btn btn-primary btn-sm">+ Log Visitor</button>
+          <div><h2 class="section-title">Visitor Approvals</h2><p class="section-subtitle">Approve/reject resident visitor requests and track approved entries</p></div>
         </div>
-        <div id="visitors-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        <div class="form-grid mb-md" style="grid-template-columns:2fr 1fr;">
+          <div class="form-group mb-0">
+            <label class="form-label">Search</label>
+            <input id="visitor-search" class="form-input" placeholder="Search by visitor, resident, property" />
+          </div>
+          <div class="form-group mb-0">
+            <label class="form-label">Status Filter</label>
+            <select id="visitor-status-filter" class="form-select">
+              <option value="all">All</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="card mb-lg">
+          <h3 class="font-bold mb-sm">Pending Approval Queue</h3>
+          <div id="visitor-requests-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        </div>
+        <div class="card mb-lg">
+          <h3 class="font-bold mb-sm">Approved Visitor Records</h3>
+          <div id="visitors-approved-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        </div>
+        <div class="card">
+          <h3 class="font-bold mb-sm">Rejected Requests</h3>
+          <div id="visitors-rejected-list"><div style="display:flex;justify-content:center;padding:48px;"><div class="spinner"></div></div></div>
+        </div>
       </div>
     </div><!-- /ds-body -->
   </div><!-- /ds-main -->
@@ -508,6 +547,7 @@
       <h3 class="modal-title" id="approve-booking-title">Review Booking</h3>
       <button class="modal-close" onclick="closeModal('modal-approve-booking')">✕</button>
     </div>
+    <div id="approve-booking-review" class="booking-review-panel hidden" style="margin-bottom:.75rem;"></div>
     <div class="flex flex-col gap-md">
       <input type="hidden" id="approve-booking-id" />
       <div class="form-group">
@@ -633,57 +673,24 @@
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- MODAL: Log Visitor                                              -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div id="modal-log-visitor" class="modal-overlay">
+<div id="modal-review-visitor" class="modal-overlay">
   <div class="modal" style="max-width:520px;">
     <div class="modal-header">
-      <h3 class="modal-title">Log Visitor Entry</h3>
-      <button class="modal-close" onclick="closeModal('modal-log-visitor')">✕</button>
+      <h3 class="modal-title">Review Visitor Request</h3>
+      <button class="modal-close" onclick="closeModal('modal-review-visitor')">✕</button>
     </div>
-    <form id="log-visitor-form" class="flex flex-col gap-md">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Property *</label>
-          <select id="vis-property" class="form-select" required>
-            <option value="">Select property…</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Visiting Resident *</label>
-          <select id="vis-resident" class="form-select" required>
-            <option value="">Select resident…</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Visitor Name *</label>
-          <input type="text" id="vis-name" class="form-input" placeholder="Full name" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Visitor Phone</label>
-          <input type="tel" id="vis-phone" class="form-input" placeholder="9876543210" />
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Purpose *</label>
-          <select id="vis-purpose" class="form-select" required>
-            <option value="personal">Personal Visit</option>
-            <option value="delivery">Delivery</option>
-            <option value="official">Official / Work</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Check-In Time *</label>
-          <input type="datetime-local" id="vis-checkin" class="form-input" required />
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary btn-lg w-full">Log Entry</button>
-    </form>
+    <input type="hidden" id="visitor-review-id" />
+    <div id="visitor-review-meta" class="text-sm text-muted mb-md"></div>
+    <div class="form-group">
+      <label class="form-label">Owner Note (optional)</label>
+      <textarea id="visitor-review-note" class="form-textarea" rows="2" placeholder="Approval note or rejection reason"></textarea>
+    </div>
+    <div class="flex gap-sm mt-md">
+      <button class="btn btn-success btn-lg flex-1" onclick="reviewVisitorRequest('approved')">Approve</button>
+      <button class="btn btn-danger btn-lg flex-1" onclick="reviewVisitorRequest('rejected')">Reject</button>
+    </div>
   </div>
-</div>
-<!-- Photo Manager Modal -->
+</div><!-- Photo Manager Modal -->
 <div id="modal-photo-manager" class="modal-overlay">
   <div class="modal" style="max-width:680px;">
     <div class="modal-header">
@@ -795,23 +802,55 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL: Review Payment Proof -->
+<div id="modal-review-payment" class="modal-overlay">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Review Payment Proof</h3>
+      <button class="modal-close" onclick="closeModal('modal-review-payment')">✕</button>
+    </div>
+    <input type="hidden" id="review-submission-id" />
+    <div id="review-payment-body" class="flex flex-col gap-md"></div>
+    <div class="form-group mt-sm">
+      <label class="form-label">Note to resident (optional)</label>
+      <textarea id="review-owner-note" class="form-textarea" rows="2" placeholder="Approval note or rejection reason…"></textarea>
+    </div>
+    <div class="flex gap-sm mt-md">
+      <button type="button" class="btn btn-success flex-1" onclick="approvePaymentSubmission()">Approve</button>
+      <button type="button" class="btn btn-danger flex-1" onclick="rejectPaymentSubmission()">Reject</button>
+    </div>
+  </div>
+</div>
+
 <script src="../scripts/api.js"></script>
+<script src="../scripts/cinematic.js"></script>
+<script src="../scripts/payments.js"></script>
+<script src="../scripts/owner-payments.js"></script>
+
 <script>
   // Strict guard — only 'owner' role allowed, nothing else
   if (!Auth.isLoggedIn() || Auth.getRole() !== 'owner') {
-    Auth.clear();
-    window.location.href = 'login.html';
+    Auth.logout('owner-login.html');
   }
   function ownerLogout() {
-    Auth.clear();
-    window.location.href = 'login.html';
+    Auth.logout('owner-login.html');
   }
   const user = Auth.getUser();
   document.getElementById('sidebar-username').textContent = user?.username || 'Owner';
   document.getElementById('avatar-text').textContent = (user?.username || 'O')[0].toUpperCase();
   async function enforceOwnerOnboarding() {
+    const cachedStatus = Auth.getOwnerOnboardingState();
+    if (cachedStatus?.can_list_properties) {
+      return true;
+    }
     try {
       const status = await api.get('/auth/owner/onboarding-status/');
+      if (!status) {
+        if (!Auth.isLoggedIn()) return false;
+        throw new Error('Missing onboarding status');
+      }
+      Auth.setOwnerOnboardingState(status);
       if (!status.can_list_properties) {
         Toast.warning(status.prompt_message || 'Verify your account to continue listing properties.');
         window.location.href = 'owner-onboarding.html';
@@ -819,13 +858,19 @@
       }
       return true;
     } catch {
-      Toast.error('Unable to validate owner onboarding status.');
-      window.location.href = 'owner-onboarding.html';
+      if (!Auth.isLoggedIn()) return false;
+      if (cachedStatus && !cachedStatus.can_list_properties) {
+        window.location.href = 'owner-onboarding.html';
+        return false;
+      }
+      Toast.error('Your session has expired. Please login again.');
+      Auth.logout('owner-login.html');
       return false;
     }
   }
   let ownerProperties = [];
   let ownerBookings = [];
+  let activeOwnerTab = 'overview';
   const manageState = { selectedPropertyId: null, property: null, images: [] };
   function switchTab(tab) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -843,6 +888,8 @@
       visitors:'Visitors'
     };
     document.getElementById('page-title').textContent = titles[tab] || tab;
+    activeOwnerTab = tab;
+    if (tab !== 'visitors') stopOwnerVisitorRealtime();
     closeSidebar();
     const loaders = {
       properties: loadProperties,
@@ -854,6 +901,7 @@
       visitors: loadVisitors
     };
     if (loaders[tab]) loaders[tab]();
+    if (tab === 'visitors') startOwnerVisitorRealtime();
   }
   function toggleSidebar() {
     document.getElementById('ds-sidebar').classList.toggle('open');
@@ -1286,7 +1334,7 @@
       } else {
         barsEl.innerHTML = '<p style="color:#6B7B5A;font-size:.85rem;text-align:center;padding:12px;">No properties yet.</p>';
       }
-    } catch (e) { console.error('loadOverview error:', e); Toast.error('Failed to load overview.'); }
+    } catch (e) { Toast.error('Failed to load overview.'); }
   }
   // ── Properties ────────────────────────────────────────────
   async function loadProperties() {
@@ -1395,18 +1443,47 @@
         <tbody>${bookings.map(b => `
           <tr><td class="font-semibold">${b.resident_username}</td><td>${b.property_name}</td>
           <td>${b.room_number || '—'}</td><td>${formatDate(b.move_in_date)}</td>
-          <td>${statusBadge(b.status)}</td>
+          <td>${statusBadge(b.status, b.status_display)}</td>
           <td>${b.status === 'pending' ? `<button onclick="openApproveModal(${b.id})" class="btn btn-primary btn-sm">Review</button>` : b.status === 'approved' ? `<button onclick="handleVacate(${b.id})" class="btn btn-secondary btn-sm">Mark Vacated</button>` : ''}</td>
           </tr>`).join('')}
         </tbody></table></div>`;
     } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load bookings.</p>'; }
   }
+  function renderApproveBookingReview(booking) {
+    const panel = document.getElementById('approve-booking-review');
+    if (!panel || !booking) return;
+    panel.classList.remove('hidden');
+    const docs = (booking.documents || []).map((doc) => `
+      <a href="${doc.document_url}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${doc.document_type_display || doc.document_type}</a>
+    `).join('') || '<span class="text-muted text-sm">No documents uploaded</span>';
+    panel.innerHTML = `
+      <div class="card" style="padding:.85rem;">
+        <div class="text-xs text-muted uppercase mb-sm" style="letter-spacing:.08em;">Resident Application</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;font-size:.84rem;">
+          <div><span class="text-muted">Name</span><br><strong>${booking.resident_full_name || booking.resident_username || '—'}</strong></div>
+          <div><span class="text-muted">Phone</span><br><strong>${booking.resident_phone || '—'}</strong></div>
+          <div><span class="text-muted">Email</span><br><strong>${booking.resident_email || '—'}</strong></div>
+          <div><span class="text-muted">Room Type</span><br><strong>${booking.requested_room_type_display || booking.requested_room_type || '—'}</strong></div>
+          <div><span class="text-muted">Duration</span><br><strong>${booking.duration_months ? booking.duration_months + ' month(s)' : '—'}</strong></div>
+          <div><span class="text-muted">Move-in</span><br><strong>${formatDate(booking.move_in_date)}</strong></div>
+          <div><span class="text-muted">Occupants</span><br><strong>${booking.occupants || '—'}</strong></div>
+          <div><span class="text-muted">Status</span><br>${statusBadge(booking.status, booking.status_display)}</div>
+        </div>
+        <div style="margin-top:.7rem;">
+          <div class="text-xs text-muted uppercase mb-sm">Uploaded Documents</div>
+          <div class="flex gap-sm flex-wrap">${docs}</div>
+        </div>
+        ${booking.message ? `<div style="margin-top:.7rem;"><div class="text-xs text-muted uppercase mb-sm">Resident Message</div><div class="p-sm bg-surface-2 rounded-md text-sm border" style="white-space:pre-wrap;">${booking.message}</div></div>` : ''}
+      </div>`;
+  }
+
   async function openApproveModal(bookingId) {
     const booking = ownerBookings.find(b => b.id === bookingId);
     document.getElementById('approve-booking-id').value = bookingId;
-    document.getElementById('approve-booking-title').textContent = `Review: ${booking?.resident_username || ''} → ${booking?.property_name || ''}`;
+    document.getElementById('approve-booking-title').textContent = `Review: ${booking?.resident_full_name || booking?.resident_username || ''} → ${booking?.property_name || ''}`;
+    renderApproveBookingReview(booking);
     document.getElementById('approve-note').value = '';
-    document.getElementById('approve-movein').value = '';
+    document.getElementById('approve-movein').value = booking?.move_in_date || '';
     // Populate available rooms for the booking's property (use owner endpoint)
     const roomSel = document.getElementById('approve-room');
     roomSel.innerHTML = '<option value="">No specific room — auto assign</option>';
@@ -1448,30 +1525,7 @@
       loadOverview();
     } catch (err) { Toast.error(err.message); }
   }
-  // ── Payments ──────────────────────────────────────────────
-  const ownerInvoicesMap = {};
-  async function loadPayments() {
-    const el = document.getElementById('payments-list');
-    try {
-      const invoices = await api.get('/payments/owner/');
-      // Store in map for safe lookup
-      invoices.forEach(inv => ownerInvoicesMap[inv.id] = inv);
-      if (!invoices.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💰</div><h3>No Invoices</h3><p>Create invoices for your residents.</p></div>'; return; }
-      el.innerHTML = `<div class="table-wrapper"><table class="table">
-        <thead><tr><th>#</th><th>Resident</th><th>Period</th><th>Amount</th><th>Due</th><th>Txn ID</th><th>Status</th><th>Receipt</th></tr></thead>
-        <tbody>${invoices.map(inv => `
-          <tr><td>#${inv.id}</td><td class="font-semibold">${inv.resident_username}</td>
-          <td>${inv.month_display} ${inv.year}</td><td class="text-brand-light font-bold">${formatCurrency(inv.amount)}</td>
-          <td>${formatDate(inv.due_date)}</td>
-          <td class="text-sm text-muted" style="font-family:monospace;">${inv.transaction_id || '—'}</td>
-          <td>${statusBadge(inv.status)}</td>
-          <td>${inv.status === 'paid'
-            ? `<button onclick="showReceipt(${inv.id})" class="btn btn-secondary btn-sm">📰 Receipt</button>`
-            : '<span class="text-muted text-xs">Unpaid</span>'
-          }</td></tr>`).join('')}
-        </tbody></table></div>`;
-    } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load invoices.</p>'; }
-  }
+  // ── Payments (see owner-payments.js) ───────────────────
   function showReceipt(idOrObj) {
     const inv = (typeof idOrObj === 'object') ? idOrObj : ownerInvoicesMap[idOrObj];
     if (!inv) { Toast.error('Receipt data not found.'); return; }
@@ -1497,11 +1551,6 @@
       });
     } catch {}
   }
-  document.getElementById('modal-create-invoice').addEventListener('click', (e) => {
-    if (e.target.closest('.modal-overlay') === e.target) return;
-  });
-  // Open invoice modal
-  document.querySelector('[onclick="openModal(\'modal-create-invoice\')"]')?.addEventListener('click', populateInvoiceForm);
   document.getElementById('create-invoice-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type=submit]');
@@ -1565,72 +1614,176 @@
           btn.disabled = false; btn.textContent = 'Save Changes';
       }
   });
-  // ── Visitors ──────────────────────────────────────────────
-  async function loadVisitors() {
-    const el = document.getElementById('visitors-list');
-    try {
-      const logs = await api.get('/visitors/owner/');
-      if (!logs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><h3>No Visitor Records</h3><p>Log visitor entries to track who enters your property.</p></div>'; return; }
-      el.innerHTML = `<div class="table-wrapper"><table class="table">
-        <thead><tr><th>Visitor</th><th>Resident</th><th>Purpose</th><th>Check-In</th><th>Check-Out</th><th>Action</th></tr></thead>
-        <tbody>${logs.map(v => `
-          <tr><td class="font-semibold">${v.visitor_name}</td><td>${v.resident_username}</td>
-          <td>${v.purpose_display}</td><td>${formatDate(v.check_in)}</td>
-          <td>${v.check_out ? formatDate(v.check_out) : '<span class="badge badge-yellow">Inside</span>'}</td>
-          <td>${!v.check_out ? `<button onclick="checkOutVisitor(${v.id})" class="btn btn-secondary btn-sm">Check Out</button>` : ''}</td></tr>`).join('')}
-        </tbody></table></div>`;
-    } catch { el.innerHTML = '<p class="text-muted text-center py-xl">Failed to load visitor log.</p>'; }
-  }
-  async function populateVisitorForm() {
-    try {
-      const [props, bookings] = await Promise.all([api.get('/properties/owner/'), api.get('/bookings/owner/')]);
-      const propSel = document.getElementById('vis-property');
-      propSel.innerHTML = '<option value="">Select property…</option>';
-      props.forEach(p => propSel.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-      const resSel = document.getElementById('vis-resident');
-      resSel.innerHTML = '<option value="">Select resident…</option>';
-      bookings.filter(b => b.status === 'approved').forEach(b =>
-        resSel.innerHTML += `<option value="${b.resident}">${b.resident_username}</option>`
-      );
-    } catch {}
-  }
-  document.getElementById('log-visitor-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button[type=submit]');
-    btn.disabled = true; btn.textContent = 'Logging…';
-    try {
-      await api.post('/visitors/owner/', {
-        property: parseInt(document.getElementById('vis-property').value),
-        resident: parseInt(document.getElementById('vis-resident').value),
-        visitor_name: document.getElementById('vis-name').value,
-        visitor_phone: document.getElementById('vis-phone').value,
-        purpose: document.getElementById('vis-purpose').value,
-        check_in: document.getElementById('vis-checkin').value,
-      });
-      closeModal('modal-log-visitor');
-      Toast.success('Visitor logged!');
-      e.target.reset();
-      loadVisitors();
-    } catch (err) { Toast.error(err.message); }
-    finally { btn.disabled = false; btn.textContent = 'Log Entry'; }
+  // Visitors
+let ownerVisitorRealtimeTimer = null;
+const ownerVisitorRequestsById = {};
+
+function stopOwnerVisitorRealtime() {
+  if (!ownerVisitorRealtimeTimer) return;
+  clearInterval(ownerVisitorRealtimeTimer);
+  ownerVisitorRealtimeTimer = null;
+}
+
+function startOwnerVisitorRealtime() {
+  stopOwnerVisitorRealtime();
+  ownerVisitorRealtimeTimer = setInterval(() => {
+    if (document.hidden || activeOwnerTab !== 'visitors') return;
+    loadVisitors(true);
+  }, 8000);
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
-  async function checkOutVisitor(id) {
-    try {
-      await api.patch(`/visitors/owner/${id}/`, { check_out: new Date().toISOString() });
-      Toast.success('Visitor checked out.');
-      loadVisitors();
-    } catch (err) { Toast.error(err.message); }
+}
+
+function visitorStatusBadge(status) {
+  if (status === 'approved') return '<span class="badge badge-green">Approved</span>';
+  if (status === 'rejected') return '<span class="badge badge-red">Rejected</span>';
+  return '<span class="badge badge-yellow">Pending</span>';
+}
+
+function getVisitLifecycleStatus(checkIn, checkOut, apiStatus = '') {
+  const normalized = (apiStatus || '').toLowerCase();
+  if (['upcoming', 'active', 'completed'].includes(normalized)) return normalized;
+  const nowMs = Date.now();
+  const checkInMs = checkIn ? new Date(checkIn).getTime() : Number.NaN;
+  const checkOutMs = checkOut ? new Date(checkOut).getTime() : Number.NaN;
+  if (Number.isFinite(checkOutMs) && nowMs >= checkOutMs) return 'completed';
+  if (Number.isFinite(checkInMs) && nowMs >= checkInMs) return 'active';
+  return 'upcoming';
+}
+
+function visitLifecycleBadge(status) {
+  if (status === 'completed') return '<span class="badge badge-green">Completed</span>';
+  if (status === 'active') return '<span class="badge badge-yellow">Active / Inside</span>';
+  return '<span class="badge badge-blue">Upcoming</span>';
+}
+
+function calculateVisitDurationLabel(checkIn, checkOut) {
+  if (!checkIn || !checkOut) return '-';
+  const start = new Date(checkIn).getTime();
+  const end = new Date(checkOut).getTime();
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return '-';
+  const mins = Math.floor((end - start) / 60000);
+  const hours = Math.floor(mins / 60);
+  const remMins = mins % 60;
+  if (hours && remMins) return `${hours}h ${remMins}m`;
+  if (hours) return `${hours}h`;
+  return `${remMins}m`;
+}
+
+function openVisitorReviewById(requestId) {
+  const req = ownerVisitorRequestsById[requestId];
+  if (!req) return;
+  openVisitorReviewModal(req);
+}
+
+function openVisitorReviewModal(req) {
+  document.getElementById('visitor-review-id').value = req.id;
+  document.getElementById('visitor-review-note').value = '';
+  document.getElementById('visitor-review-meta').innerHTML = `<strong>${req.visitor_name}</strong> requesting entry for <strong>${req.resident_username}</strong><br>${req.property_name} | ${formatDateTime(req.requested_check_in)} to ${formatDateTime(req.requested_check_out)} (${calculateVisitDurationLabel(req.requested_check_in, req.requested_check_out)})`;
+  openModal('modal-review-visitor');
+}
+
+async function reviewVisitorRequest(status) {
+  const requestId = Number(document.getElementById('visitor-review-id').value);
+  const note = document.getElementById('visitor-review-note').value.trim();
+  if (!requestId) return;
+  try {
+    await api.patch(`/visitors/requests/owner/${requestId}/review/`, {
+      status,
+      owner_note: note,
+    });
+    closeModal('modal-review-visitor');
+    Toast.success(`Visitor request ${status}.`);
+    await loadVisitors();
+    await loadOverview();
+  } catch (err) {
+    Toast.error(err.message || 'Failed to update visitor request.');
   }
-  // Attach populate on modal open - using direct click handlers on buttons
-  document.getElementById('btn-open-log-visitor').addEventListener('click', () => {
-    populateVisitorForm();
-    openModal('modal-log-visitor');
-  });
-  document.getElementById('btn-open-create-invoice').addEventListener('click', () => {
-    populateInvoiceForm();
-    openModal('modal-create-invoice');
-  });
-  // ── Manage Rooms ──────────────────────────────────────────
+}
+
+async function loadVisitors(silent = false) {
+  const pendingEl = document.getElementById('visitor-requests-list');
+  const approvedEl = document.getElementById('visitors-approved-list');
+  const rejectedEl = document.getElementById('visitors-rejected-list');
+  const searchTerm = document.getElementById('visitor-search')?.value?.trim() || '';
+  const statusFilter = document.getElementById('visitor-status-filter')?.value || 'all';
+  const params = new URLSearchParams();
+  if (searchTerm) params.set('search', searchTerm);
+  if (statusFilter !== 'all') params.set('status', statusFilter);
+  try {
+    const requestEndpoint = `/visitors/requests/owner/${params.toString() ? `?${params.toString()}` : ''}`;
+    const [requests, logs] = await Promise.all([
+      api.get(requestEndpoint),
+      api.get('/visitors/owner/'),
+    ]);
+    const pending = requests.filter((req) => req.status === 'pending');
+    const approved = requests.filter((req) => req.status === 'approved');
+    const rejected = requests.filter((req) => req.status === 'rejected');
+    const logsFiltered = logs.filter((item) => {
+      if (statusFilter === 'rejected') return false;
+      if (!searchTerm) return true;
+      const haystack = `${item.visitor_name || ''} ${item.resident_username || ''} ${item.property_name || ''}`.toLowerCase();
+      return haystack.includes(searchTerm.toLowerCase());
+    });
+    Object.keys(ownerVisitorRequestsById).forEach((key) => delete ownerVisitorRequestsById[key]);
+    requests.forEach((req) => { ownerVisitorRequestsById[req.id] = req; });
+
+    if (!pending.length) {
+      pendingEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">Q</div><h3>No Pending Requests</h3><p>New visitor requests will appear here in real time.</p></div>';
+    } else {
+      pendingEl.innerHTML = `<div class="table-wrapper"><table class="table"><thead><tr><th>Visitor</th><th>Resident</th><th>Purpose</th><th>Request Time</th><th>Expected Check-In</th><th>Expected Check-Out</th><th>Duration</th><th>Status</th><th>Action</th></tr></thead><tbody>${pending.map((req) => `<tr><td class="font-semibold">${req.visitor_name}<br><span class="text-xs text-muted">${req.visitor_phone || 'No phone'}</span></td><td>${req.resident_username}</td><td>${req.purpose_display}</td><td>${formatDateTime(req.created_at)}</td><td>${formatDateTime(req.requested_check_in)}</td><td>${formatDateTime(req.requested_check_out)}</td><td>${calculateVisitDurationLabel(req.requested_check_in, req.requested_check_out)}</td><td>${visitorStatusBadge(req.status)}</td><td><button class="btn btn-secondary btn-sm" onclick="openVisitorReviewById(${req.id})">Review</button></td></tr>`).join('')}</tbody></table></div>`;
+    }
+
+    if (!logsFiltered.length) {
+      approvedEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">OK</div><h3>No Approved Visitor Records</h3><p>Approved visitor check-ins appear here.</p></div>';
+    } else {
+      approvedEl.innerHTML = `<div class="table-wrapper"><table class="table"><thead><tr><th>Visitor</th><th>Resident</th><th>Purpose</th><th>Check-In</th><th>Check-Out</th><th>Status</th></tr></thead><tbody>${logsFiltered.map((v) => {
+        const lifecycle = getVisitLifecycleStatus(v.check_in, v.check_out, v.visit_status);
+        return `<tr><td class="font-semibold">${v.visitor_name}</td><td>${v.resident_username}</td><td>${v.purpose_display}</td><td>${formatDateTime(v.check_in)}</td><td>${formatDateTime(v.check_out)}</td><td>${visitLifecycleBadge(lifecycle)}</td></tr>`;
+      }).join('')}</tbody></table></div>`;
+    }
+
+    if (!rejected.length) {
+      rejectedEl.innerHTML = '<p class="text-muted text-sm">No rejected requests.</p>';
+    } else {
+      rejectedEl.innerHTML = `<div class="table-wrapper"><table class="table"><thead><tr><th>Visitor</th><th>Resident</th><th>Request Time</th><th>Decision Time</th><th>Reason</th><th>Status</th></tr></thead><tbody>${rejected.map((req) => `<tr><td class="font-semibold">${req.visitor_name}</td><td>${req.resident_username}</td><td>${formatDateTime(req.created_at)}</td><td>${formatDateTime(req.reviewed_at)}</td><td>${req.owner_note || '-'}</td><td>${visitorStatusBadge(req.status)}</td></tr>`).join('')}</tbody></table></div>`;
+    }
+
+    if (!silent) {
+      const title = document.getElementById('page-title');
+      if (title && activeOwnerTab === 'visitors') {
+        title.textContent = `Visitors (${pending.length} Pending)`;
+      }
+    }
+  } catch {
+    pendingEl.innerHTML = '<p class="text-muted text-center py-xl">Failed to load pending requests.</p>';
+    approvedEl.innerHTML = '<p class="text-muted text-center py-xl">Failed to load approved visitor records.</p>';
+    rejectedEl.innerHTML = '<p class="text-muted text-center py-xl">Failed to load rejected requests.</p>';
+  }
+}
+
+document.getElementById('btn-open-create-invoice').addEventListener('click', () => {
+  populateInvoiceForm();
+  openModal('modal-create-invoice');
+});
+document.getElementById('visitor-search')?.addEventListener('input', () => {
+  if (activeOwnerTab !== 'visitors') return;
+  loadVisitors(true);
+});
+document.getElementById('visitor-status-filter')?.addEventListener('change', () => {
+  if (activeOwnerTab !== 'visitors') return;
+  loadVisitors();
+});
+// ── Manage Rooms ──────────────────────────────────────────
   async function openManageRooms(propertyId, propertyName) {
     document.getElementById('rooms-property-id').value = propertyId;
     document.getElementById('rooms-modal-title').textContent = `Manage Rooms — ${propertyName}`;
@@ -1854,9 +2007,7 @@
                   </div>
               `).join('');
           }
-      } catch (e) {
-          console.error(e);
-      }
+      } catch (e) {}
   }
   function toggleNotifications() {
       const el = document.getElementById('notif-dropdown');
@@ -1878,6 +2029,16 @@
     document.getElementById('topbar-date').textContent =
       new Date().toLocaleDateString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
   })();
+  window.addEventListener('beforeunload', stopOwnerVisitorRealtime);
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+

@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Invoice - PGDOST</title>
     <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/theme-dark.css" />
+<link rel="stylesheet" href="../css/cinematic.css" />
+
+
     <script>
       (function () {
         try {
@@ -113,6 +117,8 @@
     </div>
 
     <script src="../scripts/api.js"></script>
+<script src="../scripts/cinematic.js"></script>
+
     <script>
         async function loadInvoice() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -134,7 +140,7 @@
                 if (role === 'owner') {
                     invoices = await api.get('/payments/owner/');
                 } else {
-                    invoices = await api.get('/payments/resident/');
+                    invoices = await api.get('/payments/my/');
                 }
                 
                 const invoice = invoices.find(i => i.id == invoiceId);
@@ -167,7 +173,6 @@
                 document.getElementById('inv-total').textContent = amtFormatted;
 
             } catch (err) {
-                console.error(err);
                 alert('Failed to load invoice details.');
             }
         }

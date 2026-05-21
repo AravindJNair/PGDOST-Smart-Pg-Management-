@@ -1,0 +1,384 @@
+/* ============================================================
+   PGDOST — Cinematic scroll & motion enhancement layer
+   Load after style.css / theme-dark.css. Does not replace UI.
+   ============================================================ */
+
+:root {
+  --cine-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --cine-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --cine-duration: 0.72s;
+  --cine-blur: 6px;
+  --cine-rise: 22px;
+}
+
+/* ── Scroll progress ───────────────────────────────────────── */
+.cine-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  z-index: 9998;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--theme-neon, #8fea5b), transparent);
+  box-shadow: 0 0 18px rgba(143, 234, 91, 0.45);
+  opacity: 0;
+  transition: opacity 0.35s var(--cine-ease);
+  transform-origin: left center;
+}
+
+html.cinematic-ready .cine-scroll-progress.is-active {
+  opacity: 1;
+}
+
+/* ── Section reveals ───────────────────────────────────────── */
+html.cinematic-ready .cine-reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--cine-rise), 0);
+  filter: blur(var(--cine-blur));
+  transition:
+    opacity var(--cine-duration) var(--cine-ease),
+    transform var(--cine-duration) var(--cine-ease),
+    filter calc(var(--cine-duration) * 0.85) var(--cine-ease);
+  will-change: opacity, transform, filter;
+}
+
+html.cinematic-ready .cine-reveal.cine-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+  will-change: auto;
+}
+
+html.cinematic-ready .cine-stagger > .cine-reveal,
+html.cinematic-ready .cine-stagger > .cine-reveal-child {
+  transition-delay: calc(var(--cine-i, 0) * 70ms);
+}
+
+/* Preserve existing load-time hero/auth animations */
+html.cinematic-ready .animate-fade-up,
+html.cinematic-ready .animate-fade-in,
+html.cinematic-ready .animate-scale-in {
+  filter: none;
+}
+
+/* ── Parallax depth layers ─────────────────────────────────── */
+html.cinematic-ready .theme-atmosphere {
+  will-change: transform;
+}
+
+html.cinematic-ready .theme-atmosphere [data-cine-parallax] {
+  transition: transform 0.12s linear;
+  will-change: transform;
+}
+
+html.cinematic-parallax .ambient-glow,
+html.cinematic-parallax .floating-leaf,
+html.cinematic-parallax .ambient-particle {
+  animation-play-state: paused;
+}
+
+/* ── Property cards — depth & glow ─────────────────────────── */
+html.cinematic-ready .property-card.cine-depth {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition:
+    transform 0.55s var(--cine-ease),
+    box-shadow 0.55s var(--cine-ease),
+    border-color 0.35s var(--ease);
+}
+
+html.cinematic-ready .property-card.cine-depth:hover {
+  transform:
+    translate3d(0, -8px, 0)
+    rotateX(var(--cine-tilt-x, 0deg))
+    rotateY(var(--cine-tilt-y, 0deg))
+    scale(1.012);
+  box-shadow:
+    var(--shadow-xl),
+    0 24px 48px rgba(7, 36, 18, 0.22),
+    0 0 40px rgba(143, 234, 91, 0.14);
+}
+
+html.cinematic-ready .property-card.cine-depth .property-card-image {
+  transition: transform 0.65s var(--cine-ease);
+}
+
+html.cinematic-ready .property-card.cine-depth:hover .property-card-image[style*="background-image"],
+html.cinematic-ready .property-card.cine-depth:hover .property-card-image {
+  transform: scale(1.07);
+}
+
+html.cinematic-ready .property-card.cine-depth::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    520px circle at var(--cine-glow-x, 50%) var(--cine-glow-y, 40%),
+    rgba(143, 234, 91, 0.14),
+    transparent 58%
+  );
+  transition: opacity 0.4s var(--cine-ease);
+  z-index: 2;
+}
+
+html.cinematic-ready .property-card.cine-depth:hover::after {
+  opacity: 1;
+}
+
+html.cinematic-ready .resident-property-card {
+  transition:
+    transform 0.5s var(--cine-ease),
+    box-shadow 0.5s var(--cine-ease),
+    border-color 0.35s var(--ease);
+}
+
+html.cinematic-ready .resident-property-card:hover {
+  transform: translate3d(0, -5px, 0);
+  box-shadow: 0 18px 36px rgba(7, 36, 18, 0.18), 0 0 28px rgba(143, 234, 91, 0.1);
+}
+
+html.cinematic-ready .resident-property-card:hover .resident-property-img {
+  transform: scale(1.05);
+}
+
+html.cinematic-ready .resident-property-img {
+  transition: transform 0.6s var(--cine-ease);
+  overflow: hidden;
+}
+
+/* ── Modals ────────────────────────────────────────────────── */
+html.cinematic-ready .modal-overlay {
+  transition:
+    opacity 0.42s var(--cine-ease),
+    backdrop-filter 0.5s var(--cine-ease),
+    -webkit-backdrop-filter 0.5s var(--cine-ease);
+}
+
+html.cinematic-ready .modal-overlay.open {
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
+html.cinematic-ready .modal-overlay .modal {
+  transition:
+    transform 0.58s var(--cine-ease),
+    opacity 0.42s var(--cine-ease);
+  opacity: 0;
+}
+
+html.cinematic-ready .modal-overlay.open .modal {
+  opacity: 1;
+}
+
+html.cinematic-ready .modal-overlay.cine-modal-open .modal .form-group,
+html.cinematic-ready .modal-overlay.cine-modal-open .modal .apply-form-section,
+html.cinematic-ready .modal-overlay.cine-modal-open .modal .ds-form-group,
+html.cinematic-ready .modal-overlay.cine-modal-open .modal .card {
+  animation: cineModalStagger 0.55s var(--cine-ease) both;
+  animation-delay: calc(var(--cine-i, 0) * 55ms + 80ms);
+}
+
+@keyframes cineModalStagger {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+/* ── Sidebar & navigation ──────────────────────────────────── */
+html.cinematic-ready .ds-sidebar .sb-item,
+html.cinematic-ready .sb-item {
+  position: relative;
+  transition:
+    background 0.32s var(--cine-ease),
+    color 0.28s var(--ease),
+    transform 0.28s var(--cine-ease),
+    box-shadow 0.32s var(--cine-ease);
+}
+
+html.cinematic-ready .ds-sidebar .sb-item::before,
+html.cinematic-ready .sb-item::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--theme-neon, #8fea5b), rgba(143, 234, 91, 0.35));
+  box-shadow: 0 0 12px rgba(143, 234, 91, 0.45);
+  transform: translateY(-50%);
+  transition: height 0.38s var(--cine-ease), opacity 0.28s var(--ease);
+  opacity: 0;
+}
+
+html.cinematic-ready .ds-sidebar .sb-item.active::before,
+html.cinematic-ready .sb-item.active::before {
+  height: 62%;
+  opacity: 1;
+}
+
+html.cinematic-ready .ds-sidebar .sb-item:hover,
+html.cinematic-ready .sb-item:hover {
+  transform: translateX(3px);
+}
+
+html.cinematic-ready .navbar-link,
+html.cinematic-ready .nav-text-link {
+  transition: color 0.25s var(--ease), transform 0.28s var(--cine-ease), opacity 0.25s var(--ease);
+}
+
+html.cinematic-ready .navbar-link:hover,
+html.cinematic-ready .nav-text-link:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Micro-interactions ────────────────────────────────────── */
+html.cinematic-ready .btn,
+html.cinematic-ready .btn-ds-primary,
+html.cinematic-ready .btn-ds-secondary,
+html.cinematic-ready .qa-btn {
+  transition:
+    transform 0.28s var(--cine-ease),
+    box-shadow 0.32s var(--cine-ease),
+    background 0.28s var(--ease),
+    border-color 0.28s var(--ease);
+}
+
+html.cinematic-ready .btn:active:not(:disabled),
+html.cinematic-ready .btn-ds-primary:active,
+html.cinematic-ready .btn-ds-secondary:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+html.cinematic-ready .form-select,
+html.cinematic-ready .form-input,
+html.cinematic-ready .ds-form-input,
+html.cinematic-ready .ds-form-select {
+  transition:
+    border-color 0.28s var(--ease),
+    box-shadow 0.32s var(--cine-ease),
+    transform 0.25s var(--cine-ease),
+    background 0.28s var(--ease);
+}
+
+html.cinematic-ready .form-input:focus,
+html.cinematic-ready .form-select:focus,
+html.cinematic-ready .ds-form-input:focus,
+html.cinematic-ready .ds-form-select:focus {
+  transform: translateY(-1px);
+}
+
+html.cinematic-ready .upload-zone,
+html.cinematic-ready .apply-upload-slot {
+  transition:
+    border-color 0.3s var(--ease),
+    background 0.3s var(--ease),
+    transform 0.35s var(--cine-ease),
+    box-shadow 0.35s var(--cine-ease);
+}
+
+html.cinematic-ready .upload-zone:hover,
+html.cinematic-ready .apply-upload-slot:hover {
+  transform: translateY(-2px);
+}
+
+html.cinematic-ready #toast-container .toast {
+  animation: cineToastIn 0.48s var(--cine-ease) both;
+}
+
+@keyframes cineToastIn {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 8px, 0) scale(0.96);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+html.cinematic-ready .toast.removing {
+  animation: cineToastOut 0.32s var(--cine-ease) forwards;
+}
+
+@keyframes cineToastOut {
+  to {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0) scale(0.96);
+  }
+}
+
+/* Tab panels — soft enter */
+html.cinematic-ready .tab-panel.cine-tab-active {
+  animation: cineTabIn 0.5s var(--cine-ease) both;
+}
+
+@keyframes cineTabIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ── Mobile / reduced motion ───────────────────────────────── */
+html.cine-mobile {
+  --cine-rise: 12px;
+  --cine-blur: 3px;
+  --cine-duration: 0.52s;
+}
+
+html.cine-mobile .property-card.cine-depth:hover {
+  transform: translate3d(0, -5px, 0) scale(1.01);
+}
+
+html.cine-mobile .ds-sidebar .sb-item:hover,
+html.cine-mobile .sb-item:hover {
+  transform: none;
+}
+
+html.cine-reduced .cine-scroll-progress,
+html.cine-reduced .theme-atmosphere [data-cine-parallax] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.cinematic-ready .cine-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  html.cinematic-ready .property-card.cine-depth:hover,
+  html.cinematic-ready .resident-property-card:hover {
+    transform: translate3d(0, -4px, 0) !important;
+  }
+
+  html.cinematic-ready .modal-overlay.cine-modal-open .modal * {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  html.cinematic-ready:not(.cine-mobile) .cine-reveal {
+    --cine-rise: 14px;
+    --cine-blur: 4px;
+  }
+}

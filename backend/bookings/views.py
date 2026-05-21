@@ -1,10 +1,9 @@
 from rest_framework import generics, permissions, status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils import timezone
 from .models import Booking
 from .serializers import BookingSerializer, BookingCreateSerializer, BookingStatusUpdateSerializer
-from properties.models import Room
 
 
 class IsOwner(permissions.BasePermission):
@@ -15,8 +14,13 @@ class IsOwner(permissions.BasePermission):
 
 class IsResident(permissions.BasePermission):
     """Grants access only to users with role='resident'."""
+    message = 'Only residents can submit booking requests. Please sign in with a resident account.'
+
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'resident'
+        return (
+            request.user.is_authenticated
+            and getattr(request.user, 'role', None) == 'resident'
+        )
 
 
 class IsSuperAdmin(permissions.BasePermission):
@@ -30,9 +34,17 @@ class ResidentApplyView(generics.CreateAPIView):
     """Resident applies for a PG (creates a pending booking)."""
     permission_classes = [IsResident]
     serializer_class = BookingCreateSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        booking = serializer.save()
+        output = BookingSerializer(booking, context={'request': request})
+        return Response(output.data, status=status.HTTP_201_CREATED)
 
 
 class ResidentBookingListView(generics.ListAPIView):
@@ -41,7 +53,7 @@ class ResidentBookingListView(generics.ListAPIView):
     serializer_class = BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(resident=self.request.user)
+        return Booking.objects.filter(resident=self.request.user).prefetch_related('documents')
 
 
 class ResidentActiveBookingView(APIView):
@@ -51,7 +63,7 @@ class ResidentActiveBookingView(APIView):
     def get(self, request):
         booking = Booking.objects.filter(
             resident=request.user, status='approved'
-        ).order_by('-id').first()
+        ).prefetch_related('documents').order_by('-id').first()
         if not booking:
             return Response({'detail': 'No active booking found.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = BookingSerializer(booking)
@@ -66,7 +78,7 @@ class OwnerBookingListView(generics.ListAPIView):
     serializer_class = BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(property__owner=self.request.user)
+        return Booking.objects.filter(property__owner=self.request.user).prefetch_related('documents')
 
 
 class OwnerBookingUpdateView(generics.UpdateAPIView):
@@ -89,12 +101,12 @@ class OwnerBookingUpdateView(generics.UpdateAPIView):
         # When vacated: restore a bed
         elif booking.status == 'vacated' and booking.room:
             room = booking.room
-            room.available_beds = min(room.available_beds + 1, room.total_beds)
+            room.available_beds += 1
             room.save()
             
         # Create notification for resident
         from accounts.models import Notification
-        message = f"Your booking for {booking.property.name} is now {booking.get_status_display()}."
+        message = f"Your booking for {booking.property.name} is now {booking.get_resident_status_display()}."
         if booking.owner_note:
             message += f" Note: {booking.owner_note}"
         Notification.objects.create(user=booking.resident, message=message)
