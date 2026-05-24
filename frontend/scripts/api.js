@@ -6,6 +6,12 @@ function resolveApiBase() {
   const configured = (window.PGDOST_API_BASE || '').trim();
   if (configured) return configured.replace(/\/+$/, '');
   if (window.location.protocol === 'file:') return 'http://127.0.0.1:8000/api';
+  const host = window.location.hostname;
+  const port = window.location.port;
+  const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+  // When frontend is served from a local static server (e.g. :5500),
+  // route API calls to Django running on :8000.
+  if (isLocalHost && port && port !== '8000') return 'http://127.0.0.1:8000/api';
   return `${window.location.origin}/api`;
 }
 
